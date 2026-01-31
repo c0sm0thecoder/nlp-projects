@@ -1,0 +1,11 @@
+{
+  "dataset": "poems_translated.parquet",
+  "rows": 846,
+  "text_column": "modern_text",
+  "tokenizer": "word-level BPE (task1_tokenize.py base)",
+  "vocab_size_target": 10000,
+  "min_pair_freq": 2,
+  "num_merges": 9899,
+  "total_bpe_tokens": 210631,
+  "unique_bpe_types": 8803
+}

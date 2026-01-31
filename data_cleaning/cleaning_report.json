@@ -1,0 +1,8 @@
+{
+  "dataset": "poems.parquet",
+  "rows": 846,
+  "changed_rows": 102,
+  "template_removed_rows": 100,
+  "toc_removed_rows": 3,
+  "empty_after_cleaning": 2
+}

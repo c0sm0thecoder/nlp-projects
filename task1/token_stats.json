@@ -1,0 +1,8 @@
+{
+  "dataset": "poems_cleaned.parquet",
+  "rows": 846,
+  "text_column": "text",
+  "tokenizer": "simple-space",
+  "total_tokens": 133408,
+  "unique_types": 50389
+}
