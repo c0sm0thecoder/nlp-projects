@@ -1,0 +1,60 @@
+{
+  "original_text": {
+    "basic": {
+      "total_poems": 846,
+      "total_segments": 11381,
+      "avg_segments_per_poem": 13.452718676122931,
+      "avg_segment_length": 83.95541167596468,
+      "median_segment_length": 82.0,
+      "total_chars": 887595,
+      "empty_segments_total": 0
+    },
+    "poetry_aware": {
+      "total_poems": 846,
+      "total_segments": 11381,
+      "avg_segments_per_poem": 13.452718676122931,
+      "avg_segment_length": 83.95541167596468,
+      "median_segment_length": 82.0,
+      "total_chars": 887595,
+      "empty_segments_total": 0
+    },
+    "advanced": {
+      "total_poems": 846,
+      "total_segments": 11408,
+      "avg_segments_per_poem": 13.484633569739954,
+      "avg_segment_length": 83.68363062591061,
+      "median_segment_length": 82.0,
+      "total_chars": 887541,
+      "empty_segments_total": 0
+    }
+  },
+  "modern_text": {
+    "basic": {
+      "total_poems": 846,
+      "total_segments": 11234,
+      "avg_segments_per_poem": 13.278959810874705,
+      "avg_segment_length": 86.67939284227835,
+      "median_segment_length": 84.5,
+      "total_chars": 913958,
+      "empty_segments_total": 0
+    },
+    "poetry_aware": {
+      "total_poems": 846,
+      "total_segments": 11240,
+      "avg_segments_per_poem": 13.286052009456265,
+      "avg_segment_length": 86.67406660813747,
+      "median_segment_length": 84.5,
+      "total_chars": 913946,
+      "empty_segments_total": 0
+    },
+    "advanced": {
+      "total_poems": 846,
+      "total_segments": 11266,
+      "avg_segments_per_poem": 13.31678486997636,
+      "avg_segment_length": 86.40289385481978,
+      "median_segment_length": 84.5,
+      "total_chars": 913894,
+      "empty_segments_total": 0
+    }
+  }
+}

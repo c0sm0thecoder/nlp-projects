@@ -1,0 +1,194 @@
+[
+  {
+    "title": "Aşiq oldum yenə bir tazə güli-rənayə",
+    "author": "Məhəmməd Füzuli",
+    "original_text": "Aşiq oldum yenə bir tazə güli-rənayə\nKi, salır al ilə hər dəm məni yüz qovğayə.\nMüşt urub, qalibi-fərsudəmi gəh həbs qılır,\nGəh sərasiməvü üryan buraxır səhrayə.\nÜzümün qani ilə sinəmi al etdim kim,\nAləti-sənət ola ol büti-bipərvayə.\nBu nə işdir ki, bizi iynə kimi incəldib,\nSalır iplik kimi hərdəm bir uzun sevdayə.\nAyağın bağlamış avarələrin sənət ilə,\nYox nihayət səri-kuyində gəzən şeydayə.\nLəxt-ləxt olmuş ikən, qəmzə dirəfşini çəkib,\nÇarəsiz olmadı bir gün məni-qəmfərsayə.\nYaxa çak edəni başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi istiğnayə.",
+    "modern_text": "Yenə bir təzə gözələ aşiq oldum,\nHər an hiylə ilə məni yüz qovğaya salır.\nYumruq vurub, köhnəlmiş vücudumu gah həbs edir,\nGah da sərasimə və çılpaq buraxır səhraya.\nÜzümün qanı ilə sinəmi al qırmızı etdim ki,\nO laqeyd bütə sənət aləti olsun.\nBu nə işdir ki, bizi iynə kimi incəldib,\nİplik kimi hər an uzun bir sevdaya salır.\nAvarələrin ayağını məharətlə bağlamış,\nOnun küçəsində gəzən şeydaya yoxdur son.\nParça-parça olmuşkən, qəmzə bayrağını çəkib,\nDərd çəkən mənə bir gün də çarə olmadı.\nYaxasını cıranı başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi laqeydliyə.",
+    "original_segmentation": {
+      "basic": [
+        "Aşiq oldum yenə bir tazə güli-rənayə\nKi, salır al ilə hər dəm məni yüz qovğayə",
+        "Müşt urub, qalibi-fərsudəmi gəh həbs qılır,\nGəh sərasiməvü üryan buraxır səhrayə",
+        "Üzümün qani ilə sinəmi al etdim kim,\nAləti-sənət ola ol büti-bipərvayə",
+        "Bu nə işdir ki, bizi iynə kimi incəldib,\nSalır iplik kimi hərdəm bir uzun sevdayə",
+        "Ayağın bağlamış avarələrin sənət ilə,\nYox nihayət səri-kuyində gəzən şeydayə",
+        "Ləxt-ləxt olmuş ikən, qəmzə dirəfşini çəkib,\nÇarəsiz olmadı bir gün məni-qəmfərsayə",
+        "Yaxa çak edəni başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi istiğnayə"
+      ],
+      "poetry_aware": [
+        "Aşiq oldum yenə bir tazə güli-rənayə\nKi, salır al ilə hər dəm məni yüz qovğayə",
+        "Müşt urub, qalibi-fərsudəmi gəh həbs qılır,\nGəh sərasiməvü üryan buraxır səhrayə",
+        "Üzümün qani ilə sinəmi al etdim kim,\nAləti-sənət ola ol büti-bipərvayə",
+        "Bu nə işdir ki, bizi iynə kimi incəldib,\nSalır iplik kimi hərdəm bir uzun sevdayə",
+        "Ayağın bağlamış avarələrin sənət ilə,\nYox nihayət səri-kuyində gəzən şeydayə",
+        "Ləxt-ləxt olmuş ikən, qəmzə dirəfşini çəkib,\nÇarəsiz olmadı bir gün məni-qəmfərsayə",
+        "Yaxa çak edəni başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi istiğnayə"
+      ],
+      "advanced": [
+        "Aşiq oldum yenə bir tazə güli-rənayə\nKi, salır al ilə hər dəm məni yüz qovğayə",
+        "Müşt urub, qalibi-fərsudəmi gəh həbs qılır,\nGəh sərasiməvü üryan buraxır səhrayə",
+        "Üzümün qani ilə sinəmi al etdim kim,\nAləti-sənət ola ol büti-bipərvayə",
+        "Bu nə işdir ki, bizi iynə kimi incəldib,\nSalır iplik kimi hərdəm bir uzun sevdayə",
+        "Ayağın bağlamış avarələrin sənət ilə,\nYox nihayət səri-kuyində gəzən şeydayə",
+        "Ləxt-ləxt olmuş ikən, qəmzə dirəfşini çəkib,\nÇarəsiz olmadı bir gün məni-qəmfərsayə",
+        "Yaxa çak edəni başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi istiğnayə"
+      ]
+    },
+    "modern_segmentation": {
+      "basic": [
+        "Yenə bir təzə gözələ aşiq oldum,\nHər an hiylə ilə məni yüz qovğaya salır",
+        "Yumruq vurub, köhnəlmiş vücudumu gah həbs edir,\nGah da sərasimə və çılpaq buraxır səhraya",
+        "Üzümün qanı ilə sinəmi al qırmızı etdim ki,\nO laqeyd bütə sənət aləti olsun",
+        "Bu nə işdir ki, bizi iynə kimi incəldib,\nİplik kimi hər an uzun bir sevdaya salır",
+        "Avarələrin ayağını məharətlə bağlamış,\nOnun küçəsində gəzən şeydaya yoxdur son",
+        "Parça-parça olmuşkən, qəmzə bayrağını çəkib,\nDərd çəkən mənə bir gün də çarə olmadı",
+        "Yaxasını cıranı başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi laqeydliyə"
+      ],
+      "poetry_aware": [
+        "Yenə bir təzə gözələ aşiq oldum,\nHər an hiylə ilə məni yüz qovğaya salır",
+        "Yumruq vurub, köhnəlmiş vücudumu gah həbs edir,\nGah da sərasimə və çılpaq buraxır səhraya",
+        "Üzümün qanı ilə sinəmi al qırmızı etdim ki,\nO laqeyd bütə sənət aləti olsun",
+        "Bu nə işdir ki, bizi iynə kimi incəldib,\nİplik kimi hər an uzun bir sevdaya salır",
+        "Avarələrin ayağını məharətlə bağlamış,\nOnun küçəsində gəzən şeydaya yoxdur son",
+        "Parça-parça olmuşkən, qəmzə bayrağını çəkib,\nDərd çəkən mənə bir gün də çarə olmadı",
+        "Yaxasını cıranı başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi laqeydliyə"
+      ],
+      "advanced": [
+        "Yenə bir təzə gözələ aşiq oldum,\nHər an hiylə ilə məni yüz qovğaya salır",
+        "Yumruq vurub, köhnəlmiş vücudumu gah həbs edir,\nGah da sərasimə və çılpaq buraxır səhraya",
+        "Üzümün qanı ilə sinəmi al qırmızı etdim ki,\nO laqeyd bütə sənət aləti olsun",
+        "Bu nə işdir ki, bizi iynə kimi incəldib,\nİplik kimi hər an uzun bir sevdaya salır",
+        "Avarələrin ayağını məharətlə bağlamış,\nOnun küçəsində gəzən şeydaya yoxdur son",
+        "Parça-parça olmuşkən, qəmzə bayrağını çəkib,\nDərd çəkən mənə bir gün də çarə olmadı",
+        "Yaxasını cıranı başmaq kimi salır ayağa,\nEy Füzuli, bax onun etdiyi laqeydliyə"
+      ]
+    }
+  },
+  {
+    "title": "Bağə gir bülbülə ərzi-güli-rüxsar eylə",
+    "author": "Məhəmməd Füzuli",
+    "original_text": "Bağə gir bülbülə ərzi-güli-rüxsar eylə,\nYıq gülün irzini bülbül gözünə xar eylə.\nBağ şahidlərinə zülf ilə çeşmin göstər,\nSünbülü dərhəm edib, nərgisi bimar eylə.\nQönçəyə lafi-lətafətdə ağız açdırma,\nLəhzə-ləhzə onu şərməndeyi-köftar eylə.\nSərvə azadəlik ismilə yaraşmaz yürümək,\nOnu həm şiveyi-rəftarə giriftar eylə.\nDari-dünyanı könül, cəhd qılıb tərk edə gör,\nXabi-qəflətdə ikən özünü bidar eylə.\nA ciyər zəxmi, ağız açma xədəngin görübən,\nYetənə razi-nihanım, yetər, izhar eylə.\nKəs, Füzuli, təməin qeyr təmənnalərdən,\nQanda olsan tələbi-dövləti-didar eylə.",
+    "modern_text": "Bağa gir, bülbülə üzünün gülünü ərz et,\nGülün şöhrətini yıx, bülbülün gözündə onu xar et.\nBağ şahidlərinə saçlarınla gözlərini göstər,\nSünbülü pərişan edib, nərgizi isə xəstə et.\nQönçəyə zərifliyindən danışmağa imkan vermə,\nHər an onu danışığından utandır.\nSərvə azadlıq adı ilə gəzmək yaraşmaz,\nOnu da yeriyiş tərzinə giriftar et.\nEy könül, bu dünyanı tərk etməyə cəhd et,\nQəflət yuxusunda ikən özünü oyat.\nEy ciyər yarası, onun oxunu görüb ağız açma,\nGizli sirrimi kimə çatdırsan, bəsdir, aşkar et.\nFüzuli, istəklərini başqa arzularından kəs,\nHarada olsan, görüşməyin səadətini tələb et.",
+    "original_segmentation": {
+      "basic": [
+        "Bağə gir bülbülə ərzi-güli-rüxsar eylə,\nYıq gülün irzini bülbül gözünə xar eylə",
+        "Bağ şahidlərinə zülf ilə çeşmin göstər,\nSünbülü dərhəm edib, nərgisi bimar eylə",
+        "Qönçəyə lafi-lətafətdə ağız açdırma,\nLəhzə-ləhzə onu şərməndeyi-köftar eylə",
+        "Sərvə azadəlik ismilə yaraşmaz yürümək,\nOnu həm şiveyi-rəftarə giriftar eylə",
+        "Dari-dünyanı könül, cəhd qılıb tərk edə gör,\nXabi-qəflətdə ikən özünü bidar eylə",
+        "A ciyər zəxmi, ağız açma xədəngin görübən,\nYetənə razi-nihanım, yetər, izhar eylə",
+        "Kəs, Füzuli, təməin qeyr təmənnalərdən,\nQanda olsan tələbi-dövləti-didar eylə"
+      ],
+      "poetry_aware": [
+        "Bağə gir bülbülə ərzi-güli-rüxsar eylə,\nYıq gülün irzini bülbül gözünə xar eylə",
+        "Bağ şahidlərinə zülf ilə çeşmin göstər,\nSünbülü dərhəm edib, nərgisi bimar eylə",
+        "Qönçəyə lafi-lətafətdə ağız açdırma,\nLəhzə-ləhzə onu şərməndeyi-köftar eylə",
+        "Sərvə azadəlik ismilə yaraşmaz yürümək,\nOnu həm şiveyi-rəftarə giriftar eylə",
+        "Dari-dünyanı könül, cəhd qılıb tərk edə gör,\nXabi-qəflətdə ikən özünü bidar eylə",
+        "A ciyər zəxmi, ağız açma xədəngin görübən,\nYetənə razi-nihanım, yetər, izhar eylə",
+        "Kəs, Füzuli, təməin qeyr təmənnalərdən,\nQanda olsan tələbi-dövləti-didar eylə"
+      ],
+      "advanced": [
+        "Bağə gir bülbülə ərzi-güli-rüxsar eylə,\nYıq gülün irzini bülbül gözünə xar eylə",
+        "Bağ şahidlərinə zülf ilə çeşmin göstər,\nSünbülü dərhəm edib, nərgisi bimar eylə",
+        "Qönçəyə lafi-lətafətdə ağız açdırma,\nLəhzə-ləhzə onu şərməndeyi-köftar eylə",
+        "Sərvə azadəlik ismilə yaraşmaz yürümək,\nOnu həm şiveyi-rəftarə giriftar eylə",
+        "Dari-dünyanı könül, cəhd qılıb tərk edə gör,\nXabi-qəflətdə ikən özünü bidar eylə",
+        "A ciyər zəxmi, ağız açma xədəngin görübən,\nYetənə razi-nihanım, yetər, izhar eylə",
+        "Kəs, Füzuli, təməin qeyr təmənnalərdən,\nQanda olsan tələbi-dövləti-didar eylə"
+      ]
+    },
+    "modern_segmentation": {
+      "basic": [
+        "Bağa gir, bülbülə üzünün gülünü ərz et,\nGülün şöhrətini yıx, bülbülün gözündə onu xar et",
+        "Bağ şahidlərinə saçlarınla gözlərini göstər,\nSünbülü pərişan edib, nərgizi isə xəstə et",
+        "Qönçəyə zərifliyindən danışmağa imkan vermə,\nHər an onu danışığından utandır",
+        "Sərvə azadlıq adı ilə gəzmək yaraşmaz,\nOnu da yeriyiş tərzinə giriftar et",
+        "Ey könül, bu dünyanı tərk etməyə cəhd et,\nQəflət yuxusunda ikən özünü oyat",
+        "Ey ciyər yarası, onun oxunu görüb ağız açma,\nGizli sirrimi kimə çatdırsan, bəsdir, aşkar et",
+        "Füzuli, istəklərini başqa arzularından kəs,\nHarada olsan, görüşməyin səadətini tələb et"
+      ],
+      "poetry_aware": [
+        "Bağa gir, bülbülə üzünün gülünü ərz et,\nGülün şöhrətini yıx, bülbülün gözündə onu xar et",
+        "Bağ şahidlərinə saçlarınla gözlərini göstər,\nSünbülü pərişan edib, nərgizi isə xəstə et",
+        "Qönçəyə zərifliyindən danışmağa imkan vermə,\nHər an onu danışığından utandır",
+        "Sərvə azadlıq adı ilə gəzmək yaraşmaz,\nOnu da yeriyiş tərzinə giriftar et",
+        "Ey könül, bu dünyanı tərk etməyə cəhd et,\nQəflət yuxusunda ikən özünü oyat",
+        "Ey ciyər yarası, onun oxunu görüb ağız açma,\nGizli sirrimi kimə çatdırsan, bəsdir, aşkar et",
+        "Füzuli, istəklərini başqa arzularından kəs,\nHarada olsan, görüşməyin səadətini tələb et"
+      ],
+      "advanced": [
+        "Bağa gir, bülbülə üzünün gülünü ərz et,\nGülün şöhrətini yıx, bülbülün gözündə onu xar et",
+        "Bağ şahidlərinə saçlarınla gözlərini göstər,\nSünbülü pərişan edib, nərgizi isə xəstə et",
+        "Qönçəyə zərifliyindən danışmağa imkan vermə,\nHər an onu danışığından utandır",
+        "Sərvə azadlıq adı ilə gəzmək yaraşmaz,\nOnu da yeriyiş tərzinə giriftar et",
+        "Ey könül, bu dünyanı tərk etməyə cəhd et,\nQəflət yuxusunda ikən özünü oyat",
+        "Ey ciyər yarası, onun oxunu görüb ağız açma,\nGizli sirrimi kimə çatdırsan, bəsdir, aşkar et",
+        "Füzuli, istəklərini başqa arzularından kəs,\nHarada olsan, görüşməyin səadətini tələb et"
+      ]
+    }
+  },
+  {
+    "title": "Batalı qanə oxun dideyi-giryan içrə",
+    "author": "Məhəmməd Füzuli",
+    "original_text": "Batalı qanə oxun dideyi-giryan içrə,\nBir əlifdir sanasan kim, yazılar qan içrə.\nYeridir, sineyi-suzanıma gülxən desələr,\nBəs ki, yanmışdır oxun sineyi-suzan içrə.\nCanı tən içrə nə saxlardım əgər bilsə idim\nKi, deyil gizli qəmi-ləli-ləbin can içrə.\nAla gör oxlarını didələrimdən, ey dil,\nHeyfdir, olmaya nagəh itə müjgan içrə.\nÇak könlüm arasında yaraşır peykanın,\nİqdi-şəbnəm xoş olur qönçeyi-xəndan içrə.\nQəddinə sərv demiş, qönçələrin tənindən\nDuramaz badi-səba hiç gülüstan içrə.\nEy Füzuli, kimə suzi-dilimi şərh qılım,\nYox mənim kimi yanan atəşi-hicran içrə.",
+    "modern_text": "Ağlayan göz içində oxun qana batıb,\nSanki qan içində yazılmış bir əlifdir.\nYerinə düşər, yanan sinəmə gülxən desələr,\nÇünki oxun yanan sinəmin içində yanıb.\nCanı bədənimdə niyə saxlayardım, əgər bilsəydim\nKi, ləl dodağının qəmi canda gizli deyil.\nGözlərimdən oxlarını çıxar, ey könül,\nHeyifdir, birdən kirpiklərim içində itərlər.\nYarılmış könlümün arasında oxunun ucu yaraşır,\nGülümsəyən qönçənin içində şeh damlası xoş görünür.\nBoyuna sərv deyən, qönçələrin tənəsindən\nSəba yeli heç bir gülistanda dayana bilməz.\nEy Füzuli, ürəyimin yanmasını kimə izah edim,\nHicran atəşi içində mənim kimi yanan yoxdur.",
+    "original_segmentation": {
+      "basic": [
+        "Batalı qanə oxun dideyi-giryan içrə,\nBir əlifdir sanasan kim, yazılar qan içrə",
+        "Yeridir, sineyi-suzanıma gülxən desələr,\nBəs ki, yanmışdır oxun sineyi-suzan içrə",
+        "Canı tən içrə nə saxlardım əgər bilsə idim\nKi, deyil gizli qəmi-ləli-ləbin can içrə",
+        "Ala gör oxlarını didələrimdən, ey dil,\nHeyfdir, olmaya nagəh itə müjgan içrə",
+        "Çak könlüm arasında yaraşır peykanın,\nİqdi-şəbnəm xoş olur qönçeyi-xəndan içrə",
+        "Qəddinə sərv demiş, qönçələrin tənindən\nDuramaz badi-səba hiç gülüstan içrə",
+        "Ey Füzuli, kimə suzi-dilimi şərh qılım,\nYox mənim kimi yanan atəşi-hicran içrə"
+      ],
+      "poetry_aware": [
+        "Batalı qanə oxun dideyi-giryan içrə,\nBir əlifdir sanasan kim, yazılar qan içrə",
+        "Yeridir, sineyi-suzanıma gülxən desələr,\nBəs ki, yanmışdır oxun sineyi-suzan içrə",
+        "Canı tən içrə nə saxlardım əgər bilsə idim\nKi, deyil gizli qəmi-ləli-ləbin can içrə",
+        "Ala gör oxlarını didələrimdən, ey dil,\nHeyfdir, olmaya nagəh itə müjgan içrə",
+        "Çak könlüm arasında yaraşır peykanın,\nİqdi-şəbnəm xoş olur qönçeyi-xəndan içrə",
+        "Qəddinə sərv demiş, qönçələrin tənindən\nDuramaz badi-səba hiç gülüstan içrə",
+        "Ey Füzuli, kimə suzi-dilimi şərh qılım,\nYox mənim kimi yanan atəşi-hicran içrə"
+      ],
+      "advanced": [
+        "Batalı qanə oxun dideyi-giryan içrə,\nBir əlifdir sanasan kim, yazılar qan içrə",
+        "Yeridir, sineyi-suzanıma gülxən desələr,\nBəs ki, yanmışdır oxun sineyi-suzan içrə",
+        "Canı tən içrə nə saxlardım əgər bilsə idim\nKi, deyil gizli qəmi-ləli-ləbin can içrə",
+        "Ala gör oxlarını didələrimdən, ey dil,\nHeyfdir, olmaya nagəh itə müjgan içrə",
+        "Çak könlüm arasında yaraşır peykanın,\nİqdi-şəbnəm xoş olur qönçeyi-xəndan içrə",
+        "Qəddinə sərv demiş, qönçələrin tənindən\nDuramaz badi-səba hiç gülüstan içrə",
+        "Ey Füzuli, kimə suzi-dilimi şərh qılım,\nYox mənim kimi yanan atəşi-hicran içrə"
+      ]
+    },
+    "modern_segmentation": {
+      "basic": [
+        "Ağlayan göz içində oxun qana batıb,\nSanki qan içində yazılmış bir əlifdir",
+        "Yerinə düşər, yanan sinəmə gülxən desələr,\nÇünki oxun yanan sinəmin içində yanıb",
+        "Canı bədənimdə niyə saxlayardım, əgər bilsəydim\nKi, ləl dodağının qəmi canda gizli deyil",
+        "Gözlərimdən oxlarını çıxar, ey könül,\nHeyifdir, birdən kirpiklərim içində itərlər",
+        "Yarılmış könlümün arasında oxunun ucu yaraşır,\nGülümsəyən qönçənin içində şeh damlası xoş görünür",
+        "Boyuna sərv deyən, qönçələrin tənəsindən\nSəba yeli heç bir gülistanda dayana bilməz",
+        "Ey Füzuli, ürəyimin yanmasını kimə izah edim,\nHicran atəşi içində mənim kimi yanan yoxdur"
+      ],
+      "poetry_aware": [
+        "Ağlayan göz içində oxun qana batıb,\nSanki qan içində yazılmış bir əlifdir",
+        "Yerinə düşər, yanan sinəmə gülxən desələr,\nÇünki oxun yanan sinəmin içində yanıb",
+        "Canı bədənimdə niyə saxlayardım, əgər bilsəydim\nKi, ləl dodağının qəmi canda gizli deyil",
+        "Gözlərimdən oxlarını çıxar, ey könül,\nHeyifdir, birdən kirpiklərim içində itərlər",
+        "Yarılmış könlümün arasında oxunun ucu yaraşır,\nGülümsəyən qönçənin içində şeh damlası xoş görünür",
+        "Boyuna sərv deyən, qönçələrin tənəsindən\nSəba yeli heç bir gülistanda dayana bilməz",
+        "Ey Füzuli, ürəyimin yanmasını kimə izah edim,\nHicran atəşi içində mənim kimi yanan yoxdur"
+      ],
+      "advanced": [
+        "Ağlayan göz içində oxun qana batıb,\nSanki qan içində yazılmış bir əlifdir",
+        "Yerinə düşər, yanan sinəmə gülxən desələr,\nÇünki oxun yanan sinəmin içində yanıb",
+        "Canı bədənimdə niyə saxlayardım, əgər bilsəydim\nKi, ləl dodağının qəmi canda gizli deyil",
+        "Gözlərimdən oxlarını çıxar, ey könül,\nHeyifdir, birdən kirpiklərim içində itərlər",
+        "Yarılmış könlümün arasında oxunun ucu yaraşır,\nGülümsəyən qönçənin içində şeh damlası xoş görünür",
+        "Boyuna sərv deyən, qönçələrin tənəsindən\nSəba yeli heç bir gülistanda dayana bilməz",
+        "Ey Füzuli, ürəyimin yanmasını kimə izah edim,\nHicran atəşi içində mənim kimi yanan yoxdur"
+      ]
+    }
+  }
+]
