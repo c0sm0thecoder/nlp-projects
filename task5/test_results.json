@@ -1,0 +1,402 @@
+[
+    {
+        "input_word": "Asiq",
+        "expected_word": "Aşiq",
+        "predicted_word": "aşiq",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "taze",
+        "expected_word": "tazə",
+        "predicted_word": "taz",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "guli-renaye",
+        "expected_word": "güli-rənayə",
+        "predicted_word": null,
+        "levenshtein_distance": 4,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "Must",
+        "expected_word": "Müşt",
+        "predicted_word": "musa",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "uryan",
+        "expected_word": "üryan",
+        "predicted_word": "üryan",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "sehraye",
+        "expected_word": "səhrayə",
+        "predicted_word": "səhraya",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "iyne",
+        "expected_word": "iynə",
+        "predicted_word": "iynə",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "senet",
+        "expected_word": "sənət",
+        "predicted_word": "sene",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "qemze",
+        "expected_word": "qəmzə",
+        "predicted_word": "qemü",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "direfsini",
+        "expected_word": "dirəfşini",
+        "predicted_word": "dirəfşini",
+        "levenshtein_distance": 2,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "bulbulə",
+        "expected_word": "bülbülə",
+        "predicted_word": "bülbülə",
+        "levenshtein_distance": 2,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "ruxsar",
+        "expected_word": "rüxsar",
+        "predicted_word": "ruxsarə",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "cesmin",
+        "expected_word": "çeşmin",
+        "predicted_word": "cismin",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "Sunbulu",
+        "expected_word": "Sünbülü",
+        "predicted_word": "suyumu",
+        "levenshtein_distance": 3,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "nergisi",
+        "expected_word": "nərgisi",
+        "predicted_word": "nərgisi",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "koftar",
+        "expected_word": "köftar",
+        "predicted_word": "kaftar",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "Serve",
+        "expected_word": "Sərvə",
+        "predicted_word": "sǝrv",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "cehd",
+        "expected_word": "cəhd",
+        "predicted_word": "cəhd",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "xedengin",
+        "expected_word": "xədəngin",
+        "predicted_word": "xədəngin",
+        "levenshtein_distance": 2,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "temennalerden",
+        "expected_word": "təmənnalərdən",
+        "predicted_word": null,
+        "levenshtein_distance": 4,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "Fuzuli",
+        "expected_word": "Füzuli",
+        "predicted_word": "füzuli",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "konlum",
+        "expected_word": "könlüm",
+        "predicted_word": "konlum",
+        "levenshtein_distance": 0,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "mujgan",
+        "expected_word": "müjgan",
+        "predicted_word": "müjgan",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "peykanin",
+        "expected_word": "peykanın",
+        "predicted_word": "peykanin",
+        "levenshtein_distance": 0,
+        "status": "FAIL",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "yarasir",
+        "expected_word": "yaraşır",
+        "predicted_word": "yaraşır",
+        "levenshtein_distance": 2,
+        "status": "PASS",
+        "error_type": "anglicization"
+    },
+    {
+        "input_word": "qovayə",
+        "expected_word": "qovğayə",
+        "predicted_word": "ovayə",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "fərsudmi",
+        "expected_word": "fərsudəmi",
+        "predicted_word": "dərsimi",
+        "levenshtein_distance": 3,
+        "status": "FAIL",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "iplk",
+        "expected_word": "iplik",
+        "predicted_word": "iplik",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "avarələin",
+        "expected_word": "avarələrin",
+        "predicted_word": "avarələrin",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "səriməvü",
+        "expected_word": "sərasiməvü",
+        "predicted_word": "sərimə",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "irzni",
+        "expected_word": "irzini",
+        "predicted_word": "irzini",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "lətaftdə",
+        "expected_word": "lətafətdə",
+        "predicted_word": "lətafətdə",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "azadlik",
+        "expected_word": "azadəlik",
+        "predicted_word": "azadəlik",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "bida",
+        "expected_word": "bidar",
+        "predicted_word": "bica",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "dideyi-giryn",
+        "expected_word": "dideyi-giryan",
+        "predicted_word": "dideyigiryan",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "deletion"
+    },
+    {
+        "input_word": "sevadyə",
+        "expected_word": "sevdayə",
+        "predicted_word": "sevdadə",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "transposition"
+    },
+    {
+        "input_word": "istğinayə",
+        "expected_word": "istiğnayə",
+        "predicted_word": "istiğnayə",
+        "levenshtein_distance": 2,
+        "status": "PASS",
+        "error_type": "transposition"
+    },
+    {
+        "input_word": "Lətx-ləxt",
+        "expected_word": "Ləxt-ləxt",
+        "predicted_word": "ləxtləxt",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "transposition"
+    },
+    {
+        "input_word": "drəhm",
+        "expected_word": "dərhəm",
+        "predicted_word": "rəhm",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "transposition"
+    },
+    {
+        "input_word": "zəmxi",
+        "expected_word": "zəxmi",
+        "predicted_word": "zərbi",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "transposition"
+    },
+    {
+        "input_word": "Batlai",
+        "expected_word": "Batalı",
+        "predicted_word": "batar",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "transposition"
+    },
+    {
+        "input_word": "yennə",
+        "expected_word": "yenə",
+        "predicted_word": "yenə",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "insertion"
+    },
+    {
+        "input_word": "bippərvayə",
+        "expected_word": "bipərvayə",
+        "predicted_word": "bipərva",
+        "levenshtein_distance": 3,
+        "status": "FAIL",
+        "error_type": "insertion"
+    },
+    {
+        "input_word": "səhrayyə",
+        "expected_word": "səhrayə",
+        "predicted_word": "səhrayə",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "insertion"
+    },
+    {
+        "input_word": "biddar",
+        "expected_word": "bidar",
+        "predicted_word": "bidar",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "insertion"
+    },
+    {
+        "input_word": "canıı",
+        "expected_word": "canı",
+        "predicted_word": "canımı",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "insertion"
+    },
+    {
+        "input_word": "kovğayə",
+        "expected_word": "qovğayə",
+        "predicted_word": "qovğayə",
+        "levenshtein_distance": 1,
+        "status": "PASS",
+        "error_type": "phonetic"
+    },
+    {
+        "input_word": "xarə",
+        "expected_word": "xar",
+        "predicted_word": "xarə",
+        "levenshtein_distance": 0,
+        "status": "FAIL",
+        "error_type": "phonetic"
+    },
+    {
+        "input_word": "könülm",
+        "expected_word": "könlüm",
+        "predicted_word": "könülə",
+        "levenshtein_distance": 1,
+        "status": "FAIL",
+        "error_type": "phonetic"
+    },
+    {
+        "input_word": "seydaye",
+        "expected_word": "şeydayə",
+        "predicted_word": "sevdayə",
+        "levenshtein_distance": 2,
+        "status": "FAIL",
+        "error_type": "phonetic"
+    }
+]

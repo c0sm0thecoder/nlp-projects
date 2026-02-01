@@ -1,0 +1,252 @@
+[
+    {
+        "input": "Asiq",
+        "expected": "Aşiq",
+        "type": "anglicization"
+    },
+    {
+        "input": "taze",
+        "expected": "tazə",
+        "type": "anglicization"
+    },
+    {
+        "input": "guli-renaye",
+        "expected": "güli-rənayə",
+        "type": "anglicization"
+    },
+    {
+        "input": "Must",
+        "expected": "Müşt",
+        "type": "anglicization"
+    },
+    {
+        "input": "uryan",
+        "expected": "üryan",
+        "type": "anglicization"
+    },
+    {
+        "input": "sehraye",
+        "expected": "səhrayə",
+        "type": "anglicization"
+    },
+    {
+        "input": "iyne",
+        "expected": "iynə",
+        "type": "anglicization"
+    },
+    {
+        "input": "senet",
+        "expected": "sənət",
+        "type": "anglicization"
+    },
+    {
+        "input": "qemze",
+        "expected": "qəmzə",
+        "type": "anglicization"
+    },
+    {
+        "input": "direfsini",
+        "expected": "dirəfşini",
+        "type": "anglicization"
+    },
+    {
+        "input": "bulbulə",
+        "expected": "bülbülə",
+        "type": "anglicization"
+    },
+    {
+        "input": "ruxsar",
+        "expected": "rüxsar",
+        "type": "anglicization"
+    },
+    {
+        "input": "cesmin",
+        "expected": "çeşmin",
+        "type": "anglicization"
+    },
+    {
+        "input": "Sunbulu",
+        "expected": "Sünbülü",
+        "type": "anglicization"
+    },
+    {
+        "input": "nergisi",
+        "expected": "nərgisi",
+        "type": "anglicization"
+    },
+    {
+        "input": "koftar",
+        "expected": "köftar",
+        "type": "anglicization"
+    },
+    {
+        "input": "Serve",
+        "expected": "Sərvə",
+        "type": "anglicization"
+    },
+    {
+        "input": "cehd",
+        "expected": "cəhd",
+        "type": "anglicization"
+    },
+    {
+        "input": "xedengin",
+        "expected": "xədəngin",
+        "type": "anglicization"
+    },
+    {
+        "input": "temennalerden",
+        "expected": "təmənnalərdən",
+        "type": "anglicization"
+    },
+    {
+        "input": "Fuzuli",
+        "expected": "Füzuli",
+        "type": "anglicization"
+    },
+    {
+        "input": "konlum",
+        "expected": "könlüm",
+        "type": "anglicization"
+    },
+    {
+        "input": "mujgan",
+        "expected": "müjgan",
+        "type": "anglicization"
+    },
+    {
+        "input": "peykanin",
+        "expected": "peykanın",
+        "type": "anglicization"
+    },
+    {
+        "input": "yarasir",
+        "expected": "yaraşır",
+        "type": "anglicization"
+    },
+    {
+        "input": "qovayə",
+        "expected": "qovğayə",
+        "type": "deletion"
+    },
+    {
+        "input": "fərsudmi",
+        "expected": "fərsudəmi",
+        "type": "deletion"
+    },
+    {
+        "input": "iplk",
+        "expected": "iplik",
+        "type": "deletion"
+    },
+    {
+        "input": "avarələin",
+        "expected": "avarələrin",
+        "type": "deletion"
+    },
+    {
+        "input": "səriməvü",
+        "expected": "sərasiməvü",
+        "type": "deletion"
+    },
+    {
+        "input": "irzni",
+        "expected": "irzini",
+        "type": "deletion"
+    },
+    {
+        "input": "lətaftdə",
+        "expected": "lətafətdə",
+        "type": "deletion"
+    },
+    {
+        "input": "azadlik",
+        "expected": "azadəlik",
+        "type": "deletion"
+    },
+    {
+        "input": "bida",
+        "expected": "bidar",
+        "type": "deletion"
+    },
+    {
+        "input": "dideyi-giryn",
+        "expected": "dideyi-giryan",
+        "type": "deletion"
+    },
+    {
+        "input": "sevadyə",
+        "expected": "sevdayə",
+        "type": "transposition"
+    },
+    {
+        "input": "istğinayə",
+        "expected": "istiğnayə",
+        "type": "transposition"
+    },
+    {
+        "input": "Lətx-ləxt",
+        "expected": "Ləxt-ləxt",
+        "type": "transposition"
+    },
+    {
+        "input": "drəhm",
+        "expected": "dərhəm",
+        "type": "transposition"
+    },
+    {
+        "input": "zəmxi",
+        "expected": "zəxmi",
+        "type": "transposition"
+    },
+    {
+        "input": "Batlai",
+        "expected": "Batalı",
+        "type": "transposition"
+    },
+    {
+        "input": "yennə",
+        "expected": "yenə",
+        "type": "insertion"
+    },
+    {
+        "input": "bippərvayə",
+        "expected": "bipərvayə",
+        "type": "insertion"
+    },
+    {
+        "input": "səhrayyə",
+        "expected": "səhrayə",
+        "type": "insertion"
+    },
+    {
+        "input": "biddar",
+        "expected": "bidar",
+        "type": "insertion"
+    },
+    {
+        "input": "canıı",
+        "expected": "canı",
+        "type": "insertion"
+    },
+    {
+        "input": "kovğayə",
+        "expected": "qovğayə",
+        "type": "phonetic"
+    },
+    {
+        "input": "xarə",
+        "expected": "xar",
+        "type": "phonetic"
+    },
+    {
+        "input": "könülm",
+        "expected": "könlüm",
+        "type": "phonetic"
+    },
+    {
+        "input": "seydaye",
+        "expected": "şeydayə",
+        "type": "phonetic"
+    }
+]
