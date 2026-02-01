@@ -1,0 +1,17 @@
+{
+  "confusion_matrix": {
+    "insertion->incorrect": 58,
+    "substitution->correct": 12,
+    "correct->correct": 235,
+    "deletion->incorrect": 74,
+    "insertion->correct": 9,
+    "transposition->incorrect": 59,
+    "substitution->incorrect": 40,
+    "deletion->correct": 4,
+    "transposition->correct": 9
+  },
+  "matrix_explanation": {
+    "format": "Key: actual_error_type->predicted_outcome",
+    "values": "Count of occurrences"
+  }
+}

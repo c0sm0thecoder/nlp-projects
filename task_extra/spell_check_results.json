@@ -1,0 +1,923 @@
+{
+  "metadata": {
+    "total_words_processed": 132242,
+    "vocabulary_size": 7034,
+    "test_cases": 500,
+    "accuracy": 12.830188679245284,
+    "max_weighted_distance": 2.5
+  },
+  "error_type_stats": {
+    "insertion": 67,
+    "substitution": 52,
+    "correct": 235,
+    "deletion": 78,
+    "transposition": 68
+  },
+  "correction_stats": {
+    "no_match": 95,
+    "corrected": 162,
+    "exact_match": 243
+  },
+  "test_results": [
+    {
+      "original_word": "eşqindən",
+      "error_word": "eşqindğən",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "vədeyivəslin",
+      "error_word": "vədeyişəslin",
+      "actual_error_type": "substitution",
+      "predicted_word": "vədeyivəslin",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": true
+    },
+    {
+      "original_word": "zəfəran",
+      "error_word": "zəfəran",
+      "actual_error_type": "correct",
+      "predicted_word": "zəfəran",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "əzəldə",
+      "error_word": "əzldə",
+      "actual_error_type": "deletion",
+      "predicted_word": "əldə",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "çəkilsin",
+      "error_word": "çəkilsn",
+      "actual_error_type": "deletion",
+      "predicted_word": "çəkilən",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "mahı",
+      "error_word": "mhı",
+      "actual_error_type": "deletion",
+      "predicted_word": "axı",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "xoşdu",
+      "error_word": "xoşdu",
+      "actual_error_type": "correct",
+      "predicted_word": "xoşdu",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "bundan",
+      "error_word": "undan",
+      "actual_error_type": "deletion",
+      "predicted_word": "оndan",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "həmişə",
+      "error_word": "həmşə",
+      "actual_error_type": "deletion",
+      "predicted_word": "təmə",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "natəvanın",
+      "error_word": "naatəvanın",
+      "actual_error_type": "insertion",
+      "predicted_word": "natəvanın",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": true
+    },
+    {
+      "original_word": "əbsəm",
+      "error_word": "əubsəm",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "ictinab",
+      "error_word": "ictinab",
+      "actual_error_type": "correct",
+      "predicted_word": "ictinab",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "aşiqididar",
+      "error_word": "aşiqididar",
+      "actual_error_type": "correct",
+      "predicted_word": "aşiqididar",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "usana",
+      "error_word": "usaa",
+      "actual_error_type": "deletion",
+      "predicted_word": "umar",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "sərgərdan",
+      "error_word": "sərgərdan",
+      "actual_error_type": "correct",
+      "predicted_word": "sərgərdan",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "əfəndim",
+      "error_word": "əfəndim",
+      "actual_error_type": "correct",
+      "predicted_word": "əfəndim",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "şəha",
+      "error_word": "şəha",
+      "actual_error_type": "correct",
+      "predicted_word": "şəha",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "güzgü",
+      "error_word": "güzgü",
+      "actual_error_type": "correct",
+      "predicted_word": "güzgü",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "demə",
+      "error_word": "demə",
+      "actual_error_type": "correct",
+      "predicted_word": "demə",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "tamaşası",
+      "error_word": "tamaşası",
+      "actual_error_type": "correct",
+      "predicted_word": "tamaşası",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "xasiyyətlər",
+      "error_word": "xasiyyətlər",
+      "actual_error_type": "correct",
+      "predicted_word": "xasiyyətlər",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "hiyləgər",
+      "error_word": "hiyləgər",
+      "actual_error_type": "correct",
+      "predicted_word": "hiyləgər",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "sürahi",
+      "error_word": "sürzahi",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "körpüdən",
+      "error_word": "körpüdən",
+      "actual_error_type": "correct",
+      "predicted_word": "körpüdən",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "səninçün",
+      "error_word": "səninçün",
+      "actual_error_type": "correct",
+      "predicted_word": "səninçün",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "ömrümün",
+      "error_word": "ömrümün",
+      "actual_error_type": "correct",
+      "predicted_word": "ömrümün",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "demişəm",
+      "error_word": "demişəm",
+      "actual_error_type": "correct",
+      "predicted_word": "demişəm",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "xəyalə",
+      "error_word": "xəyalə",
+      "actual_error_type": "correct",
+      "predicted_word": "xəyalə",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "aşkar",
+      "error_word": "şakar",
+      "actual_error_type": "transposition",
+      "predicted_word": "salar",
+      "weighted_distance": 1.5,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "ətir",
+      "error_word": "ədir",
+      "actual_error_type": "substitution",
+      "predicted_word": "əmir",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "buldu",
+      "error_word": "buldu",
+      "actual_error_type": "correct",
+      "predicted_word": "buldu",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "tab",
+      "error_word": "dtab",
+      "actual_error_type": "insertion",
+      "predicted_word": "atan",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "kuyinə",
+      "error_word": "kuyqnə",
+      "actual_error_type": "substitution",
+      "predicted_word": "muyinə",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "qəmin",
+      "error_word": "qəmin",
+      "actual_error_type": "correct",
+      "predicted_word": "qəmin",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "eşigindǝ",
+      "error_word": "eşigindǝ",
+      "actual_error_type": "correct",
+      "predicted_word": "eşigindǝ",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "eşitcək",
+      "error_word": "eşitcfk",
+      "actual_error_type": "substitution",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "imkanı",
+      "error_word": "imknı",
+      "actual_error_type": "deletion",
+      "predicted_word": "imkanı",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": true
+    },
+    {
+      "original_word": "cǝmalın",
+      "error_word": "cǝmlaın",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "sərimdən",
+      "error_word": "sərimdən",
+      "actual_error_type": "correct",
+      "predicted_word": "sərimdən",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "feyz",
+      "error_word": "efyz",
+      "actual_error_type": "transposition",
+      "predicted_word": "ehya",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "seyqəl",
+      "error_word": "seyqəl",
+      "actual_error_type": "correct",
+      "predicted_word": "seyqəl",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "məza",
+      "error_word": "məaz",
+      "actual_error_type": "transposition",
+      "predicted_word": "məhz",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "halətdir",
+      "error_word": "alətdir",
+      "actual_error_type": "deletion",
+      "predicted_word": "adətdir",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "xilas",
+      "error_word": "xilas",
+      "actual_error_type": "correct",
+      "predicted_word": "xilas",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "fateh",
+      "error_word": "fateh",
+      "actual_error_type": "correct",
+      "predicted_word": "fateh",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "salsın",
+      "error_word": "salsn",
+      "actual_error_type": "deletion",
+      "predicted_word": "salar",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "tabi",
+      "error_word": "tai",
+      "actual_error_type": "deletion",
+      "predicted_word": "tac",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "gedəndə",
+      "error_word": "geəndə",
+      "actual_error_type": "deletion",
+      "predicted_word": "edəndə",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "məscid",
+      "error_word": "məscid",
+      "actual_error_type": "correct",
+      "predicted_word": "məscid",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "dibdat",
+      "error_word": "dibeat",
+      "actual_error_type": "substitution",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "camdən",
+      "error_word": "camdən",
+      "actual_error_type": "correct",
+      "predicted_word": "camdən",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "yоla",
+      "error_word": "yоla",
+      "actual_error_type": "correct",
+      "predicted_word": "yоla",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "qalma",
+      "error_word": "qalma",
+      "actual_error_type": "correct",
+      "predicted_word": "qalma",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "aqil",
+      "error_word": "aqiy",
+      "actual_error_type": "substitution",
+      "predicted_word": "saqiya",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "her",
+      "error_word": "hre",
+      "actual_error_type": "transposition",
+      "predicted_word": "ərş",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "pərvin",
+      "error_word": "pçərvin",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "suzan",
+      "error_word": "suzan",
+      "actual_error_type": "correct",
+      "predicted_word": "suzan",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "dilgir",
+      "error_word": "dilgir",
+      "actual_error_type": "correct",
+      "predicted_word": "dilgir",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "kef",
+      "error_word": "ef",
+      "actual_error_type": "deletion",
+      "predicted_word": "ev",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "qurandır",
+      "error_word": "quarndır",
+      "actual_error_type": "transposition",
+      "predicted_word": "qandır",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "zəhmət",
+      "error_word": "zəhqət",
+      "actual_error_type": "substitution",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "günahı",
+      "error_word": "günahı",
+      "actual_error_type": "correct",
+      "predicted_word": "günahı",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "zülfünü",
+      "error_word": "ülfünü",
+      "actual_error_type": "deletion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "canımda",
+      "error_word": "acnımda",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "tutulmuş",
+      "error_word": "tutoulmuş",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "abihəyat",
+      "error_word": "abihəyaç",
+      "actual_error_type": "substitution",
+      "predicted_word": "abihəyat",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": true
+    },
+    {
+      "original_word": "məzhərdir",
+      "error_word": "mzəhərdir",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "yeyən",
+      "error_word": "yeynə",
+      "actual_error_type": "transposition",
+      "predicted_word": "yenǝ",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "karvan",
+      "error_word": "kavan",
+      "actual_error_type": "deletion",
+      "predicted_word": "atan",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "uzaqlaş",
+      "error_word": "uzaqhlaş",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "merac",
+      "error_word": "möerac",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "səbr",
+      "error_word": "səbr",
+      "actual_error_type": "correct",
+      "predicted_word": "səbr",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "gülşən",
+      "error_word": "gülşən",
+      "actual_error_type": "correct",
+      "predicted_word": "gülşən",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "yuva",
+      "error_word": "yuva",
+      "actual_error_type": "correct",
+      "predicted_word": "yuva",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "könlünün",
+      "error_word": "könlünün",
+      "actual_error_type": "substitution",
+      "predicted_word": "könlünün",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "sevdiyim",
+      "error_word": "srevdiyim",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "bağdad",
+      "error_word": "badğad",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "misal",
+      "error_word": "mimal",
+      "actual_error_type": "substitution",
+      "predicted_word": "bimar",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "çeşmim",
+      "error_word": "çşemim",
+      "actual_error_type": "transposition",
+      "predicted_word": "şerim",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "tər",
+      "error_word": "tgr",
+      "actual_error_type": "substitution",
+      "predicted_word": "zar",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "nökər",
+      "error_word": "nöəkr",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "soyar",
+      "error_word": "soyar",
+      "actual_error_type": "correct",
+      "predicted_word": "soyar",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "gündə",
+      "error_word": "gündə",
+      "actual_error_type": "correct",
+      "predicted_word": "gündə",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "gözlə",
+      "error_word": "gözl",
+      "actual_error_type": "deletion",
+      "predicted_word": "söz",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "ruzigarım",
+      "error_word": "ruüigarım",
+      "actual_error_type": "substitution",
+      "predicted_word": "ruzgarım",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "xəstəyəm",
+      "error_word": "xəstəyəm",
+      "actual_error_type": "correct",
+      "predicted_word": "xəstəyəm",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "mеydən",
+      "error_word": "mbydən",
+      "actual_error_type": "substitution",
+      "predicted_word": "meydən",
+      "weighted_distance": 1.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "gəzir",
+      "error_word": "gəzir",
+      "actual_error_type": "correct",
+      "predicted_word": "gəzir",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "cananə",
+      "error_word": "cananə",
+      "actual_error_type": "correct",
+      "predicted_word": "cananə",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "mütləq",
+      "error_word": "mültəq",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "xeyr",
+      "error_word": "xeyr",
+      "actual_error_type": "correct",
+      "predicted_word": "xeyr",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    },
+    {
+      "original_word": "dövlətim",
+      "error_word": "dövləitm",
+      "actual_error_type": "transposition",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "gündür",
+      "error_word": "günüdr",
+      "actual_error_type": "transposition",
+      "predicted_word": "gündür",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": true
+    },
+    {
+      "original_word": "işini",
+      "error_word": "şiini",
+      "actual_error_type": "transposition",
+      "predicted_word": "dinini",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "kimdə",
+      "error_word": "kimddə",
+      "actual_error_type": "insertion",
+      "predicted_word": null,
+      "weighted_distance": Infinity,
+      "prediction_type": "no_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "yanıb",
+      "error_word": "yanb",
+      "actual_error_type": "deletion",
+      "predicted_word": "yaş",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "məcnun",
+      "error_word": "məcbun",
+      "actual_error_type": "substitution",
+      "predicted_word": "məcruh",
+      "weighted_distance": 2.0,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "çıraq",
+      "error_word": "çırqa",
+      "actual_error_type": "transposition",
+      "predicted_word": "çərxə",
+      "weighted_distance": 2.5,
+      "prediction_type": "corrected",
+      "is_correct": false
+    },
+    {
+      "original_word": "yolunda",
+      "error_word": "yoluna",
+      "actual_error_type": "deletion",
+      "predicted_word": "yoluna",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": false
+    },
+    {
+      "original_word": "əlində",
+      "error_word": "əlində",
+      "actual_error_type": "correct",
+      "predicted_word": "əlində",
+      "weighted_distance": 0.0,
+      "prediction_type": "exact_match",
+      "is_correct": true
+    }
+  ]
+}
