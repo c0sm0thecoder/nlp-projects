@@ -1,0 +1,8 @@
+{
+  "dataset": "poems_translated.parquet",
+  "rows": 846,
+  "text_column": "modern_text",
+  "tokenizer": "simple-space",
+  "total_tokens": 141008,
+  "unique_types": 41998
+}
