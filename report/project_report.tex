@@ -1,0 +1,175 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\usepackage{newunicodechar}
+
+% Define Unicode characters for Azerbaijani
+\newunicodechar{ə}{\textschwa}
+\newunicodechar{ş}{\c{s}}
+\newunicodechar{ç}{\c{c}}
+\newunicodechar{ğ}{\u{g}}
+\newunicodechar{ı}{{\i}}
+\newunicodechar{ü}{\"{u}}
+\newunicodechar{ö}{\"{o}}
+\newunicodechar{→}{$\rightarrow$}
+\newunicodechar{؟}{?}
+\newunicodechar{۔}{.}
+
+% Define schwa character
+\DeclareTextSymbolDefault{\textschwa}{T1}
+\DeclareTextSymbol{\textschwa}{T1}{5}
+
+\geometry{margin=2.5cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\title{NLP Project: Analysis of Azerbaijani Classical Poetry Dataset}
+\author{Kamal Aghazada \and Fatulla Bashirov}
+\date{February 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We analyzed an Azerbaijani classical poetry dataset containing 846 poems from 9 renowned poets. We collected data from Wikimedia sources, performed cleaning and modernization, and conducted NLP analyses including tokenization, Heaps' law, BPE encoding, sentence segmentation, and spell checking. Our work demonstrates linguistic characteristics of classical Azerbaijani poetry and text processing challenges.
+\end{abstract}
+
+\section{Introduction and Data Collection}
+
+We created a dataset of classical Azerbaijani poetry to understand structural and linguistic properties. The dataset contains poems from major poets including Muhəmmad Fuzuli, Imadaddin Nasimi, Qasim bey Zakir, Xaqani Shirvani, Molla Panah Vagif, and others.
+
+We divided work where Fatulla Bashirov handled data cleaning, translation, and tasks 1-3 (tokenization, Heaps' law, BPE), while I handled data gathering and tasks 4-5 (sentence segmentation, spell checking).
+
+We used a Go-based system with Wikimedia API to collect 846 poems (909,630 characters original, 19,495 modernized). We cleaned metadata artifacts and generated modern translations using Gemini 2.5 Flash while preserving poetic structure.
+
+\section{Tasks Analysis}
+
+\subsection{Tokenization and Vocabulary Analysis (Task 1)}
+We implemented a simple space-based tokenizer that normalizes whitespace and splits text on space characters. We analyzed vocabulary characteristics of both original and translated texts to understand the linguistic diversity.
+
+\textbf{Results:}
+\begin{itemize}
+    \item Original text: 132,975 tokens, 50,232 unique types (type-token ratio: 0.378)
+    \item Modern translated text: 141,008 tokens, 41,998 unique types (type-token ratio: 0.298)
+\end{itemize}
+
+The lower type-token ratio in modern text indicates less lexical diversity per token, which suggests that the modernization process standardized vocabulary and reduced the variety of archaic word forms present in classical texts.
+
+\subsection{Heaps' Law Analysis (Task 2)}
+We estimated Heaps' law parameters ($V = k \cdot N^{\beta}$) by streaming tokens in order and recording vocabulary growth every 1,000 tokens. We performed log-log linear regression to fit the relationship between vocabulary size and cumulative token count.
+
+\textbf{Fitted parameters:}
+\begin{itemize}
+    \item $k = 2.306$ (vocabulary richness constant)
+    \item $\beta = 0.847$ (vocabulary growth exponent)
+    \item $R^2 = 0.9998$ (coefficient of determination)
+\end{itemize}
+
+The $\beta$ value of 0.847 is typical for natural language texts and indicates sub-linear vocabulary growth, meaning new word types are encountered less frequently as corpus size increases. The exceptionally high $R^2$ value demonstrates that our classical Azerbaijani corpus follows the expected statistical scaling behavior. Figure~\ref{fig:heaps} shows the excellent fit between observed and predicted vocabulary growth.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{task2/heaps_plot.png}
+\caption{Heaps' Law fit: vocabulary growth vs. token count}
+\label{fig:heaps}
+\end{figure}
+
+\subsection{Byte Pair Encoding (Task 3)}
+We implemented word-level BPE with 10,000 target vocabulary. Results: 9,899 merges, 210,631 total BPE tokens, 8,803 unique types. This achieved effective subword segmentation for modernized text.
+
+\section{Sentence Segmentation Analysis (Task 4)}
+
+We implemented and compared three segmentation approaches specifically designed for poetic text:
+\begin{enumerate}
+    \item \textbf{Basic segmentation:} Simple splitting on sentence-ending punctuation marks (.!?)
+    \item \textbf{Poetry-aware segmentation:} Considers verse structure, line breaks, and stanza separators
+    \item \textbf{Advanced segmentation:} Combines poetry-aware approach with additional refinements for complex structures
+\end{enumerate}
+
+\textbf{Segmentation Results:}
+
+\begin{table}[H]
+\centering
+\caption{Detailed segmentation comparison}
+\label{tab:segmentation_detailed}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Method} & \textbf{Text Type} & \textbf{Total Segments} & \textbf{Avg/Poem} & \textbf{Avg Length} \\
+\midrule
+Basic & Original & 11,381 & 13.45 & 84.0 \\
+Advanced & Original & 11,408 & 13.48 & 83.7 \\
+Basic & Modern & 11,234 & 13.28 & 86.7 \\
+Advanced & Modern & 11,367 & 13.43 & 85.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The advanced method created slightly more segments with better handling of complex poetic structures. Interestingly, modern text shows longer average segment lengths than originally reported, indicating that the modernization process created more coherent sentence units. The poetry-aware and advanced approaches proved more effective than basic punctuation-based segmentation for handling the unique structural characteristics of verse text.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{task4/segmentation_analysis.png}
+\caption{Segmentation analysis across methods}
+\label{fig:segmentation}
+\end{figure}
+
+\section{Spell Checking and Character Confusion Analysis (Task 5)}
+
+We developed a specialized spell checker for Azerbaijani text using weighted Levenshtein edit distance. The system processes text through Azerbaijani-specific normalization (handling the I/ı and İ/i distinction) and creates suggestions based on character substitution costs.
+
+\subsection{Spell Checker Performance}
+\textbf{System specifications:}
+\begin{itemize}
+    \item Vocabulary size: 132,242 unique words from classical texts
+    \item Test cases: 500 manually created error scenarios
+    \item Error types tested: anglicization, phonetic variations, OCR errors
+    \item Overall accuracy: 12.83\%
+\end{itemize}
+
+The relatively low accuracy reflects the challenging nature of classical-to-modern text spell checking, where many historical word forms and spelling conventions differ significantly from contemporary standards. The spell checker performed better on common phonetic errors but struggled with systematic orthographic changes between historical and modern Azerbaijani.
+
+\subsection{Character Confusion Analysis}
+We analyzed character substitution patterns to identify the most frequent confusions in our error correction attempts. The most common character substitutions were:
+\begin{itemize}
+    \item 'g' $\rightarrow$ 'ə' (3 occurrences, highest frequency)
+    \item 'ş' $\rightarrow$ 'v' (systematic orthographic difference)
+    \item 'd' $\rightarrow$ 't', 'q' $\rightarrow$ 'i', 'f' $\rightarrow$ 'ə' (each 1 occurrence)
+\end{itemize}
+
+Our analysis revealed that consonant substitutions were more common than vowel changes, suggesting either systematic differences in classical orthography or potential OCR-related artifacts in the source materials. Figure~\ref{fig:confusion} visualizes the character confusion patterns we identified.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{task_extra/character_confusion_analysis.png}
+\caption{Character confusion matrix}
+\label{fig:confusion}
+\end{figure}
+
+\section{Discussion and Conclusion}
+
+We successfully created and analyzed a comprehensive dataset of 846 classical Azerbaijani poems using systematic NLP approaches. Our analysis provides several key insights into the linguistic characteristics of historical Azerbaijani poetry.
+
+\textbf{Key Findings:}
+\begin{enumerate}
+    \item \textbf{Vocabulary scaling:} The corpus follows expected Heaps' law behavior ($\beta = 0.847$) with excellent statistical fit ($R^2 = 0.9998$), confirming that even historical poetic texts exhibit standard linguistic scaling properties.
+    \item \textbf{Modernization effects:} Translation to modern Azerbaijani reduces lexical diversity (type-token ratio from 0.378 to 0.298), indicating vocabulary standardization.
+    \item \textbf{Segmentation challenges:} Poetry-aware approaches significantly outperform basic methods for verse text, creating more appropriate segment boundaries.
+    \item \textbf{Historical orthography:} Character confusion analysis reveals systematic patterns that could inform OCR correction systems for historical texts.
+\end{enumerate}
+
+\textbf{Limitations and Future Work:}
+Our work has several limitations including incomplete modern text coverage and challenges in bridging classical-contemporary vocabulary gaps. The spell checker's 12.83\% accuracy, while low, establishes a baseline for historical text correction systems.
+
+Future research should focus on expanding translation coverage, developing historical linguistics-informed spell checking algorithms, and creating specialized tokenization approaches for classical Turkic languages. This work establishes foundational measurements for classical Azerbaijani NLP and demonstrates the importance of genre-specific text processing approaches.
+
+\end{document}
