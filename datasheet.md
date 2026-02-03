@@ -2,7 +2,7 @@
 
 **Dataset name**: az-poems-modernized (project working name)
 
-**Date**: 2026-01-31
+**Date**: 2026-02-03
 
 ## 1. Motivation
 - **Purpose**: Provide Azerbaijani classical poetry with a modernized paraphrase (`modern_text`) for training and evaluation, including CPT-style pretraining for Azerbaijani LLMs.
@@ -16,7 +16,7 @@
   - `title` (string)
   - `url` (string, Wikisource page)
   - `text` (string, original poem text)
-  - `modern_text` (string, modernized Azerbaijani; partially filled)
+  - `modern_text` (string, modernized Azerbaijani; fully filled)
 - **Authors (9)**:
   - İmadəddin Nəsimi
   - Qasım bəy Zakir
@@ -29,7 +29,7 @@
   - Məhəmməd Füzuli
 - **Text size (current snapshot)**:
   - Original text characters: 909,630
-  - Modernized text characters: 19,495
+  - Modernized text characters: 935,784
   - Translation coverage: 846 / 846 rows filled in `modern_text`
 
 ## 3. Collection Process
@@ -54,7 +54,7 @@
   - High-stakes applications (legal, medical, etc.).
 
 ## 7. Quality & Limitations
-- **Partial coverage**: As of this snapshot, only 20 poems are modernized.
+- **Coverage**: All poems are modernized in `modern_text`.
 - **Model risk**: Generative output may contain paraphrase errors, omissions, or hallucinations.
 - **Genre/style**: Texts are classical poetry; not representative of modern everyday Azerbaijani.
 
