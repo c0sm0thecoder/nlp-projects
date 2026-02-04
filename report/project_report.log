@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.9.22)  3 FEB 2026 22:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.9.22)  4 FEB 2026 18:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/kamal/NLP/project_1/project_report.tex
-(/home/kamal/NLP/project_1/project_report.tex
+**/home/kamal/NLP/project_1/report/project_report.tex
+(/home/kamal/NLP/project_1/report/project_report.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -470,28 +470,28 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 69.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 69.
-<task2/heaps_plot.png, id=56, 578.16pt x 433.62pt>
-File: task2/heaps_plot.png Graphic file (type png)
-<use task2/heaps_plot.png>
-Package pdftex.def Info: task2/heaps_plot.png  used on input line 82.
+<../task2/heaps_plot.png, id=56, 578.16pt x 433.62pt>
+File: ../task2/heaps_plot.png Graphic file (type png)
+<use ../task2/heaps_plot.png>
+Package pdftex.def Info: ../task2/heaps_plot.png  used on input line 82.
 (pdftex.def)             Requested size: 318.66948pt x 239.0012pt.
- [2{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc} <./task2/heaps_plot.png>]
-<task4/segmentation_analysis.png, id=69, 1293.633pt x 853.0269pt>
-File: task4/segmentation_analysis.png Graphic file (type png)
-<use task4/segmentation_analysis.png>
-Package pdftex.def Info: task4/segmentation_analysis.png  used on input line 121.
+ [2{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc} <../task2/heaps_plot.png>]
+<../task4/segmentation_analysis.png, id=69, 1293.633pt x 853.0269pt>
+File: ../task4/segmentation_analysis.png Graphic file (type png)
+<use ../task4/segmentation_analysis.png>
+Package pdftex.def Info: ../task4/segmentation_analysis.png  used on input line 121.
 (pdftex.def)             Requested size: 273.14923pt x 180.10413pt.
- [3] [4 <./task4/segmentation_analysis.png>]
+ [3] [4 <../task4/segmentation_analysis.png>]
 Overfull \hbox (0.85207pt too wide) in paragraph at lines 149--150
 []\T1/lmr/m/n/12 Our anal-y-sis re-vealed that con-so-nant sub-sti-tu-tions were more com-mon than vowel changes,
  []
 
-<task_extra/character_confusion_analysis.png, id=85, 1438.173pt x 1148.8521pt>
-File: task_extra/character_confusion_analysis.png Graphic file (type png)
-<use task_extra/character_confusion_analysis.png>
-Package pdftex.def Info: task_extra/character_confusion_analysis.png  used on input line 153.
+<../task_extra/character_confusion_analysis.png, id=85, 1438.173pt x 1148.8521pt>
+File: ../task_extra/character_confusion_analysis.png Graphic file (type png)
+<use ../task_extra/character_confusion_analysis.png>
+Package pdftex.def Info: ../task_extra/character_confusion_analysis.png  used on input line 153.
 (pdftex.def)             Requested size: 273.14923pt x 218.19652pt.
-[5 <./task_extra/character_confusion_analysis.png>] [6] (./project_report.aux)
+[5 <../task_extra/character_confusion_analysis.png>] [6] (./project_report.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -501,14 +501,14 @@ Package rerunfilecheck Info: File `project_report.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  11524 strings out of 476139
- 182764 string characters out of 5794454
+ 182848 string characters out of 5794454
  1932975 words of memory out of 5000000
  33348 multiletter control sequences out of 15000+600000
  608352 words of font info for 67 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 75i,8n,79p,508b,503s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,8n,79p,515b,503s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi12.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb>
-Output written on project_report.pdf (6 pages, 1287869 bytes).
+Output written on project_report.pdf (6 pages, 1287857 bytes).
 PDF statistics:
  156 PDF objects out of 1000 (max. 8388607)
  120 compressed objects within 2 object streams

@@ -50,7 +50,7 @@ We created a dataset of classical Azerbaijani poetry to understand structural an
 
 We divided work where Fatulla Bashirov handled data cleaning, translation, and tasks 1-3 (tokenization, Heaps' law, BPE), while I handled data gathering and tasks 4-5 (sentence segmentation, spell checking).
 
-We used a Go-based system with Wikimedia API to collect 846 poems (909,630 characters original, 19,495 modernized). We cleaned metadata artifacts and generated modern translations using Gemini 2.5 Flash while preserving poetic structure.
+We used a Go-based system with Wikimedia API to collect 846 poems (909,630 characters original, 935,784 modernized). We cleaned metadata artifacts and generated modern translations using Gemini 2.5 Flash while preserving poetic structure.
 
 \section{Tasks Analysis}
 
@@ -79,7 +79,7 @@ The $\beta$ value of 0.847 is typical for natural language texts and indicates s
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{task2/heaps_plot.png}
+\includegraphics[width=0.7\textwidth]{../task2/heaps_plot.png}
 \caption{Heaps' Law fit: vocabulary growth vs. token count}
 \label{fig:heaps}
 \end{figure}
@@ -118,7 +118,7 @@ The advanced method created slightly more segments with better handling of compl
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\textwidth]{task4/segmentation_analysis.png}
+\includegraphics[width=0.6\textwidth]{../task4/segmentation_analysis.png}
 \caption{Segmentation analysis across methods}
 \label{fig:segmentation}
 \end{figure}
@@ -150,7 +150,7 @@ Our analysis revealed that consonant substitutions were more common than vowel c
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\textwidth]{task_extra/character_confusion_analysis.png}
+\includegraphics[width=0.6\textwidth]{../task_extra/character_confusion_analysis.png}
 \caption{Character confusion matrix}
 \label{fig:confusion}
 \end{figure}
