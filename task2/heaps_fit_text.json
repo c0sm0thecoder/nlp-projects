@@ -1,5 +1,5 @@
 {
-  "dataset": "poems_cleaned.parquet",
+  "dataset": "poems_translated.parquet",
   "rows": 846,
   "tokenizer": "simple-space (task1_tokenize.py)",
   "step": 1000,

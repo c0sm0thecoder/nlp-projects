@@ -1,0 +1,12 @@
+{
+  "dataset": "poems_translated.parquet",
+  "rows": 846,
+  "tokenizer": "simple-space (task1_tokenize.py)",
+  "step": 1000,
+  "total_tokens": 141008,
+  "unique_types": 41998,
+  "k": 3.5139706980154353,
+  "beta": 0.7905706438566358,
+  "r2": 0.9996424925976324,
+  "num_points": 142
+}

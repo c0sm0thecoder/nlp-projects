@@ -45,7 +45,7 @@ def linear_regression(xs: list[float], ys: list[float]) -> tuple[float, float, f
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fit Heaps' law V = k * N^beta")
-    parser.add_argument("--input", type=str, default="poems_cleaned.parquet")
+    parser.add_argument("--input", type=str, default="poems_translated.parquet")
     parser.add_argument("--step", type=int, default=1000, help="Sample every N tokens")
     parser.add_argument("--out-dir", type=str, default="task2")
     args = parser.parse_args()
@@ -58,7 +58,7 @@ def main() -> None:
     tokenize = load_tokenizer()
 
     df = pd.read_parquet(input_path)
-    texts = df["text"].fillna("")
+    texts = df["modern_text"].fillna("")
 
     total_tokens = 0
     vocab: set[str] = set()
@@ -99,10 +99,10 @@ def main() -> None:
         "num_points": int(len(points)),
     }
 
-    stats_path = out_dir / "heaps_fit.json"
+    stats_path = out_dir / "heaps_fit_modern_text.json"
     stats_path.write_text(json.dumps(stats, indent=2), encoding="utf-8")
 
-    points_path = out_dir / "heaps_points.csv"
+    points_path = out_dir / "heaps_points_modern_text.csv"
     with points_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["tokens", "types", "log_tokens", "log_types"])

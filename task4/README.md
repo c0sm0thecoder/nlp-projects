@@ -8,7 +8,7 @@
 ## Method Descriptions
 
 ### Basic Segmentation
-- Splits text on sentence-ending punctuation marks (.!?؟۔)
+- Splits text on sentence-ending punctuation marks (.!?)
 - Simple approach suitable for prose text
 
 ### Poetry-aware Segmentation
