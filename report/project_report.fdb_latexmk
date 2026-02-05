@@ -1,10 +1,10 @@
 # Fdb version 4
-["pdflatex"] 1770214302.7262 "/home/kamal/NLP/project_1/report/project_report.tex" "project_report.pdf" "project_report" 1770214309.47507 0
+["pdflatex"] 1770295948.35626 "/home/kamal/NLP/project_1/report/project_report.tex" "project_report.pdf" "project_report" 1770295954.89001 0
   "../task2/heaps_plot.png" 1769938620.25929 136428 9a0c9503e10d38177c10b358e19550c2 ""
   "../task4/segmentation_analysis.png" 1769943117.48124 400562 5abcb349640f9495e35ff1b4959e9354 ""
   "../task_extra/character_confusion_analysis.png" 1769949862.48317 640028 9f688a403247a00619805d36ed374c7d ""
   "/etc/texmf/web2c/texmf.cnf" 1726951605.10454 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/kamal/NLP/project_1/report/project_report.tex" 1770214302.3481 9783 ab85baa5cb7fd5aaccd4959220e5a629 ""
+  "/home/kamal/NLP/project_1/report/project_report.tex" 1770295948.02138 9766 e2dd2408acdbd9038d261edda915fc81 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1200.tfm" 1136768653 3584 f80ddd985bd00e29e9a6047ebd9d4781 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm" 1136768653 1288 655e228510b4c2a1abe905c368440826 ""
@@ -109,9 +109,9 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1726952018.43672 128028 f533b797fba58d231669ea19e894e23e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1726952035 6851220 f4952fc855378fc56cd1ea66b20de3a9 ""
-  "project_report.aux" 1770214309.32607 2555 fb58cffadae9d2e3cf27a2e3521f3d4c "pdflatex"
-  "project_report.out" 1770214309.32707 2228 30cbd0992e6aad236103476c449821ea "pdflatex"
-  "project_report.tex" 1770214302.3481 9783 ab85baa5cb7fd5aaccd4959220e5a629 ""
+  "project_report.aux" 1770295954.76029 2555 fb58cffadae9d2e3cf27a2e3521f3d4c "pdflatex"
+  "project_report.out" 1770295954.76129 2228 30cbd0992e6aad236103476c449821ea "pdflatex"
+  "project_report.tex" 1770295948.02138 9766 e2dd2408acdbd9038d261edda915fc81 ""
   (generated)
   "project_report.aux"
   "project_report.log"

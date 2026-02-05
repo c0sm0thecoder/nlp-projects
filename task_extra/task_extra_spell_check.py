@@ -78,11 +78,9 @@ class WeightedEditDistance:
             ['o', 'ö'], 
             ['u', 'ü'],
             ['i', 'ı'],
-            ['e', 'ë'],
             ['s', 'ş'],
             ['c', 'ç'],
             ['g', 'ğ'],
-            ['n', 'ŋ'],
         ]
         
         costs = defaultdict(lambda: 1.0)

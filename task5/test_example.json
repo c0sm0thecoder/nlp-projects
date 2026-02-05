@@ -1,0 +1,7 @@
+[
+    {
+        "input": "Asiq",
+        "expected": "Aşiq",
+        "type": "anglicization"
+    }
+]
