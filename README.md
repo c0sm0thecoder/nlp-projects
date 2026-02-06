@@ -35,6 +35,13 @@ python .\task4\task4_sentence_segmentation.py
 python .\task5\task5_levenshtein.py
 ```
 
+**Interactive UI for Spell Check**
+```powershell
+cd task5/
+chmod +x ./start_ui.sh
+./start_ui.sh
+```
+
 ```powershell
 go run .\data_gathering\main.go
 ```
