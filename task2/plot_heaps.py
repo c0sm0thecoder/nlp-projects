@@ -9,8 +9,8 @@ import pandas as pd
 
 def main() -> None:
     out_dir = Path(__file__).resolve().parent
-    points_path = out_dir / "heaps_points.csv"
-    fit_path = out_dir / "heaps_fit.json"
+    points_path = out_dir / "heaps_points_modern_text.csv"
+    fit_path = out_dir / "heaps_fit_modern_text.json"
 
     points = pd.read_csv(points_path)
     fit = json.loads(fit_path.read_text(encoding="utf-8"))
@@ -32,7 +32,7 @@ def main() -> None:
     plt.legend()
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
-    out_path = out_dir / "heaps_plot.png"
+    out_path = out_dir / "heaps_plot_modern_text.png"
     plt.tight_layout()
     plt.savefig(out_path, dpi=200)
 
