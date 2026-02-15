@@ -24,7 +24,7 @@
       "error_word": "eşqindğən",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -114,7 +114,7 @@
       "error_word": "əubsəm",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -222,7 +222,7 @@
       "error_word": "sürzahi",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -339,7 +339,7 @@
       "error_word": "eşitcfk",
       "actual_error_type": "substitution",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -357,7 +357,7 @@
       "error_word": "cǝmlaın",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -465,7 +465,7 @@
       "error_word": "dibeat",
       "actual_error_type": "substitution",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -519,7 +519,7 @@
       "error_word": "pçərvin",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -564,7 +564,7 @@
       "error_word": "zəhqət",
       "actual_error_type": "substitution",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -582,7 +582,7 @@
       "error_word": "ülfünü",
       "actual_error_type": "deletion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -591,7 +591,7 @@
       "error_word": "acnımda",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -600,7 +600,7 @@
       "error_word": "tutoulmuş",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -618,7 +618,7 @@
       "error_word": "mzəhərdir",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -645,7 +645,7 @@
       "error_word": "uzaqhlaş",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -654,7 +654,7 @@
       "error_word": "möerac",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -699,7 +699,7 @@
       "error_word": "srevdiyim",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -708,7 +708,7 @@
       "error_word": "badğad",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -744,7 +744,7 @@
       "error_word": "nöəkr",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -825,7 +825,7 @@
       "error_word": "mültəq",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -843,7 +843,7 @@
       "error_word": "dövləitm",
       "actual_error_type": "transposition",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
@@ -870,7 +870,7 @@
       "error_word": "kimddə",
       "actual_error_type": "insertion",
       "predicted_word": null,
-      "weighted_distance": Infinity,
+      "weighted_distance": "Infinity",
       "prediction_type": "no_match",
       "is_correct": false
     },
