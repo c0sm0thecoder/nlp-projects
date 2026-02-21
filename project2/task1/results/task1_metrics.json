@@ -1,0 +1,98 @@
+{
+  "config": {
+    "input": "project2\\poems_translated.parquet",
+    "text_col": "modern_text",
+    "author_col": "author",
+    "test_size": 0.2,
+    "seed": 42,
+    "min_freq": 2,
+    "tokenizer": "unicode-word-boundary-lowercase",
+    "smoothing": "none (unsmoothed MLE)",
+    "boundary_tokens": [
+      "<s>",
+      "</s>"
+    ]
+  },
+  "corpus": {
+    "rows_input": 846,
+    "rows_after_non_empty_text": 844,
+    "rows_after_tokenization": 844,
+    "dropped_empty_text_rows": 2,
+    "dropped_no_word_token_rows": 0,
+    "authors": 9,
+    "total_tokens_before_unk": 142939,
+    "train_tokens_after_unk": 112997,
+    "test_tokens_after_unk": 29942
+  },
+  "split": {
+    "train_rows": 675,
+    "test_rows": 169,
+    "train_author_counts": {
+      "Molla Pənah Vaqif": 68,
+      "Məhəmməd Füzuli": 203,
+      "Qasım bəy Zakir": 26,
+      "Qətran Təbrizi": 2,
+      "Seyid Əzim Şirvani": 84,
+      "Xaqani Şirvani": 55,
+      "Xurşidbanu Natəvan": 17,
+      "İmadəddin Nəsimi": 148,
+      "Şah İsmayıl Xətai": 72
+    },
+    "test_author_counts": {
+      "Molla Pənah Vaqif": 17,
+      "Məhəmməd Füzuli": 51,
+      "Qasım bəy Zakir": 6,
+      "Qətran Təbrizi": 1,
+      "Seyid Əzim Şirvani": 21,
+      "Xaqani Şirvani": 14,
+      "Xurşidbanu Natəvan": 4,
+      "İmadəddin Nəsimi": 37,
+      "Şah İsmayıl Xətai": 18
+    }
+  },
+  "vocab": {
+    "raw_train_vocab_size": 25098,
+    "retained_vocab_size": 10009,
+    "effective_vocab_size_with_unk": 10010,
+    "rare_train_token_types_mapped_to_unk": 15089,
+    "train_unk_token_count": 15089,
+    "test_unk_token_count": 6208,
+    "test_oov_before_unk_count": 6208,
+    "min_freq": 2
+  },
+  "models": {
+    "unigram": {
+      "train_perplexity": 1309.1281084040675,
+      "test_perplexity": 749.8577126709614,
+      "zero_prob_events_train": 0,
+      "zero_prob_events_test": 0,
+      "unseen_rate_train": 0.0,
+      "unseen_rate_test": 0.0,
+      "train_event_count": 112997,
+      "test_event_count": 29942,
+      "ngram_type_count": 10010
+    },
+    "bigram": {
+      "train_perplexity": 33.09509070347499,
+      "test_perplexity": "inf",
+      "zero_prob_events_train": 0,
+      "zero_prob_events_test": 14927,
+      "unseen_rate_train": 0.0,
+      "unseen_rate_test": 0.49573245657733056,
+      "train_event_count": 113672,
+      "test_event_count": 30111,
+      "ngram_type_count": 77064
+    },
+    "trigram": {
+      "train_perplexity": 2.3287869534184398,
+      "test_perplexity": "inf",
+      "zero_prob_events_train": 0,
+      "zero_prob_events_test": 26193,
+      "unseen_rate_train": 0.0,
+      "unseen_rate_test": 0.8698814386768955,
+      "train_event_count": 113672,
+      "test_event_count": 30111,
+      "ngram_type_count": 106007
+    }
+  }
+}

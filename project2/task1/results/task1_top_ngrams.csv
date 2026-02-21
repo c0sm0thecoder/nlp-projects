@@ -1,0 +1,151 @@
+model,n,rank,ngram,count
+unigram,1,1,<unk>,15089
+unigram,1,2,ki,2129
+unigram,1,3,bir,2019
+unigram,1,4,bu,1520
+unigram,1,5,o,1384
+unigram,1,6,ey,1216
+unigram,1,7,nə,987
+unigram,1,8,və,934
+unigram,1,9,hər,923
+unigram,1,10,mən,650
+unigram,1,11,kimi,614
+unigram,1,12,ilə,611
+unigram,1,13,i,559
+unigram,1,14,də,535
+unigram,1,15,sən,474
+unigram,1,16,var,422
+unigram,1,17,mənə,402
+unigram,1,18,əgər,347
+unigram,1,19,oldu,343
+unigram,1,20,üçün,343
+unigram,1,21,da,341
+unigram,1,22,tək,339
+unigram,1,23,sənə,324
+unigram,1,24,etdi,312
+unigram,1,25,sənin,305
+unigram,1,26,olar,301
+unigram,1,27,mənim,297
+unigram,1,28,can,297
+unigram,1,29,məni,293
+unigram,1,30,onun,290
+unigram,1,31,çünki,289
+unigram,1,32,gül,287
+unigram,1,33,et,269
+unigram,1,34,heç,264
+unigram,1,35,çox,257
+unigram,1,36,ona,242
+unigram,1,37,göz,240
+unigram,1,38,gün,232
+unigram,1,39,olsun,232
+unigram,1,40,könül,230
+unigram,1,41,dedi,219
+unigram,1,42,belə,212
+unigram,1,43,qədər,212
+unigram,1,44,gözəl,209
+unigram,1,45,kim,208
+unigram,1,46,onu,205
+unigram,1,47,deyil,204
+unigram,1,48,yoxdur,201
+unigram,1,49,necə,200
+unigram,1,50,idi,194
+bigram,2,1,<unk> <unk>,2484
+bigram,2,2,bir <unk>,282
+bigram,2,3,ki <unk>,250
+bigram,2,4,<unk> bir,247
+bigram,2,5,bu <unk>,235
+bigram,2,6,və <unk>,229
+bigram,2,7,o <unk>,212
+bigram,2,8,<unk> bu,211
+bigram,2,9,<unk> o,207
+bigram,2,10,<unk> ki,187
+bigram,2,11,i <unk>,170
+bigram,2,12,<unk> nə,163
+bigram,2,13,<unk> hər,162
+bigram,2,14,<unk> ey,162
+bigram,2,15,<unk> və,140
+bigram,2,16,hər an,128
+bigram,2,17,<unk> mən,117
+bigram,2,18,kimi <unk>,117
+bigram,2,19,<unk> </s>,108
+bigram,2,20,<unk> i,107
+bigram,2,21,nə <unk>,106
+bigram,2,22,ilə <unk>,101
+bigram,2,23,ki bu,98
+bigram,2,24,bu gün,96
+bigram,2,25,<unk> ilə,90
+bigram,2,26,də <unk>,89
+bigram,2,27,<unk> var,86
+bigram,2,28,mən <unk>,85
+bigram,2,29,ey füzuli,79
+bigram,2,30,ey <unk>,78
+bigram,2,31,<unk> sən,76
+bigram,2,32,<s> ey,74
+bigram,2,33,mənim <unk>,71
+bigram,2,34,hər <unk>,70
+bigram,2,35,<unk> əgər,63
+bigram,2,36,bil ki,62
+bigram,2,37,onun <unk>,61
+bigram,2,38,nə qədər,61
+bigram,2,39,ey könül,61
+bigram,2,40,sənin <unk>,60
+bigram,2,41,sən <unk>,59
+bigram,2,42,nə olar,59
+bigram,2,43,ki o,57
+bigram,2,44,üçün <unk>,56
+bigram,2,45,ki bir,55
+bigram,2,46,<unk> sənin,55
+bigram,2,47,<unk> də,54
+bigram,2,48,məni <unk>,54
+bigram,2,49,öz <unk>,53
+bigram,2,50,bütün <unk>,53
+trigram,3,1,<unk> <unk> <unk>,480
+trigram,3,2,<s> <s> ey,74
+trigram,3,3,ki <unk> <unk>,52
+trigram,3,4,<unk> və <unk>,48
+trigram,3,5,bu <unk> <unk>,44
+trigram,3,6,<unk> bir <unk>,44
+trigram,3,7,<unk> i <unk>,41
+trigram,3,8,və <unk> <unk>,41
+trigram,3,9,<s> <s> bir,39
+trigram,3,10,<unk> bu <unk>,39
+trigram,3,11,bir <unk> <unk>,37
+trigram,3,12,<unk> <unk> o,36
+trigram,3,13,<s> <s> <unk>,36
+trigram,3,14,i <unk> <unk>,35
+trigram,3,15,<unk> o <unk>,34
+trigram,3,16,<unk> <unk> bir,33
+trigram,3,17,o <unk> <unk>,32
+trigram,3,18,<unk> ki <unk>,29
+trigram,3,19,<unk> <unk> və,28
+trigram,3,20,<unk> <unk> ey,28
+trigram,3,21,mən <unk> <unk>,27
+trigram,3,22,<unk> <unk> hər,25
+trigram,3,23,<unk> <unk> bu,23
+trigram,3,24,<unk> <unk> i,22
+trigram,3,25,nə olar ki,21
+trigram,3,26,də <unk> <unk>,19
+trigram,3,27,kimi <unk> <unk>,19
+trigram,3,28,<unk> <unk> ki,19
+trigram,3,29,<unk> ilə <unk>,19
+trigram,3,30,<unk> <unk> nə,19
+trigram,3,31,<unk> hər an,19
+trigram,3,32,<unk> <unk> mən,19
+trigram,3,33,<unk> kimi <unk>,18
+trigram,3,34,<unk> <unk> ilə,18
+trigram,3,35,nə <unk> nə,18
+trigram,3,36,bir <unk> ki,18
+trigram,3,37,ilə <unk> <unk>,18
+trigram,3,38,<unk> mən <unk>,17
+trigram,3,39,<unk> <unk> əgər,17
+trigram,3,40,o kəs ki,17
+trigram,3,41,<unk> <unk> </s>,17
+trigram,3,42,nə qədər ki,16
+trigram,3,43,<unk> nə <unk>,16
+trigram,3,44,o <unk> ki,16
+trigram,3,45,<unk> <unk> var,15
+trigram,3,46,ki bu <unk>,15
+trigram,3,47,niyə gəlmir niyə,15
+trigram,3,48,gəlmir niyə gəlmir,15
+trigram,3,49,onun <unk> <unk>,14
+trigram,3,50,mənim <unk> <unk>,13
