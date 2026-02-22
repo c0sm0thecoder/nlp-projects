@@ -258,7 +258,7 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Data + split settings")
-        input_path = st.text_input("Parquet path", value="../poems_translated.parquet")
+        input_path = st.text_input("Parquet path", value="poems_translated.parquet")
         text_col = st.text_input("Text column", value="modern_text")
         author_col = st.text_input("Author column", value="author")
         test_size = st.slider("Test size", min_value=0.05, max_value=0.40, value=0.20, step=0.05)

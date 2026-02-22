@@ -1,0 +1,326 @@
+[
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "binary_naive_bayes__bow_lexicon",
+    "statistic": 0.0,
+    "p_value": 1.0,
+    "b": 1,
+    "c": 0,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "binary_naive_bayes__lexicon",
+    "statistic": 52.1551724137931,
+    "p_value": 5.128120150743598e-13,
+    "b": 57,
+    "c": 1,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "logistic_regression__bow",
+    "statistic": 6.564102564102564,
+    "p_value": 0.010405619868873561,
+    "b": 11,
+    "c": 28,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "logistic_regression__bow_lexicon",
+    "statistic": 7.225,
+    "p_value": 0.007189517250165034,
+    "b": 11,
+    "c": 29,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "logistic_regression__lexicon",
+    "statistic": 53.018181818181816,
+    "p_value": 3.305133944309091e-13,
+    "b": 55,
+    "c": 0,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "naive_bayes__bow",
+    "statistic": 0.9,
+    "p_value": 0.3427817111479112,
+    "b": 3,
+    "c": 7,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 0.1,
+    "p_value": 0.7518296340458492,
+    "b": 4,
+    "c": 6,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 54.017857142857146,
+    "p_value": 1.9872992140790302e-13,
+    "b": 56,
+    "c": 0,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "binary_naive_bayes__lexicon",
+    "statistic": 51.1578947368421,
+    "p_value": 8.523182160047327e-13,
+    "b": 56,
+    "c": 1,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "logistic_regression__bow",
+    "statistic": 7.605263157894737,
+    "p_value": 0.005819816954009904,
+    "b": 10,
+    "c": 28,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "logistic_regression__bow_lexicon",
+    "statistic": 8.307692307692308,
+    "p_value": 0.0039477518569034364,
+    "b": 10,
+    "c": 29,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "logistic_regression__lexicon",
+    "statistic": 52.01851851851852,
+    "p_value": 5.497824417943775e-13,
+    "b": 54,
+    "c": 0,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "naive_bayes__bow",
+    "statistic": 1.4545454545454546,
+    "p_value": 0.22779999398822903,
+    "b": 3,
+    "c": 8,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 0.36363636363636365,
+    "p_value": 0.5464935954065822,
+    "b": 4,
+    "c": 7,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "binary_naive_bayes__bow_lexicon",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 53.018181818181816,
+    "p_value": 3.305133944309091e-13,
+    "b": 55,
+    "c": 0,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__lexicon",
+    "classifier_b": "logistic_regression__bow",
+    "statistic": 69.12,
+    "p_value": 1.1102230246251565e-16,
+    "b": 1,
+    "c": 74,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__lexicon",
+    "classifier_b": "logistic_regression__bow_lexicon",
+    "statistic": 70.11842105263158,
+    "p_value": 1.1102230246251565e-16,
+    "b": 1,
+    "c": 75,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__lexicon",
+    "classifier_b": "logistic_regression__lexicon",
+    "statistic": 0.0,
+    "p_value": 1.0,
+    "b": 2,
+    "c": 3,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "binary_naive_bayes__lexicon",
+    "classifier_b": "naive_bayes__bow",
+    "statistic": 56.145161290322584,
+    "p_value": 6.727951529228449e-14,
+    "b": 1,
+    "c": 61,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__lexicon",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 54.15,
+    "p_value": 1.857403120197887e-13,
+    "b": 1,
+    "c": 59,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "binary_naive_bayes__lexicon",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 0.5,
+    "p_value": 0.47950012218695337,
+    "b": 1,
+    "c": 1,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "logistic_regression__bow",
+    "classifier_b": "logistic_regression__bow_lexicon",
+    "statistic": 0.0,
+    "p_value": 1.0,
+    "b": 0,
+    "c": 1,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "logistic_regression__bow",
+    "classifier_b": "logistic_regression__lexicon",
+    "statistic": 68.12162162162163,
+    "p_value": 1.1102230246251565e-16,
+    "b": 73,
+    "c": 1,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow",
+    "classifier_b": "naive_bayes__bow",
+    "statistic": 4.363636363636363,
+    "p_value": 0.03671385636270408,
+    "b": 23,
+    "c": 10,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 5.9393939393939394,
+    "p_value": 0.014806109127348477,
+    "b": 24,
+    "c": 9,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 69.12,
+    "p_value": 1.1102230246251565e-16,
+    "b": 74,
+    "c": 1,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow_lexicon",
+    "classifier_b": "logistic_regression__lexicon",
+    "statistic": 69.12,
+    "p_value": 1.1102230246251565e-16,
+    "b": 74,
+    "c": 1,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow_lexicon",
+    "classifier_b": "naive_bayes__bow",
+    "statistic": 4.970588235294118,
+    "p_value": 0.02578187777747254,
+    "b": 24,
+    "c": 10,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow_lexicon",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 6.617647058823529,
+    "p_value": 0.010097314647507294,
+    "b": 25,
+    "c": 9,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__bow_lexicon",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 70.11842105263158,
+    "p_value": 1.1102230246251565e-16,
+    "b": 75,
+    "c": 1,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__lexicon",
+    "classifier_b": "naive_bayes__bow",
+    "statistic": 57.016949152542374,
+    "p_value": 4.318767565791859e-14,
+    "b": 0,
+    "c": 59,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__lexicon",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 55.01754385964912,
+    "p_value": 1.1945999744966684e-13,
+    "b": 0,
+    "c": 57,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "logistic_regression__lexicon",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 0.0,
+    "p_value": 1.0,
+    "b": 2,
+    "c": 1,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "naive_bayes__bow",
+    "classifier_b": "naive_bayes__bow_lexicon",
+    "statistic": 0.5,
+    "p_value": 0.47950012218695337,
+    "b": 2,
+    "c": 0,
+    "significant_0.05": false
+  },
+  {
+    "classifier_a": "naive_bayes__bow",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 58.016666666666666,
+    "p_value": 2.5979218776228663e-14,
+    "b": 60,
+    "c": 0,
+    "significant_0.05": true
+  },
+  {
+    "classifier_a": "naive_bayes__bow_lexicon",
+    "classifier_b": "naive_bayes__lexicon",
+    "statistic": 56.01724137931034,
+    "p_value": 7.183142969324763e-14,
+    "b": 58,
+    "c": 0,
+    "significant_0.05": true
+  }
+]
