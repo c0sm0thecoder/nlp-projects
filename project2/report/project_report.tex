@@ -1,0 +1,287 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+
+\geometry{margin=2.5cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\title{NLP Project 2: Language Modelling and Sentence Boundary Detection on Azerbaijani Poetry}
+\author{Kamal Aghazada \and Fatulla Bashirov}
+\date{February 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report documents Project 2 results for Task 1, Task 2, Task 4, and the Extra Task (UI). Task 3 is intentionally excluded in this version. We used the shared poetry dataset (\texttt{846} rows, \texttt{9} authors) and implemented reproducible pipelines for unsmoothed n-gram modelling, smoothing-method comparison, and sentence boundary detection with logistic regression (L1/L2 regularization). The report summarizes methodology, exact metrics, statistical testing, and implementation artifacts.
+\end{abstract}
+
+\section{Introduction and Dataset}
+
+Project 2 uses \texttt{project2/poems\_translated.parquet}, containing the columns \texttt{author}, \texttt{title}, \texttt{url}, \texttt{text}, and \texttt{modern\_text}. All main experiments in this report are based on \texttt{modern\_text}, with deterministic random seed \texttt{42}.
+
+The implemented deliverables are:
+\begin{itemize}
+    \item Task 1: Unigram, bigram, trigram language models and perplexity.
+    \item Task 2: Laplace, Interpolation, Backoff, and Kneser-Ney smoothing comparison.
+    \item Task 4: Dot-level sentence boundary detection with logistic regression (L1 vs L2).
+    \item Extra Task: Streamlit interfaces for interactive analysis.
+\end{itemize}
+
+Task 3 was omitted from this report as requested.
+
+\section{Task 1: Unsmoothed N-gram Models and Perplexity}
+
+\subsection{Method}
+The Task 1 pipeline (\texttt{project2/task1/task1\_ngram.py}) applies:
+\begin{itemize}
+    \item Unicode word tokenization with regex \texttt{\textbackslash b\textbackslash w+\textbackslash b} and lowercasing.
+    \item Cleaning: remove empty texts and rows without tokens.
+    \item Stratified train/test split by author (\texttt{test\_size=0.2}).
+    \item Unknown-word policy: tokens with train frequency $<2$ are mapped to \texttt{<unk>}.
+    \item Boundary handling for higher-order models with \texttt{<s>} and \texttt{</s>}.
+\end{itemize}
+
+Perplexity is computed as:
+\[
+\mathrm{PPL} = \exp\left(-\frac{1}{N}\sum_{i=1}^{N}\log p(w_i \mid h_i)\right),
+\]
+and is reported as \texttt{inf} if any zero-probability event occurs in evaluation.
+
+\subsection{Data and Vocabulary Statistics}
+\begin{table}[H]
+\centering
+\caption{Task 1 corpus and split statistics}
+\label{tab:task1-stats}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Input rows & 846 \\
+Rows after cleaning/tokenization & 844 \\
+Train rows & 675 \\
+Test rows & 169 \\
+Train tokens after \texttt{<unk>} mapping & 112,997 \\
+Test tokens after \texttt{<unk>} mapping & 29,942 \\
+Raw train vocabulary size & 25,098 \\
+Retained vocabulary size (freq $\geq 2$) & 10,009 \\
+Effective vocabulary with \texttt{<unk>} & 10,010 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Perplexity Results}
+\begin{table}[H]
+\centering
+\caption{Task 1 model perplexities (unsmoothed MLE)}
+\label{tab:task1-ppl}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{Train PPL} & \textbf{Test PPL} & \textbf{Zero-Prob Test} & \textbf{Unseen Rate (Test)} \\
+\midrule
+Unigram & 1309.13 & 749.86 & 0 & 0.0000 \\
+Bigram & 33.10 & inf & 14,927 & 0.4957 \\
+Trigram & 2.33 & inf & 26,193 & 0.8699 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Main observation: unsmoothed higher-order models fit training data strongly but fail on held-out text because many n-grams are unseen. This motivates smoothing in Task 2.
+
+Top-frequency outputs (\texttt{project2/task1/results/task1\_top\_ngrams.csv}) also show heavy \texttt{<unk>} presence, confirming the long-tail lexical distribution.
+
+\section{Task 2: Smoothing Method Comparison}
+
+\subsection{Method}
+Task 2 (\texttt{project2/task2/task2\_smoothing.py}, \texttt{smoothing\_core.py}) compares:
+\begin{itemize}
+    \item Laplace (add-one),
+    \item Interpolation (bigram and trigram mixtures),
+    \item Katz-style Backoff (discount grid),
+    \item Kneser-Ney (absolute discounting with continuation probability).
+\end{itemize}
+
+Evaluation protocol:
+\begin{itemize}
+    \item Outer split: train/test with \texttt{test\_size=0.2}.
+    \item Inner split: inner-train/validation from outer-train with \texttt{val\_size=0.1}.
+    \item Tune hyperparameters on validation perplexity, retrain on final train, evaluate on test.
+\end{itemize}
+
+\subsection{Split and Tuning Setup}
+\begin{table}[H]
+\centering
+\caption{Task 2 split configuration}
+\label{tab:task2-split}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Outer train rows & 675 \\
+Inner train rows & 606 \\
+Validation rows & 69 \\
+Test rows & 169 \\
+Interpolation bigram grid & 0.5, 0.6, 0.7, 0.8, 0.9 \\
+Interpolation trigram step & 0.1 \\
+Discount grid & 0.5, 0.75, 1.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Best Models per Method and Order}
+\begin{table}[H]
+\centering
+\caption{Task 2 best tuned configurations}
+\label{tab:task2-methods}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Method} & \textbf{Order} & \textbf{Best Params} & \textbf{Val PPL} & \textbf{Test PPL} \\
+\midrule
+Laplace & Bigram & $\alpha=1.0$ & 2186.53 & 3192.02 \\
+Interpolation & Bigram & $\lambda_1=0.5,\lambda_2=0.5$ & 429.93 & 642.01 \\
+Backoff & Bigram & $d=0.75$ & 410.56 & 600.67 \\
+Kneser-Ney & Bigram & $d=0.75$ & 398.88 & 586.84 \\
+Laplace & Trigram & $\alpha=1.0$ & 5967.74 & 7850.22 \\
+Interpolation & Trigram & $\lambda_1=0.8,\lambda_2=0.2,\lambda_3\approx 0.0$ & 399.42 & 580.93 \\
+Backoff & Trigram & $d=0.75$ & 421.50 & 634.05 \\
+Kneser-Ney & Trigram & $d=0.75$ & 412.40 & 634.32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ranking Results}
+\begin{table}[H]
+\centering
+\caption{Best method by ranking rule}
+\label{tab:task2-ranking}
+\begin{tabular}{ll}
+\toprule
+\textbf{Rule} & \textbf{Best Method} \\
+\midrule
+\texttt{trigram\_test\_ppl} & Interpolation \\
+\texttt{bigram\_test\_ppl} & Kneser-Ney \\
+\texttt{avg\_bigram\_trigram\_test\_ppl} & Kneser-Ney \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+By the default decision rule used in the implementation (\texttt{trigram\_test\_ppl}), the selected best method is \textbf{Interpolation}.
+
+\section{Task 4: Sentence Boundary Detection (L1 vs L2)}
+
+\subsection{Method}
+Task 4 (\texttt{project2/task4/task4\_sentence\_boundary.py}, \texttt{sentence\_boundary\_core.py}) models each dot character (\texttt{.}) as a binary decision: sentence boundary vs not boundary.
+
+Pipeline highlights:
+\begin{itemize}
+    \item Dot-level sample extraction from each poem.
+    \item Heuristic labeling excludes ellipses and decimal numbers.
+    \item 18 engineered features (contextual, positional, lexical, abbreviation and punctuation cues).
+    \item Split by poem ID (not by dot) into train/val/test to avoid leakage across dots from the same poem.
+    \item Logistic regression with \texttt{saga} solver, comparing L1 and L2 penalties.
+    \item Grid search over $C \in \{0.001,0.01,0.1,0.5,1.0,5.0,10.0\}$ on validation F1.
+\end{itemize}
+
+\subsection{Dataset Characteristics}
+\begin{table}[H]
+\centering
+\caption{Task 4 dot-level dataset statistics}
+\label{tab:task4-data}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Total non-empty texts & 844 \\
+Total dot samples & 9,428 \\
+Positive dots (boundary) & 9,191 \\
+Negative dots (not boundary) & 237 \\
+Positive rate & 0.9749 \\
+Train / Val / Test dots & 6,490 / 875 / 2,063 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{L1 vs L2 Results}
+\begin{table}[H]
+\centering
+\caption{Task 4 final comparison (best $C$ per penalty)}
+\label{tab:task4-compare}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Penalty} & \textbf{Best $C$} & \textbf{Train F1} & \textbf{Val F1} & \textbf{Test F1} & \textbf{Test Acc.} & \textbf{Test Recall} \\
+\midrule
+L1 & 10.0 & 0.998355 & 0.997585 & 0.983094 & 0.968008 & 0.969192 \\
+L2 & 0.01 & 0.997810 & 0.997590 & 0.997477 & 0.995153 & 0.998485 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Test-time McNemar comparison between L1 and L2:
+\[
+\chi^2 = 48.7903,\quad p = 2.8484 \times 10^{-12},
+\]
+which is statistically significant at $\alpha=0.05$. The selected best penalty is \textbf{L2}.
+
+\subsection{Feature Analysis}
+Top absolute coefficients show stable cues across both penalties:
+\begin{itemize}
+    \item \texttt{is\_ellipsis} (strong negative),
+    \item \texttt{next\_is\_quote} (negative),
+    \item \texttt{prev\_char\_is\_alpha} (positive),
+    \item \texttt{next\_char\_is\_space} (negative),
+    \item \texttt{word\_len} (positive).
+\end{itemize}
+
+This indicates that punctuation context and immediate local token structure are the strongest predictors for dot-boundary decisions.
+
+\section{Extra Task: Streamlit UI Deliverables}
+
+Interactive UIs were implemented for all practical pipelines:
+\begin{itemize}
+    \item \texttt{project2/task1/task1\_streamlit.py}
+    \item \texttt{project2/task2/task2\_streamlit.py}
+    \item \texttt{project2/task3/task3\_streamlit.py}
+    \item \texttt{project2/task4/task4\_streamlit.py}
+\end{itemize}
+
+Although Task 3 analysis is excluded from this report text, its UI is still part of the project deliverables. The UIs provide:
+\begin{itemize}
+    \item dataset/split parameter controls,
+    \item metric dashboards and comparison tables,
+    \item custom text probing for language model behavior,
+    \item confusion matrices and significance tables for classification tasks.
+\end{itemize}
+
+\section{Task 5: Report Deliverable}
+
+This document is the Task 5 report output for Project 2, written in the same structure and style used in Project 1, with the same author list and reproducible references to generated artifacts:
+\begin{itemize}
+    \item \texttt{project2/task1/results/task1\_metrics.json}
+    \item \texttt{project2/task2/results/task2\_metrics.json}
+    \item \texttt{project2/task4/results/task4\_metrics.json}
+\end{itemize}
+
+\section{Discussion and Conclusion}
+
+The Project 2 results show a consistent pattern:
+\begin{enumerate}
+    \item Unsmoothed higher-order n-gram models are not robust on held-out poetic text, despite strong train fit.
+    \item Smoothing is essential. Interpolation gives the best trigram test perplexity, while Kneser-Ney is strongest for bigram and average rules.
+    \item Dot-level sentence boundary detection works well with carefully designed local features; L2 regularization significantly outperforms L1 on test data in this setup.
+    \item The Streamlit interfaces make each task reproducible and easier to inspect qualitatively.
+\end{enumerate}
+
+Future improvements should include stronger handling of class imbalance in Task 4 and richer domain-specific lexical resources for language modelling and downstream punctuation decisions.
+
+\end{document}
