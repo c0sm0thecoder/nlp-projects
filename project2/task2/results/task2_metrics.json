@@ -1,0 +1,232 @@
+{
+  "config": {
+    "input": "project2/poems_translated.parquet",
+    "text_col": "modern_text",
+    "author_col": "author",
+    "test_size": 0.2,
+    "val_size": 0.1,
+    "seed": 42,
+    "min_freq": 2,
+    "orders": [
+      2,
+      3
+    ],
+    "methods": [
+      "laplace",
+      "interpolation",
+      "backoff",
+      "kneser_ney"
+    ],
+    "tokenizer": "unicode-word-boundary-lowercase",
+    "boundary_tokens": [
+      "<s>",
+      "</s>"
+    ],
+    "unk_token": "<unk>",
+    "interp_bigram_grid": [
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ],
+    "interp_trigram_step": 0.1,
+    "discount_grid": [
+      0.5,
+      0.75,
+      1.0
+    ]
+  },
+  "corpus": {
+    "rows_input": 846,
+    "rows_after_non_empty_text": 844,
+    "rows_after_tokenization": 844,
+    "dropped_empty_text_rows": 2,
+    "dropped_no_word_token_rows": 0,
+    "authors": 9,
+    "inner_train_tokens_after_unk": 99122,
+    "val_tokens_after_unk": 13875,
+    "final_train_tokens_after_unk": 112997,
+    "test_tokens_after_unk": 29942,
+    "inner_vocab": {
+      "raw_train_vocab_size": 22890,
+      "retained_vocab_size": 8944,
+      "effective_vocab_size_with_unk": 8945,
+      "rare_train_token_types_mapped_to_unk": 13946,
+      "train_unk_token_count": 13946,
+      "test_unk_token_count": 3563,
+      "test_oov_before_unk_count": 3563,
+      "min_freq": 2
+    },
+    "final_vocab": {
+      "raw_train_vocab_size": 25098,
+      "retained_vocab_size": 10009,
+      "effective_vocab_size_with_unk": 10010,
+      "rare_train_token_types_mapped_to_unk": 15089,
+      "train_unk_token_count": 15089,
+      "test_unk_token_count": 6208,
+      "test_oov_before_unk_count": 6208,
+      "min_freq": 2
+    }
+  },
+  "split": {
+    "outer_train_rows": 675,
+    "inner_train_rows": 606,
+    "val_rows": 69,
+    "test_rows": 169,
+    "outer_train_author_counts": {
+      "Molla Pənah Vaqif": 68,
+      "Məhəmməd Füzuli": 203,
+      "Qasım bəy Zakir": 26,
+      "Qətran Təbrizi": 2,
+      "Seyid Əzim Şirvani": 84,
+      "Xaqani Şirvani": 55,
+      "Xurşidbanu Natəvan": 17,
+      "İmadəddin Nəsimi": 148,
+      "Şah İsmayıl Xətai": 72
+    },
+    "inner_train_author_counts": {
+      "Molla Pənah Vaqif": 61,
+      "Məhəmməd Füzuli": 183,
+      "Qasım bəy Zakir": 23,
+      "Qətran Təbrizi": 1,
+      "Seyid Əzim Şirvani": 76,
+      "Xaqani Şirvani": 49,
+      "Xurşidbanu Natəvan": 15,
+      "İmadəddin Nəsimi": 133,
+      "Şah İsmayıl Xətai": 65
+    },
+    "val_author_counts": {
+      "Molla Pənah Vaqif": 7,
+      "Məhəmməd Füzuli": 20,
+      "Qasım bəy Zakir": 3,
+      "Qətran Təbrizi": 1,
+      "Seyid Əzim Şirvani": 8,
+      "Xaqani Şirvani": 6,
+      "Xurşidbanu Natəvan": 2,
+      "İmadəddin Nəsimi": 15,
+      "Şah İsmayıl Xətai": 7
+    },
+    "test_author_counts": {
+      "Molla Pənah Vaqif": 17,
+      "Məhəmməd Füzuli": 51,
+      "Qasım bəy Zakir": 6,
+      "Qətran Təbrizi": 1,
+      "Seyid Əzim Şirvani": 21,
+      "Xaqani Şirvani": 14,
+      "Xurşidbanu Natəvan": 4,
+      "İmadəddin Nəsimi": 37,
+      "Şah İsmayıl Xətai": 18
+    }
+  },
+  "methods": [
+    {
+      "order": 2,
+      "method": "laplace",
+      "best_params": {
+        "alpha": 1.0
+      },
+      "train_perplexity": 2692.0119168915985,
+      "val_perplexity": 2186.5258539964557,
+      "test_perplexity": 3192.0239935886975,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 2,
+      "method": "interpolation",
+      "best_params": {
+        "lambda1": 0.5,
+        "lambda2": 0.5
+      },
+      "train_perplexity": 54.82520367828245,
+      "val_perplexity": 429.92972337161103,
+      "test_perplexity": 642.0106010620483,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 2,
+      "method": "backoff",
+      "best_params": {
+        "discount": 0.75
+      },
+      "train_perplexity": 80.68596509222463,
+      "val_perplexity": 410.5605661866399,
+      "test_perplexity": 600.6679187008604,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 2,
+      "method": "kneser_ney",
+      "best_params": {
+        "discount": 0.75
+      },
+      "train_perplexity": 71.93924849274671,
+      "val_perplexity": 398.8789965877835,
+      "test_perplexity": 586.8364550954786,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 3,
+      "method": "laplace",
+      "best_params": {
+        "alpha": 1.0
+      },
+      "train_perplexity": 4491.516673266783,
+      "val_perplexity": 5967.738368326372,
+      "test_perplexity": 7850.224022937087,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 3,
+      "method": "interpolation",
+      "best_params": {
+        "lambda1": 0.8,
+        "lambda2": 0.2,
+        "lambda3": -0.0
+      },
+      "train_perplexity": 102.52185986629989,
+      "val_perplexity": 399.4151514805348,
+      "test_perplexity": 580.9309088640216,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 3,
+      "method": "backoff",
+      "best_params": {
+        "discount": 0.75
+      },
+      "train_perplexity": 8.35661304453344,
+      "val_perplexity": 421.50175369588425,
+      "test_perplexity": 634.049069484171,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    },
+    {
+      "order": 3,
+      "method": "kneser_ney",
+      "best_params": {
+        "discount": 0.75
+      },
+      "train_perplexity": 6.842003529354062,
+      "val_perplexity": 412.40379594306023,
+      "test_perplexity": 634.3167729885017,
+      "zero_prob_events_test": 0,
+      "unseen_rate_test": 0.0
+    }
+  ],
+  "best_method_defaults": {
+    "default_rule": "trigram_test_ppl",
+    "best_method": "interpolation",
+    "best_method_by_rule": {
+      "trigram_test_ppl": "interpolation",
+      "bigram_test_ppl": "kneser_ney",
+      "avg_bigram_trigram_test_ppl": "kneser_ney"
+    }
+  }
+}
