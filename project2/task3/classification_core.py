@@ -25,6 +25,8 @@ from sklearn.metrics import (
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
 
+import nltk
+
 # Sentiment lexicon setup
 
 try:
@@ -43,6 +45,27 @@ TOKEN_RE = re.compile(r"\b\w+\b", flags=re.UNICODE)
 
 CLASSIFIERS: tuple[str, ...] = ("naive_bayes", "binary_naive_bayes", "logistic_regression")
 FEATURE_SETS: tuple[str, ...] = ("bow", "lexicon", "bow_lexicon")
+
+
+def _ensure_nltk_resource(resource_path: str, download_name: str) -> None:
+    try:
+        nltk.data.find(resource_path)
+    except LookupError:
+        nltk.download(download_name, quiet=True)
+
+
+def load_twitter_samples_dataframe(seed: int = 42) -> pd.DataFrame:
+    """Return labeled sentiment dataset from NLTK twitter_samples corpus."""
+    _ensure_nltk_resource("corpora/twitter_samples", "twitter_samples")
+    from nltk.corpus import twitter_samples
+
+    pos_texts = twitter_samples.strings("positive_tweets.json")
+    neg_texts = twitter_samples.strings("negative_tweets.json")
+
+    rows = [{"text": text, "label": "positive"} for text in pos_texts]
+    rows.extend({"text": text, "label": "negative"} for text in neg_texts)
+    df = pd.DataFrame(rows)
+    return df.sample(frac=1.0, random_state=seed).reset_index(drop=True)
 
 
 # Text tokenization and validation
@@ -383,19 +406,29 @@ def run_single_experiment(
 
 
 def build_task3_artifacts(
-    input_path: str,
-    text_col: str = "modern_text",
-    label_col: str = "author",
+    input_path: str | None = None,
+    dataset: str = "twitter_samples",
+    text_col: str = "text",
+    label_col: str = "label",
     test_size: float = 0.2,
     seed: int = 42,
     max_features: int | None = None,
 ) -> dict[str, Any]:
     """Full Task 3 pipeline: train all classifiers × feature sets, test, significance."""
-    parquet_path = Path(input_path)
-    if not parquet_path.exists():
-        raise FileNotFoundError(f"Input file not found: {parquet_path}")
+    if dataset == "twitter_samples":
+        df = load_twitter_samples_dataframe(seed=seed)
+        data_source = "nltk:twitter_samples"
+    elif dataset == "parquet":
+        if input_path is None:
+            raise ValueError("input_path is required when dataset='parquet'.")
+        parquet_path = Path(input_path)
+        if not parquet_path.exists():
+            raise FileNotFoundError(f"Input file not found: {parquet_path}")
+        df = pd.read_parquet(parquet_path)
+        data_source = str(parquet_path)
+    else:
+        raise ValueError(f"Unsupported dataset: {dataset}")
 
-    df = pd.read_parquet(parquet_path)
     validate_columns(df, [text_col, label_col])
 
     clean_df, clean_stats = clean_dataframe(df, text_col, label_col)
@@ -459,6 +492,27 @@ def build_task3_artifacts(
 
     best = ranked[0]
 
+    classifier_best: list[dict[str, Any]] = []
+    for clf_name in CLASSIFIERS:
+        clf_rows = [row for row in ranked if row["classifier"] == clf_name]
+        if not clf_rows:
+            continue
+        best_row = max(clf_rows, key=lambda row: row["macro_f1"])
+        classifier_best.append({
+            "classifier": clf_name,
+            "best_feature_set": best_row["feature_set"],
+            "macro_f1": best_row["macro_f1"],
+            "accuracy": best_row["accuracy"],
+        })
+
+    classifier_best = sorted(classifier_best, key=lambda row: row["macro_f1"], reverse=True)
+    best_classifier = classifier_best[0] if classifier_best else {
+        "classifier": "",
+        "best_feature_set": "",
+        "macro_f1": 0.0,
+        "accuracy": 0.0,
+    }
+
     split_info = {
         "train_rows": int(len(train_df)),
         "test_rows": int(len(test_df)),
@@ -474,7 +528,8 @@ def build_task3_artifacts(
 
     return {
         "config": {
-            "input": str(parquet_path),
+            "dataset": dataset,
+            "input": data_source,
             "text_col": text_col,
             "label_col": label_col,
             "test_size": test_size,
@@ -492,6 +547,8 @@ def build_task3_artifacts(
             "macro_f1": best["macro_f1"],
             "accuracy": best["accuracy"],
         },
+        "classifier_analysis": classifier_best,
+        "best_classifier": best_classifier,
         # Pass-through for Streamlit
         "train_texts": train_texts,
         "test_texts": test_texts,
@@ -527,6 +584,8 @@ def write_task3_outputs(artifacts: dict[str, Any], out_dir: str) -> dict[str, st
         "clean_stats": artifacts["clean_stats"],
         "split": artifacts["split"],
         "best": artifacts["best"],
+        "best_classifier": artifacts["best_classifier"],
+        "classifier_analysis": artifacts["classifier_analysis"],
         "experiments": [],
     }
     for exp in artifacts["experiment_results"]:

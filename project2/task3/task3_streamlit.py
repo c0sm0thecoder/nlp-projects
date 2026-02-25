@@ -31,6 +31,7 @@ from project2.task3.classification_core import (  # noqa: E402
 
 @st.cache_resource(show_spinner=True)
 def load_artifacts(
+    dataset: str,
     input_path: str,
     text_col: str,
     label_col: str,
@@ -39,6 +40,7 @@ def load_artifacts(
     max_features: int | None,
 ) -> dict[str, Any]:
     return build_task3_artifacts(
+        dataset=dataset,
         input_path=input_path,
         text_col=text_col,
         label_col=label_col,
@@ -108,6 +110,24 @@ def render_results_table(artifacts: dict[str, Any]) -> None:
         f"Best: **{best['classifier']}** with **{best['feature_set']}** features "
         f"(macro F1 = {best['macro_f1']:.4f}, accuracy = {best['accuracy']:.4f})"
     )
+
+    st.markdown("### Best algorithm by classifier")
+    clf_rows = []
+    for row in artifacts.get("classifier_analysis", []):
+        clf_rows.append({
+            "classifier": row["classifier"],
+            "best_feature_set": row["best_feature_set"],
+            "macro_F1": f"{row['macro_f1']:.4f}",
+            "accuracy": f"{row['accuracy']:.4f}",
+        })
+    if clf_rows:
+        st.dataframe(pd.DataFrame(clf_rows), use_container_width=True, hide_index=True)
+        best_clf = artifacts["best_classifier"]
+        st.info(
+            f"Overall best algorithm: **{best_clf['classifier']}** "
+            f"(with **{best_clf['best_feature_set']}** features, "
+            f"macro F1 = {best_clf['macro_f1']:.4f})"
+        )
 
 
 def render_confusion_matrices(artifacts: dict[str, Any]) -> None:
@@ -225,9 +245,16 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Data settings")
-        input_path = st.text_input("Parquet path", value="poems_translated.parquet")
-        text_col = st.text_input("Text column", value="modern_text")
-        label_col = st.text_input("Label column", value="author")
+        dataset = st.selectbox("Dataset", ["twitter_samples", "parquet"], index=0)
+        input_path = st.text_input(
+            "Parquet path",
+            value="poems_translated.parquet",
+            disabled=(dataset != "parquet"),
+        )
+        default_text_col = "text" if dataset == "twitter_samples" else "modern_text"
+        default_label_col = "label" if dataset == "twitter_samples" else "author"
+        text_col = st.text_input("Text column", value=default_text_col)
+        label_col = st.text_input("Label column", value=default_label_col)
         test_size = st.slider("Test size", 0.05, 0.40, 0.20, 0.05)
         seed = st.number_input("Seed", 0, 99999, 42, 1)
         max_features_raw = st.number_input(
@@ -241,6 +268,7 @@ def main() -> None:
 
     try:
         artifacts = load_artifacts(
+            dataset=dataset,
             input_path=input_path,
             text_col=text_col,
             label_col=label_col,

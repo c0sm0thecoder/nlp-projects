@@ -15,7 +15,7 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt}
 
-\title{NLP Project 2: Language Modelling and Sentence Boundary Detection on Azerbaijani Poetry}
+\title{NLP Project 2: Language Modelling, Sentiment Classification, and Sentence Boundary Detection}
 \author{Kamal Aghazada \and Fatulla Bashirov}
 \date{February 2026}
 
@@ -24,7 +24,7 @@
 \maketitle
 
 \begin{abstract}
-This report documents Project 2 results for Task 1, Task 2, Task 4, and the Extra Task (UI). Task 3 is intentionally excluded in this version. We used the shared poetry dataset (\texttt{846} rows, \texttt{9} authors) and implemented reproducible pipelines for unsmoothed n-gram modelling, smoothing-method comparison, and sentence boundary detection with logistic regression (L1/L2 regularization). The report summarizes methodology, exact metrics, statistical testing, and implementation artifacts.
+This report documents Project 2 results for Task 1, Task 2, Task 3, Task 4, and the Extra Task (UI). Tasks 1, 2, and 4 use the shared poetry dataset (\texttt{846} rows, \texttt{9} authors), while Task 3 uses the labeled NLTK \texttt{twitter\_samples} sentiment dataset (\texttt{10,000} tweets). We implemented reproducible pipelines for unsmoothed n-gram modelling, smoothing-method comparison, sentiment classification with multiple algorithms and feature sets, and sentence boundary detection with logistic regression (L1/L2 regularization). The report summarizes methodology, exact metrics, statistical testing, and implementation artifacts.
 \end{abstract}
 
 \section{Introduction and Dataset}
@@ -35,11 +35,10 @@ The implemented deliverables are:
 \begin{itemize}
     \item Task 1: Unigram, bigram, trigram language models and perplexity.
     \item Task 2: Laplace, Interpolation, Backoff, and Kneser-Ney smoothing comparison.
+    \item Task 3: Sentiment classification using Naive Bayes, Binary Naive Bayes, and Logistic Regression with Bag-of-Words and sentiment-lexicon features.
     \item Task 4: Dot-level sentence boundary detection with logistic regression (L1 vs L2).
     \item Extra Task: Streamlit interfaces for interactive analysis.
 \end{itemize}
-
-Task 3 was omitted from this report as requested.
 
 \section{Task 1: Unsmoothed N-gram Models and Perplexity}
 
@@ -178,6 +177,71 @@ Kneser-Ney & Trigram & $d=0.75$ & 412.40 & 634.32 \\
 
 By the default decision rule used in the implementation (\texttt{trigram\_test\_ppl}), the selected best method is \textbf{Interpolation}.
 
+\section{Task 3: Sentiment Classification (Naive Bayes, Binary NB, Logistic)}
+
+\subsection{Dataset and Setup}
+Task 3 (\texttt{project2/task3/task3\_classification.py}, \texttt{classification\_core.py}) uses the labeled NLTK \texttt{twitter\_samples} corpus:
+\begin{itemize}
+    \item Total samples: \texttt{10,000} tweets.
+    \item Labels: \texttt{positive} and \texttt{negative}.
+    \item Split: stratified \texttt{80/20} train/test with seed \texttt{42}.
+    \item Train/Test sizes: \texttt{8,000} / \texttt{2,000}.
+\end{itemize}
+
+Evaluated classifiers:
+\begin{itemize}
+    \item Multinomial Naive Bayes,
+    \item Binary Naive Bayes,
+    \item Logistic Regression.
+\end{itemize}
+
+Feature sets:
+\begin{itemize}
+    \item \textbf{BoW}: CountVectorizer word features,
+    \item \textbf{Lexicon}: opinion lexicon counts/ratios + VADER polarity features,
+    \item \textbf{BoW+Lexicon}: concatenation of both.
+\end{itemize}
+
+\subsection{Main Results}
+\begin{table}[H]
+\centering
+\caption{Task 3 ranking by macro F1 (top configurations)}
+\label{tab:task3-summary}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Rank} & \textbf{Classifier + Features} & \textbf{Accuracy} & \textbf{Macro Precision} & \textbf{Macro F1} \\
+\midrule
+1 & Logistic Regression + BoW+Lexicon & 0.7990 & 0.7992 & 0.7990 \\
+2 & Logistic Regression + BoW & 0.7930 & 0.7938 & 0.7929 \\
+3 & Naive Bayes + BoW+Lexicon & 0.7870 & 0.7873 & 0.7869 \\
+4 & Binary Naive Bayes + BoW+Lexicon & 0.7850 & 0.7851 & 0.7850 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Classifier-level best configurations:
+\begin{itemize}
+    \item Logistic Regression best: \texttt{BoW+Lexicon}, macro F1 = \texttt{0.79897}.
+    \item Naive Bayes best: \texttt{BoW+Lexicon}, macro F1 = \texttt{0.78695}.
+    \item Binary Naive Bayes best: \texttt{BoW+Lexicon}, macro F1 = \texttt{0.78499}.
+\end{itemize}
+
+\subsection{Statistical Significance Testing}
+We used pairwise McNemar tests on the same test predictions (\(\alpha=0.05\)). Key comparisons:
+\begin{itemize}
+    \item Logistic (BoW+Lexicon) vs Naive Bayes (BoW): \(\chi^2=5.0039\), \(p=0.02529\), significant.
+    \item Logistic (BoW+Lexicon) vs Naive Bayes (BoW+Lexicon): \(\chi^2=1.9593\), \(p=0.16159\), not significant.
+    \item Logistic (BoW+Lexicon) vs Binary NB (BoW+Lexicon): \(\chi^2=2.4966\), \(p=0.11409\), not significant.
+\end{itemize}
+
+\subsection{Analysis}
+The best overall model on this split is \textbf{Logistic Regression with BoW+Lexicon}.
+However, the significance tests show that its advantage over the strongest Naive Bayes variants is modest and not statistically significant in all pairwise comparisons. Therefore, the most accurate conclusion is:
+\begin{itemize}
+    \item Logistic Regression is the top-performing classifier in point estimates,
+    \item but Logistic and the best Naive Bayes variants are competitive under paired significance testing.
+\end{itemize}
+
 \section{Task 4: Sentence Boundary Detection (L1 vs L2)}
 
 \subsection{Method}
@@ -255,7 +319,7 @@ Interactive UIs were implemented for all practical pipelines:
     \item \texttt{project2/task4/task4\_streamlit.py}
 \end{itemize}
 
-Although Task 3 analysis is excluded from this report text, its UI is still part of the project deliverables. The UIs provide:
+The UIs provide:
 \begin{itemize}
     \item dataset/split parameter controls,
     \item metric dashboards and comparison tables,
@@ -269,6 +333,7 @@ This document is the Task 5 report output for Project 2, written in the same str
 \begin{itemize}
     \item \texttt{project2/task1/results/task1\_metrics.json}
     \item \texttt{project2/task2/results/task2\_metrics.json}
+    \item \texttt{project2/task3/results/task3\_metrics.json}
     \item \texttt{project2/task4/results/task4\_metrics.json}
 \end{itemize}
 
@@ -278,6 +343,7 @@ The Project 2 results show a consistent pattern:
 \begin{enumerate}
     \item Unsmoothed higher-order n-gram models are not robust on held-out poetic text, despite strong train fit.
     \item Smoothing is essential. Interpolation gives the best trigram test perplexity, while Kneser-Ney is strongest for bigram and average rules.
+    \item For sentiment classification on \texttt{twitter\_samples}, Logistic Regression with BoW+Lexicon gives the best overall macro F1, while top Naive Bayes variants remain competitive in paired significance tests.
     \item Dot-level sentence boundary detection works well with carefully designed local features; L2 regularization significantly outperforms L1 on test data in this setup.
     \item The Streamlit interfaces make each task reproducible and easier to inspect qualitatively.
 \end{enumerate}

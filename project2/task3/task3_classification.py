@@ -18,25 +18,33 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
             "Task3 classification pipeline: Naive Bayes, Binary NB, "
-            "Logistic Regression with BoW + sentiment-lexicon features."
+            "Logistic Regression with BoW + sentiment-lexicon features "
+            "on sentiment datasets (default: NLTK twitter_samples)."
         )
+    )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default="twitter_samples",
+        choices=["twitter_samples", "parquet"],
+        help="Dataset source.",
     )
     parser.add_argument(
         "--input",
         type=str,
         default="project2/poems_translated.parquet",
-        help="Path to input parquet file.",
+        help="Path to input parquet file (used only when --dataset parquet).",
     )
     parser.add_argument(
         "--text-col",
         type=str,
-        default="modern_text",
+        default="text",
         help="Text column.",
     )
     parser.add_argument(
         "--label-col",
         type=str,
-        default="author",
+        default="label",
         help="Label column (author as class).",
     )
     parser.add_argument(
@@ -72,6 +80,7 @@ def main() -> None:
 
     artifacts = build_task3_artifacts(
         input_path=args.input,
+        dataset=args.dataset,
         text_col=args.text_col,
         label_col=args.label_col,
         test_size=args.test_size,
@@ -88,6 +97,11 @@ def main() -> None:
         f"Best classifier: {artifacts['best']['classifier']} "
         f"({artifacts['best']['feature_set']}) "
         f"macro_f1={artifacts['best']['macro_f1']:.4f}"
+    )
+    print(
+        f"Best algorithm overall: {artifacts['best_classifier']['classifier']} "
+        f"(best feature set: {artifacts['best_classifier']['best_feature_set']}, "
+        f"macro_f1={artifacts['best_classifier']['macro_f1']:.4f})"
     )
 
 
