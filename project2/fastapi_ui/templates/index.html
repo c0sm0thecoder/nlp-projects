@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NLP Project 2 Demo</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-badge">NLP</span>
+        <div>
+          <h1>Project 2 Demo</h1>
+          <p class="muted">FastAPI • Lightweight • No Streamlit</p>
+        </div>
+      </div>
+
+      <nav class="task-nav" aria-label="Task Navigation">
+        <button class="task-nav-btn active" data-tab="task1">Task 1 · N-grams</button>
+        <button class="task-nav-btn" data-tab="task2">Task 2 · Smoothing</button>
+        <button class="task-nav-btn" data-tab="task3">Task 3 · Classification</button>
+        <button class="task-nav-btn" data-tab="task4">Task 4 · Boundaries</button>
+      </nav>
+
+      <div class="status-card" id="healthBox">Checking API health...</div>
+      <button class="run-btn warmup-btn" onclick="warmupModels()">Warm Up Models</button>
+      <div class="status-card" id="warmupBox">Warmup not started.</div>
+    </aside>
+
+    <main class="content">
+      <header class="hero">
+        <h2 id="tabTitle">Task 1: N-gram Language Models</h2>
+        <p id="tabDesc" class="muted">Train unigram / bigram / trigram models and inspect perplexity on train and test splits.</p>
+      </header>
+
+      <section class="task-panel active" id="panel-task1">
+        <div class="inner-tabs" data-task="task1">
+          <button class="inner-tab-btn active" data-inner="input">Input</button>
+          <button class="inner-tab-btn" data-inner="output">Output</button>
+          <button class="inner-tab-btn" data-inner="details">Implementation</button>
+        </div>
+
+        <div class="inner-view active" id="task1-input">
+          <div class="form-grid">
+            <label>Input parquet path <input id="t1_input_path" value="poems_translated.parquet"></label>
+            <label>Text column <input id="t1_text_col" value="modern_text"></label>
+            <label>Author column <input id="t1_author_col" value="author"></label>
+            <label>Test size <input id="t1_test_size" type="number" step="0.01" value="0.2"></label>
+            <label>Seed <input id="t1_seed" type="number" value="42"></label>
+            <label>Min freq <input id="t1_min_freq" type="number" value="2"></label>
+          </div>
+          <button class="run-btn" onclick="runTask1()">Run Task 1</button>
+
+          <div class="ask-box">
+            <h3>Ask Task 1</h3>
+            <label>Model
+              <select id="t1_predict_model">
+                <option value="trigram">trigram</option>
+                <option value="bigram">bigram</option>
+                <option value="unigram">unigram</option>
+              </select>
+            </label>
+            <label>Input sentence
+              <textarea id="t1_prompt" rows="3" placeholder="Type a sentence to predict the next word..."></textarea>
+            </label>
+            <button class="run-btn" onclick="predictTask1Next()">Predict Next Word</button>
+            <pre class="result" id="task1_answer"></pre>
+          </div>
+        </div>
+
+        <div class="inner-view" id="task1-output">
+          <div class="result-meta">Structured output appears after running the task.</div>
+          <div class="result-render" id="task1_render"></div>
+          <details class="raw-wrap">
+            <summary>Raw JSON</summary>
+            <pre class="result" id="task1_result"></pre>
+          </details>
+        </div>
+
+        <div class="inner-view" id="task1-details">
+          <h3>How it works</h3>
+          <ul>
+            <li>Cleans text and tokenizes each poem.</li>
+            <li>Applies stratified train/test split by author.</li>
+            <li>Builds unigram, bigram, trigram models and computes perplexity diagnostics.</li>
+            <li>Returns train/test perplexity, unseen-rate, and zero-probability event counts.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="task-panel" id="panel-task2">
+        <div class="inner-tabs" data-task="task2">
+          <button class="inner-tab-btn active" data-inner="input">Input</button>
+          <button class="inner-tab-btn" data-inner="output">Output</button>
+          <button class="inner-tab-btn" data-inner="details">Implementation</button>
+        </div>
+
+        <div class="inner-view active" id="task2-input">
+          <div class="form-grid">
+            <label>Input parquet path <input id="t2_input_path" value="poems_translated.parquet"></label>
+            <label>Text column <input id="t2_text_col" value="modern_text"></label>
+            <label>Author column <input id="t2_author_col" value="author"></label>
+            <label>Test size <input id="t2_test_size" type="number" step="0.01" value="0.2"></label>
+            <label>Validation size <input id="t2_val_size" type="number" step="0.01" value="0.1"></label>
+            <label>Seed <input id="t2_seed" type="number" value="42"></label>
+            <label>Min freq <input id="t2_min_freq" type="number" value="2"></label>
+            <label>Interp bigram grid (comma) <input id="t2_interp_bigram_grid" value="0.5,0.6,0.7,0.8,0.9"></label>
+            <label>Interp trigram step <input id="t2_interp_trigram_step" type="number" step="0.01" value="0.1"></label>
+            <label>Discount grid (comma) <input id="t2_discount_grid" value="0.5,0.75,1.0"></label>
+          </div>
+          <button class="run-btn" onclick="runTask2()">Run Task 2</button>
+
+          <div class="ask-box">
+            <h3>Ask Task 2</h3>
+            <div class="form-grid">
+              <label>Method (optional)
+                <input id="t2_predict_method" placeholder="leave blank for best method">
+              </label>
+              <label>Order
+                <select id="t2_predict_order">
+                  <option value="3">3 (trigram)</option>
+                  <option value="2">2 (bigram)</option>
+                </select>
+              </label>
+            </div>
+            <label>Input sentence
+              <textarea id="t2_prompt" rows="3" placeholder="Type a sentence to predict the next word..."></textarea>
+            </label>
+            <button class="run-btn" onclick="predictTask2Next()">Predict Next Word</button>
+            <pre class="result" id="task2_answer"></pre>
+          </div>
+        </div>
+
+        <div class="inner-view" id="task2-output">
+          <div class="result-meta">Compare smoothing methods and inspect ranking tables.</div>
+          <div class="result-render" id="task2_render"></div>
+          <details class="raw-wrap">
+            <summary>Raw JSON</summary>
+            <pre class="result" id="task2_result"></pre>
+          </details>
+        </div>
+
+        <div class="inner-view" id="task2-details">
+          <h3>How it works</h3>
+          <ul>
+            <li>Builds language-model artifacts for multiple smoothing methods.</li>
+            <li>Tunes interpolation and discount parameters over user-defined grids.</li>
+            <li>Produces method-level metrics and ranking rows for comparison.</li>
+            <li>Highlights the best default method in the response.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="task-panel" id="panel-task3">
+        <div class="inner-tabs" data-task="task3">
+          <button class="inner-tab-btn active" data-inner="input">Input</button>
+          <button class="inner-tab-btn" data-inner="output">Output</button>
+          <button class="inner-tab-btn" data-inner="details">Implementation</button>
+        </div>
+
+        <div class="inner-view active" id="task3-input">
+          <div class="form-grid">
+            <label>Dataset
+              <select id="t3_dataset" onchange="toggleTask3Input()">
+                <option value="twitter_samples">twitter_samples</option>
+                <option value="parquet">parquet</option>
+              </select>
+            </label>
+            <label>Input parquet path <input id="t3_input_path" value="poems_translated.parquet" disabled></label>
+            <label>Text column <input id="t3_text_col" value="text"></label>
+            <label>Label column <input id="t3_label_col" value="label"></label>
+            <label>Test size <input id="t3_test_size" type="number" step="0.01" value="0.2"></label>
+            <label>Seed <input id="t3_seed" type="number" value="42"></label>
+            <label>Max features (blank = none) <input id="t3_max_features" placeholder=""></label>
+          </div>
+          <button class="run-btn" onclick="runTask3()">Run Task 3</button>
+
+          <div class="ask-box">
+            <h3>Ask Task 3</h3>
+            <label>Input sentence
+              <textarea id="t3_prompt" rows="3" placeholder="Type text to predict sentiment..."></textarea>
+            </label>
+            <button class="run-btn" onclick="predictTask3Sentiment()">Predict Sentiment</button>
+            <pre class="result" id="task3_answer"></pre>
+          </div>
+        </div>
+
+        <div class="inner-view" id="task3-output">
+          <div class="result-meta">Review best classifier, experiment summary, and significance testing.</div>
+          <div class="result-render" id="task3_render"></div>
+          <details class="raw-wrap">
+            <summary>Raw JSON</summary>
+            <pre class="result" id="task3_result"></pre>
+          </details>
+        </div>
+
+        <div class="inner-view" id="task3-details">
+          <h3>How it works</h3>
+          <ul>
+            <li>Supports either <strong>twitter_samples</strong> or user parquet dataset.</li>
+            <li>Runs Naive Bayes, Binary Naive Bayes, and Logistic models.</li>
+            <li>Returns best model, per-classifier analysis, and summary rows.</li>
+            <li>Includes McNemar significance results for pairwise model comparisons.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="task-panel" id="panel-task4">
+        <div class="inner-tabs" data-task="task4">
+          <button class="inner-tab-btn active" data-inner="input">Input</button>
+          <button class="inner-tab-btn" data-inner="output">Output</button>
+          <button class="inner-tab-btn" data-inner="details">Implementation</button>
+        </div>
+
+        <div class="inner-view active" id="task4-input">
+          <div class="form-grid">
+            <label>Input parquet path <input id="t4_input_path" value="poems_translated.parquet"></label>
+            <label>Text column <input id="t4_text_col" value="modern_text"></label>
+            <label>Label column <input id="t4_label_col" value="author"></label>
+            <label>Validation size <input id="t4_val_size" type="number" step="0.01" value="0.1"></label>
+            <label>Test size <input id="t4_test_size" type="number" step="0.01" value="0.2"></label>
+            <label>Seed <input id="t4_seed" type="number" value="42"></label>
+            <label>C grid (comma) <input id="t4_c_grid" value="0.001,0.01,0.1,0.5,1.0,5.0,10.0"></label>
+          </div>
+          <button class="run-btn" onclick="runTask4()">Run Task 4</button>
+
+          <div class="ask-box">
+            <h3>Ask Task 4</h3>
+            <label>Penalty
+              <select id="t4_predict_penalty">
+                <option value="">auto (best)</option>
+                <option value="l1">l1</option>
+                <option value="l2">l2</option>
+              </select>
+            </label>
+            <label>Input text
+              <textarea id="t4_prompt" rows="4" placeholder="Type text and get detected sentences..."></textarea>
+            </label>
+            <button class="run-btn" onclick="predictTask4Sentences()">Detect Sentences</button>
+            <pre class="result" id="task4_answer"></pre>
+          </div>
+        </div>
+
+        <div class="inner-view" id="task4-output">
+          <div class="result-meta">Compare L1 vs L2 regularization, plus tuning and significance metrics.</div>
+          <div class="result-render" id="task4_render"></div>
+          <details class="raw-wrap">
+            <summary>Raw JSON</summary>
+            <pre class="result" id="task4_result"></pre>
+          </details>
+        </div>
+
+        <div class="inner-view" id="task4-details">
+          <h3>How it works</h3>
+          <ul>
+            <li>Builds features for dot-as-boundary prediction from sequence context.</li>
+            <li>Tunes Logistic Regression over a C grid for both L1 and L2 penalties.</li>
+            <li>Reports train/validation/test metrics, best penalty, and sparsity profile.</li>
+            <li>Returns significance and tuning rows for detailed inspection.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

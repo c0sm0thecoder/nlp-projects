@@ -405,6 +405,61 @@ def run_single_experiment(
     }
 
 
+def predict_single_text_sentiment(
+    text: str,
+    train_texts: list[str],
+    y_train: np.ndarray,
+    label_names: list[str],
+    classifier_name: str,
+    feature_set: str,
+    seed: int = 42,
+    max_features: int | None = None,
+) -> dict[str, Any]:
+    if not text or not text.strip():
+        raise ValueError("Input text is empty.")
+
+    cleaned_text = tokenize(text)
+    if not cleaned_text.strip():
+        raise ValueError("Input text has no valid word tokens.")
+
+    binary_bow = classifier_name == "binary_naive_bayes"
+    X_train, X_single, _ = extract_features(
+        train_texts=train_texts,
+        test_texts=[cleaned_text],
+        feature_set=feature_set,
+        binary_bow=binary_bow,
+        max_features=max_features,
+    )
+
+    model = train_classifier(
+        classifier_name=classifier_name,
+        X_train=X_train,
+        y_train=y_train,
+        seed=seed,
+    )
+
+    y_pred = predict(classifier_name, model, X_single)
+    pred_idx = int(y_pred[0])
+    if pred_idx < 0 or pred_idx >= len(label_names):
+        raise ValueError("Predicted label index is out of range.")
+
+    confidence = None
+    if hasattr(model, "predict_proba"):
+        probs = model.predict_proba(X_single)
+        if probs.shape[0] > 0:
+            confidence = float(np.max(probs[0]))
+
+    return {
+        "input_text": text,
+        "clean_text": cleaned_text,
+        "predicted_label": label_names[pred_idx],
+        "predicted_index": pred_idx,
+        "confidence": confidence,
+        "classifier": classifier_name,
+        "feature_set": feature_set,
+    }
+
+
 def build_task3_artifacts(
     input_path: str | None = None,
     dataset: str = "twitter_samples",

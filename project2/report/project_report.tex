@@ -41,6 +41,16 @@
 This report documents Project 2 results for Task 1, Task 2, Task 3, Task 4, and the Extra Task (UI). Tasks 1, 2, and 4 use the shared poetry dataset (\texttt{846} rows, \texttt{9} authors), while Task 3 uses the labeled NLTK \texttt{twitter\_samples} sentiment dataset (\texttt{10,000} tweets). We implemented reproducible pipelines for unsmoothed n-gram modelling, smoothing-method comparison, sentiment classification with multiple algorithms and feature sets, and sentence boundary detection with logistic regression (L1/L2 regularization). The report summarizes methodology, exact metrics, statistical testing, and implementation artifacts.
 \end{abstract}
 
+\section{Team Member Contributions}
+
+Work distribution in this project was task-based:
+\begin{itemize}
+    \item \textbf{Fatulla Bashirov}: implemented and analyzed \textbf{Task 1} (unsmoothed n-gram models and perplexity) and \textbf{Task 2} (smoothing method comparison and ranking).
+    \item \textbf{Kamal Aghazada}: implemented and analyzed \textbf{Task 3} (sentiment classification with Naive Bayes, Binary Naive Bayes, Logistic Regression, and significance testing) and \textbf{Task 4} (sentence boundary detection with L1/L2 logistic regression).
+\end{itemize}
+
+Both team members reviewed final outputs, validated generated artifacts, and collaborated on report integration and UI delivery.
+
 \section{Introduction and Dataset}
 
 Project 2 uses \texttt{project2/poems\_translated.parquet}, containing the columns \texttt{author}, \texttt{title}, \texttt{url}, \texttt{text}, and \texttt{modern\_text}. All main experiments in this report are based on \texttt{modern\_text}, with deterministic random seed \texttt{42}.
@@ -51,7 +61,7 @@ The implemented deliverables are:
     \item Task 2: Laplace, Interpolation, Backoff, and Kneser-Ney smoothing comparison.
     \item Task 3: Sentiment classification using Naive Bayes, Binary Naive Bayes, and Logistic Regression with Bag-of-Words and sentiment-lexicon features.
     \item Task 4: Dot-level sentence boundary detection with logistic regression (L1 vs L2).
-    \item Extra Task: Streamlit interfaces for interactive analysis.
+    \item Extra Task: FastAPI web interface for interactive analysis and inference.
 \end{itemize}
 
 \section{Task 1: Unsmoothed N-gram Models and Perplexity}
@@ -323,43 +333,28 @@ Top absolute coefficients show stable cues across both penalties:
 
 This indicates that punctuation context and immediate local token structure are the strongest predictors for dot-boundary decisions.
 
-\section{Extra Task: Streamlit UI Deliverables}
+\section{Extra Task: FastAPI UI Deliverables}
 
-Interactive UIs were implemented for all practical pipelines:
+A unified FastAPI interface was implemented in \texttt{fastapi\_ui/} with a single-page HTML/CSS/JS frontend and API endpoints for all tasks.
+
+Main UI/backend files:
 \begin{itemize}
-    \item \texttt{project2/task1/task1\_streamlit.py}
-    \item \texttt{project2/task2/task2\_streamlit.py}
-    \item \texttt{project2/task3/task3\_streamlit.py}
-    \item \texttt{project2/task4/task4\_streamlit.py}
+    \item \texttt{fastapi\_ui/main.py}
+    \item \texttt{fastapi\_ui/templates/index.html}
+    \item \texttt{fastapi\_ui/static/app.js}
+    \item \texttt{fastapi\_ui/static/styles.css}
 \end{itemize}
 
-The UIs provide:
+The UI provides:
 \begin{itemize}
+    \item left-side task navigation and per-task Input/Output/Implementation panels,
     \item dataset/split parameter controls,
     \item metric dashboards and comparison tables,
-    \item custom text probing for language model behavior,
+    \item custom text inference (next-word prediction for Tasks 1--2, sentiment prediction for Task 3, sentence detection for Task 4),
     \item confusion matrices and significance tables for classification tasks.
 \end{itemize}
 
-\section{Task 5: Report Deliverable}
-
-This document is the Task 5 report output for Project 2, written in the same structure and style used in Project 1, with the same author list and reproducible references to generated artifacts:
-\begin{itemize}
-    \item \texttt{project2/task1/results/task1\_metrics.json}
-    \item \texttt{project2/task2/results/task2\_metrics.json}
-    \item \texttt{project2/task3/results/task3\_metrics.json}
-    \item \texttt{project2/task4/results/task4\_metrics.json}
-\end{itemize}
-
-\section{Team Member Contributions}
-
-Work distribution in this project was task-based:
-\begin{itemize}
-    \item \textbf{Fatulla Bashirov}: implemented and analyzed \textbf{Task 1} (unsmoothed n-gram models and perplexity) and \textbf{Task 2} (smoothing method comparison and ranking).
-    \item \textbf{Kamal Aghazada}: implemented and analyzed \textbf{Task 3} (sentiment classification with Naive Bayes, Binary Naive Bayes, Logistic Regression, and significance testing) and \textbf{Task 4} (sentence boundary detection with L1/L2 logistic regression).
-\end{itemize}
-
-Both team members reviewed final outputs, validated generated artifacts, and collaborated on report integration and UI delivery.
+To improve responsiveness for heavy tasks, the FastAPI app includes in-memory and persistent disk caching (\texttt{fastapi\_ui/.model\_cache}) and a warmup endpoint (\texttt{/api/warmup}) to prebuild Task 2--4 artifacts.
 
 \section{Discussion and Conclusion}
 
@@ -369,7 +364,7 @@ The Project 2 results show a consistent pattern:
     \item Smoothing is essential. Interpolation gives the best trigram test perplexity, while Kneser-Ney is strongest for bigram and average rules.
     \item For sentiment classification on \texttt{twitter\_samples}, Logistic Regression with BoW+Lexicon gives the best overall macro F1, while top Naive Bayes variants remain competitive in paired significance tests.
     \item Dot-level sentence boundary detection works well with carefully designed local features; L2 regularization significantly outperforms L1 on test data in this setup.
-    \item The Streamlit interfaces make each task reproducible and easier to inspect qualitatively.
+    \item The FastAPI interface makes each task reproducible, interactive, and easier to inspect qualitatively.
 \end{enumerate}
 
 Future improvements should include stronger handling of class imbalance in Task 4 and richer domain-specific lexical resources for language modelling and downstream punctuation decisions.

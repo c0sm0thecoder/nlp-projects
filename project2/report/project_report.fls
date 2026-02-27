@@ -3,7 +3,7 @@ INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT project_report.tex
+INPUT /home/kamal/NLP/nlp-projects/project2/report/project_report.tex
 OUTPUT project_report.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -175,11 +175,12 @@ INPUT /usr/share/texmf/tex/latex/lm/t1lmtt.fd
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt9.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmr12.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmbx12.tfm
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmr.fd
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmr.fd
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmr.fd
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ts1-lmr10.tfm
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmbx10.tfm
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmbx12.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/rm-lmr10.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/rm-lmr7.tfm
@@ -190,7 +191,6 @@ INPUT /usr/share/texmf/fonts/tfm/public/lm/lmmi5.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/lmsy10.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/lmsy7.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/lmsy5.tfm
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc
 INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc
