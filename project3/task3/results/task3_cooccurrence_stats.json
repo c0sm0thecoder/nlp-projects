@@ -1,0 +1,7 @@
+{
+  "vocab_size": 6575,
+  "tokens_after_min_count": 154027,
+  "directed_nonzero_pairs": 876452,
+  "total_pair_events": 1508590,
+  "total_weighted_count": 692829.9690850675
+}

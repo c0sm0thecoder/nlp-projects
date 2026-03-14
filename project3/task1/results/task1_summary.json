@@ -1,0 +1,64 @@
+{
+  "documents": 1058,
+  "authors": 10,
+  "total_tokens": 209091,
+  "unique_tokens": 44113,
+  "average_document_length": 197.628544,
+  "median_document_length": 100,
+  "min_document_length": 0,
+  "max_document_length": 6182,
+  "rare_words_freq_eq_1": 26289,
+  "frequent_words_freq_ge_10": 3218,
+  "top_terms": [
+    {
+      "token": "bir",
+      "term_frequency": 3506,
+      "document_frequency": 706
+    },
+    {
+      "token": "ki",
+      "term_frequency": 2931,
+      "document_frequency": 643
+    },
+    {
+      "token": "bu",
+      "term_frequency": 2709,
+      "document_frequency": 673
+    },
+    {
+      "token": "nə",
+      "term_frequency": 1666,
+      "document_frequency": 463
+    },
+    {
+      "token": "aşıq",
+      "term_frequency": 1349,
+      "document_frequency": 52
+    },
+    {
+      "token": "ey",
+      "term_frequency": 1269,
+      "document_frequency": 497
+    },
+    {
+      "token": "hər",
+      "term_frequency": 1225,
+      "document_frequency": 462
+    },
+    {
+      "token": "ilə",
+      "term_frequency": 1222,
+      "document_frequency": 452
+    },
+    {
+      "token": "kim",
+      "term_frequency": 1173,
+      "document_frequency": 498
+    },
+    {
+      "token": "mən",
+      "term_frequency": 1059,
+      "document_frequency": 370
+    }
+  ]
+}
