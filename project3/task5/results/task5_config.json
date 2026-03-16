@@ -1,0 +1,43 @@
+{
+  "input": "poems_cleaned.parquet",
+  "text_col": "text",
+  "label_col": "author",
+  "min_docs_per_class": 5,
+  "test_size": 0.2,
+  "seed": 42,
+  "epochs": 10,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "hidden_dim": 128,
+  "max_vectorizer_features": 3000,
+  "train_docs": 844,
+  "test_docs": 211,
+  "num_classes": 9,
+  "class_names": [
+    "Aşıq Ələsgər",
+    "Molla Pənah Vaqif",
+    "Məhəmməd Füzuli",
+    "Qasım bəy Zakir",
+    "Seyid Əzim Şirvani",
+    "Xaqani Şirvani",
+    "Xurşidbanu Natəvan",
+    "İmadəddin Nəsimi",
+    "Şah İsmayıl Xətai"
+  ],
+  "features": [
+    "count",
+    "tfidf",
+    "pmi",
+    "word2vec",
+    "glove"
+  ],
+  "models": [
+    "rnn",
+    "birnn",
+    "lstm"
+  ],
+  "task2_embeddings": "task2/results/task2_skipgram_embeddings.npy",
+  "task2_vocab": "task2/results/task2_vocab.csv",
+  "task3_embeddings": "task3/results/task3_glove_embeddings.npy",
+  "task3_vocab": "task3/results/task3_vocab.csv"
+}
