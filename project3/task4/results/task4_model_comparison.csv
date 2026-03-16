@@ -1,0 +1,4 @@
+model,embedding_dim,epochs,vocab_size,neighbor_rows,equation_rows,objective,final_loss,rows_seen
+skipgram,100,8,6575,100,25,negative_sampling,1.576595898082322,993290
+cbow,100,8,6575,100,25,negative_sampling,1.3231168308435957,102497
+glove,100,25,6575,100,25,global_cooccurrence,0.0133507483918615,876452

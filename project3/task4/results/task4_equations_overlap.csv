@@ -1,0 +1,11 @@
+word2vec_model,query_word,top_k,glove_equation_results,word2vec_equation_results,overlap_count,jaccard_similarity,overlap_words
+skipgram,aşıq,5,5,5,0,0.0,
+skipgram,can,5,5,5,0,0.0,
+skipgram,dil,5,5,5,0,0.0,
+skipgram,gözəl,5,5,5,0,0.0,
+skipgram,yar,5,5,5,0,0.0,
+cbow,aşıq,5,5,5,0,0.0,
+cbow,can,5,5,5,0,0.0,
+cbow,dil,5,5,5,1,0.1111111111111111,əşk
+cbow,gözəl,5,5,5,0,0.0,
+cbow,yar,5,5,5,0,0.0,

@@ -1,0 +1,9 @@
+{
+  "task2_results_dir": "task2/results",
+  "task3_results_dir": "task3/results",
+  "neighbor_top_k": 10,
+  "equation_top_k": 5,
+  "query_word_count": 10,
+  "task2_vocab_size": 6575,
+  "task3_vocab_size": 6575
+}

@@ -1,0 +1,21 @@
+word2vec_model,query_word,top_k,glove_neighbors,word2vec_neighbors,overlap_count,jaccard_similarity,overlap_words
+skipgram,aşıq,10,10,10,3,0.17647058823529413,ələsgər; ələsgərin; ələsgərə
+skipgram,can,10,10,10,0,0.0,
+skipgram,dil,10,10,10,0,0.0,
+skipgram,dərd,10,10,10,1,0.05263157894736842,dərdi
+skipgram,göz,10,10,10,1,0.05263157894736842,yaşı
+skipgram,gözəl,10,10,10,0,0.0,
+skipgram,gül,10,10,10,0,0.0,
+skipgram,könül,10,10,10,0,0.0,
+skipgram,sultan,10,10,10,1,0.05263157894736842,geysin
+skipgram,yar,10,10,10,0,0.0,
+cbow,aşıq,10,10,10,2,0.1111111111111111,ələsgər; ələsgərə
+cbow,can,10,10,10,0,0.0,
+cbow,dil,10,10,10,0,0.0,
+cbow,dərd,10,10,10,1,0.05263157894736842,dərdi
+cbow,göz,10,10,10,1,0.05263157894736842,yaşı
+cbow,gözəl,10,10,10,0,0.0,
+cbow,gül,10,10,10,0,0.0,
+cbow,könül,10,10,10,0,0.0,
+cbow,sultan,10,10,10,1,0.05263157894736842,geysin
+cbow,yar,10,10,10,0,0.0,
