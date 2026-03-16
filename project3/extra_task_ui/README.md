@@ -1,19 +1,49 @@
 # Extra Task UI (FastAPI)
 
-Modern colorful dashboard for Tasks 1–5 results with animated glassmorphism cards and bubble-style visualization.
+Modern colorful dashboard for Tasks 1-5 results with animated glassmorphism cards and bubble-style visualization.
 
 ## Run
 
-From project root:
+From `project3/`:
 
 ```bash
-/home/kamal/NLP/nlp-projects/project3/.venv/bin/uvicorn extra_task_ui.app:app --reload
+.venv/bin/uvicorn extra_task_ui.app:app --reload
 ```
 
 Open:
 
 - http://127.0.0.1:8000
 - JSON API: http://127.0.0.1:8000/api/dashboard
+
+## Docker
+
+From `project3/`:
+
+```bash
+docker build -f extra_task_ui/Dockerfile -t project3-extra-task-ui .
+docker run --rm -p 8000:8000 project3-extra-task-ui
+```
+
+Open:
+
+- http://127.0.0.1:8000
+- JSON API: http://127.0.0.1:8000/api/dashboard
+
+The image bakes in the current `task*/results` artifacts at build time. Rebuild the image after regenerating results.
+
+## Docker Compose
+
+From `project3/`:
+
+```bash
+docker compose up --build
+```
+
+To stop it:
+
+```bash
+docker compose down
+```
 
 ## Data sources
 
