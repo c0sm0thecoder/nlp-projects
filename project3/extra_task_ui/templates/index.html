@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NLP Project Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <div class="bg-orb orb-c"></div>
+
+    <main class="container">
+      <header class="hero glass">
+        <div class="hero-copy">
+          <p class="eyebrow">Extra Task · UI Showcase</p>
+          <h1>Modern NLP Dashboard</h1>
+          <p>
+            Unified view of Task 1–5 artifacts with vivid color system, smooth glass cards,
+            and realistic floating bubbles.
+          </p>
+        </div>
+        <div class="hero-badges">
+          <div class="badge">
+            <span>Best Task 5 Setup</span>
+            <strong id="bestSetup">Loading...</strong>
+          </div>
+          <div class="badge">
+            <span>Task 4 Avg Neighbor Jaccard</span>
+            <strong id="avgNeighborJaccard">0.0000</strong>
+          </div>
+          <div class="badge">
+            <span>Task 4 Avg Equation Jaccard</span>
+            <strong id="avgEquationJaccard">0.0000</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="cards" id="taskCards"></section>
+
+      <section class="grid-two">
+        <article class="panel glass">
+          <div class="panel-head">
+            <h2>Task 5 Bubble View</h2>
+            <p>Bubble size follows geometric mean of Accuracy and Macro-F1.</p>
+          </div>
+          <div class="controls-row">
+            <label>
+              Feature
+              <select id="featureFilter"></select>
+            </label>
+            <label>
+              Model
+              <select id="modelFilter"></select>
+            </label>
+          </div>
+          <canvas id="bubbleCanvas" width="900" height="460"></canvas>
+          <div id="bubbleTooltip" class="bubble-tooltip"></div>
+        </article>
+
+        <article class="panel glass">
+          <div class="panel-head">
+            <h2>Best Model by Feature</h2>
+            <p>Fast highlight for presentation and discussion.</p>
+          </div>
+          <div id="bestByFeature" class="best-list"></div>
+        </article>
+      </section>
+
+      <section class="panel glass">
+        <div class="panel-head split-head">
+          <div>
+            <h2>Training Race View</h2>
+            <p>Animated progression of average loss across epochs.</p>
+          </div>
+          <button id="playRace" class="action-btn" type="button">Play Race</button>
+        </div>
+        <canvas id="raceCanvas" width="1100" height="320"></canvas>
+      </section>
+
+      <section class="panel glass">
+        <div class="panel-head split-head">
+          <div>
+            <h2>Task 4 Comparison Tabs</h2>
+            <p>Switch between neighbor and equation overlaps.</p>
+          </div>
+          <div class="tabs">
+            <button id="tabNeighbors" class="tab-btn active" type="button">Neighbors</button>
+            <button id="tabEquations" class="tab-btn" type="button">Equations</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Word2Vec Model</th>
+                <th>Query</th>
+                <th>Jaccard</th>
+                <th>Overlap Count</th>
+                <th>Overlap Words</th>
+              </tr>
+            </thead>
+            <tbody id="task4TabBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel glass">
+        <div class="panel-head">
+          <h2>Task 5 Performance Table</h2>
+          <p>Click Accuracy or Macro-F1 to sort.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Model</th>
+                <th id="sortAcc" class="sortable">Accuracy</th>
+                <th id="sortF1" class="sortable">Macro-F1</th>
+              </tr>
+            </thead>
+            <tbody id="perfBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script id="initialData" type="application/json">{{ data | tojson }}</script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
