@@ -23,6 +23,8 @@ const appState = {
   sortBy: "feature",
   sortDir: "asc",
   activeTask4Tab: "neighbors",
+  task4QueryFilter: "",
+  task4ModelFilter: "all",
   bubblePoints: [],
   raceAnimationId: null,
   seriesColorMap: {},
@@ -219,15 +221,29 @@ function renderTask4Tab() {
   const tabNeighbors = document.getElementById("tabNeighbors");
   const tabEquations = document.getElementById("tabEquations");
   const body = document.getElementById("task4TabBody");
+  const meta = document.getElementById("task4Meta");
 
   tabNeighbors.classList.toggle("active", appState.activeTask4Tab === "neighbors");
   tabEquations.classList.toggle("active", appState.activeTask4Tab === "equations");
 
-  const rows = appState.activeTask4Tab === "neighbors"
+  const allRows = appState.activeTask4Tab === "neighbors"
     ? (initialData?.task4_detail?.neighbors || [])
     : (initialData?.task4_detail?.equations || []);
 
+  const query = appState.task4QueryFilter.trim().toLowerCase();
+  const rows = allRows.filter((row) => {
+    const queryMatch = !query || String(row.query_word || "").toLowerCase().includes(query);
+    const modelMatch = appState.task4ModelFilter === "all" || row.word2vec_model === appState.task4ModelFilter;
+    return queryMatch && modelMatch;
+  });
+
   body.innerHTML = "";
+  if (rows.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td colspan='5'>No matches for current Task 4 filters.</td>";
+    body.appendChild(tr);
+  }
+
   rows.forEach((row) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -238,6 +254,37 @@ function renderTask4Tab() {
       <td>${row.overlap_words || "-"}</td>
     `;
     body.appendChild(tr);
+  });
+
+  const queryHint = query ? `query contains "${appState.task4QueryFilter.trim()}"` : "all queries";
+  const modelHint = appState.task4ModelFilter === "all"
+    ? "all models"
+    : appState.task4ModelFilter.toUpperCase();
+  meta.textContent = `Showing ${rows.length}/${allRows.length} rows (${queryHint}, ${modelHint})`;
+}
+
+function initTask4Filters() {
+  const queryInput = document.getElementById("task4QueryInput");
+  const modelFilter = document.getElementById("task4ModelFilter");
+
+  const neighborRows = initialData?.task4_detail?.neighbors || [];
+  const equationRows = initialData?.task4_detail?.equations || [];
+  const models = Array.from(
+    new Set(neighborRows.concat(equationRows).map((row) => row.word2vec_model).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b));
+
+  modelFilter.innerHTML = ["<option value='all'>All models</option>"]
+    .concat(models.map((model) => `<option value='${model}'>${model.toUpperCase()}</option>`))
+    .join("");
+
+  queryInput.addEventListener("input", (event) => {
+    appState.task4QueryFilter = event.target.value;
+    renderTask4Tab();
+  });
+
+  modelFilter.addEventListener("change", (event) => {
+    appState.task4ModelFilter = event.target.value;
+    renderTask4Tab();
   });
 }
 
@@ -354,7 +401,7 @@ function renderRaceFrame(epochProgress) {
   const legendRowHeight = 16;
   const legendHeight = 16 + legendRows * legendRowHeight;
 
-  const padL = 68;
+  const padL = 86;
   const padR = 24;
   const padT = 20;
   const padB = 56 + legendHeight;
@@ -377,6 +424,26 @@ function renderRaceFrame(epochProgress) {
     });
   });
 
+  const mapLossToY = (loss) => padT + (1 - (Number(loss) / maxLoss)) * plotH;
+
+  const yTicks = 4;
+  for (let i = 0; i <= yTicks; i += 1) {
+    const ratio = i / yTicks;
+    const tickLoss = maxLoss * ratio;
+    const y = mapLossToY(tickLoss);
+
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(padL + plotW, y);
+    ctx.stroke();
+
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "500 10px Inter";
+    ctx.fillText(tickLoss.toFixed(2), padL - 42, y + 3);
+  }
+
   const maxEpoch = Math.max(1, ...filteredTraining.map((item) => Number(item.epoch) || 1));
 
   const legendItems = [];
@@ -398,7 +465,7 @@ function renderRaceFrame(epochProgress) {
 
     visibleSeries.forEach((point, index) => {
       const x = padL + (Number(point.epoch) / maxEpoch) * plotW;
-      const y = padT + (Number(point.avg_loss) / maxLoss) * plotH;
+      const y = mapLossToY(point.avg_loss);
       if (index === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
@@ -416,9 +483,9 @@ function renderRaceFrame(epochProgress) {
       markerLoss = Number(previousPoint.avg_loss) + (Number(nextPoint.avg_loss) - Number(previousPoint.avg_loss)) * t;
 
       const nextX = padL + (markerEpoch / maxEpoch) * plotW;
-      const nextY = padT + (markerLoss / maxLoss) * plotH;
+      const nextY = mapLossToY(markerLoss);
       const prevX = padL + (previousEpoch / maxEpoch) * plotW;
-      const prevY = padT + (Number(previousPoint.avg_loss) / maxLoss) * plotH;
+      const prevY = mapLossToY(previousPoint.avg_loss);
       if (Math.abs(nextX - prevX) > 0.001 || Math.abs(nextY - prevY) > 0.001) {
         ctx.lineTo(nextX, nextY);
       }
@@ -426,7 +493,7 @@ function renderRaceFrame(epochProgress) {
     ctx.stroke();
 
     const lx = padL + (markerEpoch / maxEpoch) * plotW;
-    const ly = padT + (markerLoss / maxLoss) * plotH;
+    const ly = mapLossToY(markerLoss);
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
@@ -440,7 +507,7 @@ function renderRaceFrame(epochProgress) {
   ctx.fillStyle = "#dbeafe";
   ctx.font = "600 12px Inter";
   ctx.fillText(`Epoch ${epochLabel}`, width - 95, 18);
-  ctx.fillText("Avg Loss", 14, 24 + plotH / 2);
+  ctx.fillText("Avg Loss", padL - 74, padT - 6);
   ctx.fillText("Epoch", padL + plotW / 2 - 18, padT + plotH + 24);
 
   const uniqueLegend = [];
@@ -532,6 +599,7 @@ function boot(data) {
   renderHighlights(data);
   renderBestByFeature(data?.task5?.by_feature || []);
   initFilters(appState.allRows);
+  initTask4Filters();
   initInteractions();
   renderTask4Tab();
   rerenderInteractive();

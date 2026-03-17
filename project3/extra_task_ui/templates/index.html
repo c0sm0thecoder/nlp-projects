@@ -89,12 +89,23 @@
         <div class="panel-head split-head">
           <div>
             <h2>Task 4 Comparison Tabs</h2>
-            <p>Switch between neighbor and equation overlaps.</p>
+            <p>Switch between neighbor and equation overlaps, then search by query word.</p>
           </div>
           <div class="tabs">
             <button id="tabNeighbors" class="tab-btn active" type="button">Neighbors</button>
             <button id="tabEquations" class="tab-btn" type="button">Equations</button>
           </div>
+        </div>
+        <div class="controls-row task4-controls">
+          <label>
+            Query Word
+            <input id="task4QueryInput" type="text" placeholder="Type a word, e.g. king" />
+          </label>
+          <label>
+            Word2Vec Model
+            <select id="task4ModelFilter"></select>
+          </label>
+          <div class="task4-meta" id="task4Meta">Showing all rows</div>
         </div>
         <div class="table-wrap">
           <table>
