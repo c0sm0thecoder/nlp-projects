@@ -1,5 +1,17 @@
 const initialDataNode = document.getElementById("initialData");
-const initialData = initialDataNode ? JSON.parse(initialDataNode.textContent || "{}") : {};
+let initialData = {};
+if (initialDataNode) {
+  const rawText = initialDataNode.textContent || "{}";
+  const sanitizedText = rawText
+    .replace(/\bNaN\b/g, "null")
+    .replace(/\bInfinity\b/g, "null")
+    .replace(/\b-Infinity\b/g, "null");
+  try {
+    initialData = JSON.parse(sanitizedText);
+  } catch {
+    initialData = {};
+  }
+}
 
 const featurePalette = {
   count: "#60a5fa",
@@ -18,13 +30,17 @@ const modelPalette = {
 const appState = {
   allRows: initialData?.task5?.rows || [],
   trainingRows: initialData?.task5_training?.rows || [],
+  synonymRows: initialData?.synonyms?.rows || [],
   featureFilter: "all",
   modelFilter: "all",
   sortBy: "feature",
   sortDir: "asc",
+  activeView: "overview",
   activeTask4Tab: "neighbors",
   task4QueryFilter: "",
   task4ModelFilter: "all",
+  synonymModelFilter: "all",
+  synonymTopK: 5,
   bubblePoints: [],
   raceAnimationId: null,
   seriesColorMap: {},
@@ -36,6 +52,12 @@ function prettyPercent(value) {
 
 function toFixed(value, digits = 4) {
   return Number(value || 0).toFixed(digits);
+}
+
+function isMissingValue(value) {
+  if (value === null || value === undefined) return true;
+  const text = String(value).trim().toLowerCase();
+  return text === "" || text === "nan" || text === "null" || text === "none";
 }
 
 function buildSeriesColorMap() {
@@ -116,17 +138,136 @@ function renderHighlights(data) {
 }
 
 function renderBestByFeature(rows) {
-  const host = document.getElementById("bestByFeature");
-  host.innerHTML = "";
+  const body = document.getElementById("bestByFeatureBody");
+  body.innerHTML = "";
   rows.forEach((row) => {
-    const div = document.createElement("div");
-    div.className = "best-item";
-    div.innerHTML = `
-      <div><strong>${row.feature.toUpperCase()}</strong> → ${row.best_model.toUpperCase()}</div>
-      <div>Accuracy: ${prettyPercent(row.accuracy)} · Macro-F1: ${prettyPercent(row.macro_f1)}</div>
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.feature}</td>
+      <td>${row.best_model.toUpperCase()}</td>
+      <td>${prettyPercent(row.accuracy)}</td>
+      <td>${prettyPercent(row.macro_f1)}</td>
     `;
-    host.appendChild(div);
+    body.appendChild(tr);
   });
+}
+
+function setActiveView(viewName) {
+  appState.activeView = viewName;
+
+  document.querySelectorAll(".dashboard-view").forEach((node) => {
+    const isMatch = node.dataset.view === viewName;
+    node.classList.toggle("is-hidden", !isMatch);
+  });
+
+  document.querySelectorAll(".nav-btn").forEach((button) => {
+    button.classList.toggle("active", button.dataset.viewTarget === viewName);
+  });
+}
+
+function initViewNavigation() {
+  document.querySelectorAll(".nav-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.dataset.viewTarget || "overview";
+      setActiveView(target);
+    });
+  });
+
+  setActiveView(appState.activeView);
+}
+
+function renderSynonymTable() {
+  const queryInput = document.getElementById("synonymQueryInput");
+  const meta = document.getElementById("synonymMeta");
+  const body = document.getElementById("synonymBody");
+  const rawQuery = String(queryInput.value || "").trim();
+  const query = rawQuery.toLowerCase();
+
+  let rows = appState.synonymRows.filter((row) => (
+    !isMissingValue(row.model)
+    && !isMissingValue(row.query_word)
+    && !isMissingValue(row.similar_word)
+    && Number(row.rank) > 0
+  ));
+  if (appState.synonymModelFilter !== "all") {
+    rows = rows.filter((row) => row.model === appState.synonymModelFilter);
+  }
+  if (query) {
+    rows = rows.filter((row) => String(row.query_word || "").toLowerCase().includes(query));
+  }
+
+  rows = [...rows]
+    .sort((a, b) => {
+      const aQ = String(a.query_word || "");
+      const bQ = String(b.query_word || "");
+      if (aQ !== bQ) return aQ.localeCompare(bQ);
+      return Number(a.rank) - Number(b.rank);
+    });
+
+  if (query) {
+    rows = rows.filter((row) => Number(row.rank) <= appState.synonymTopK);
+  } else {
+    rows = rows.filter((row) => Number(row.rank) <= 3).slice(0, 45);
+  }
+
+  body.innerHTML = "";
+  if (rows.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td colspan='5'>No synonyms found. Try a listed query word such as can, dil, or yar.</td>";
+    body.appendChild(tr);
+  } else {
+    rows.forEach((row) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.model.toUpperCase()}</td>
+        <td>${row.query_word}</td>
+        <td>${row.rank}</td>
+        <td>${row.similar_word}</td>
+        <td>${toFixed(row.cosine_similarity, 4)}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  const modelHint = appState.synonymModelFilter === "all"
+    ? "all models"
+    : appState.synonymModelFilter.toUpperCase();
+  const queryHint = query
+    ? `query contains ${rawQuery}, top-${appState.synonymTopK}`
+    : "preview mode: top-3 per query (valid rows only)";
+  meta.textContent = `Showing ${rows.length} rows (${modelHint}; ${queryHint})`;
+}
+
+function initSynonymFinder() {
+  const modelFilter = document.getElementById("synonymModelFilter");
+  const queryInput = document.getElementById("synonymQueryInput");
+  const topK = document.getElementById("synonymTopK");
+  const queryList = document.getElementById("synonymWordOptions");
+
+  const models = initialData?.synonyms?.models || [];
+  const queryWords = initialData?.synonyms?.query_words || [];
+
+  modelFilter.innerHTML = ["<option value='all'>All models</option>"]
+    .concat(models.map((model) => `<option value='${model}'>${model.toUpperCase()}</option>`))
+    .join("");
+
+  queryList.innerHTML = queryWords.map((word) => `<option value='${word}'></option>`).join("");
+
+  modelFilter.addEventListener("change", (event) => {
+    appState.synonymModelFilter = event.target.value;
+    renderSynonymTable();
+  });
+
+  queryInput.addEventListener("input", () => {
+    renderSynonymTable();
+  });
+
+  topK.addEventListener("change", (event) => {
+    appState.synonymTopK = Number(event.target.value) || 5;
+    renderSynonymTable();
+  });
+
+  renderSynonymTable();
 }
 
 function initFilters(rows) {
@@ -232,6 +373,7 @@ function renderTask4Tab() {
 
   const query = appState.task4QueryFilter.trim().toLowerCase();
   const rows = allRows.filter((row) => {
+    if (isMissingValue(row.word2vec_model) || isMissingValue(row.query_word)) return false;
     const queryMatch = !query || String(row.query_word || "").toLowerCase().includes(query);
     const modelMatch = appState.task4ModelFilter === "all" || row.word2vec_model === appState.task4ModelFilter;
     return queryMatch && modelMatch;
@@ -251,7 +393,7 @@ function renderTask4Tab() {
       <td>${row.query_word}</td>
       <td>${toFixed(row.jaccard_similarity, 4)}</td>
       <td>${row.overlap_count}</td>
-      <td>${row.overlap_words || "-"}</td>
+      <td>${isMissingValue(row.overlap_words) ? "-" : row.overlap_words}</td>
     `;
     body.appendChild(tr);
   });
@@ -595,11 +737,13 @@ function initInteractions() {
 
 function boot(data) {
   buildSeriesColorMap();
+  initViewNavigation();
   renderTaskCards(data?.task_cards || []);
   renderHighlights(data);
   renderBestByFeature(data?.task5?.by_feature || []);
   initFilters(appState.allRows);
   initTask4Filters();
+  initSynonymFinder();
   initInteractions();
   renderTask4Tab();
   rerenderInteractive();

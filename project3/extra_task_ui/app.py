@@ -54,6 +54,14 @@ def _to_int(value: Any, default: int = 0) -> int:
         return default
 
 
+def _is_missing(value: Any) -> bool:
+    if pd.isna(value):
+        return True
+    if isinstance(value, str) and value.strip().lower() in {"", "nan", "none", "null"}:
+        return True
+    return False
+
+
 def _build_task_cards() -> list[dict[str, Any]]:
     task1_summary = _safe_read_json(TASK1_RESULTS / "task1_summary.json")
     task2_config = _safe_read_json(TASK2_RESULTS / "task2_config.json")
@@ -236,13 +244,15 @@ def _build_task4_payload() -> dict[str, Any]:
             return []
         out: list[dict[str, Any]] = []
         for _, row in df.iterrows():
+            if _is_missing(row.get("word2vec_model")) or _is_missing(row.get("query_word")):
+                continue
             out.append(
                 {
                     "word2vec_model": str(row.get("word2vec_model", "")),
                     "query_word": str(row.get("query_word", "")),
                     "jaccard_similarity": round(_to_float(row.get("jaccard_similarity", 0.0)), 4),
                     "overlap_count": _to_int(row.get("overlap_count", 0)),
-                    "overlap_words": str(row.get("overlap_words", "")),
+                    "overlap_words": "" if _is_missing(row.get("overlap_words")) else str(row.get("overlap_words", "")),
                 }
             )
         return out
@@ -253,11 +263,54 @@ def _build_task4_payload() -> dict[str, Any]:
     }
 
 
+def _build_synonyms_payload() -> dict[str, Any]:
+    task2_neighbors = _safe_read_csv(
+        TASK2_RESULTS / "task2_neighbors.csv",
+        default_columns=["model", "query_word", "rank", "similar_word", "cosine_similarity"],
+    )
+    task3_neighbors = _safe_read_csv(
+        TASK3_RESULTS / "task3_neighbors.csv",
+        default_columns=["model", "query_word", "rank", "similar_word", "cosine_similarity"],
+    )
+
+    merged = pd.concat([task2_neighbors, task3_neighbors], ignore_index=True)
+    if merged.empty:
+        return {"rows": [], "models": [], "query_words": []}
+
+    out_rows: list[dict[str, Any]] = []
+    for _, row in merged.iterrows():
+        if _is_missing(row.get("model")) or _is_missing(row.get("query_word")) or _is_missing(row.get("similar_word")):
+            continue
+        rank = _to_int(row.get("rank", 0))
+        cosine = _to_float(row.get("cosine_similarity", 0.0))
+        if rank <= 0:
+            continue
+        out_rows.append(
+            {
+                "model": str(row.get("model", "")),
+                "query_word": str(row.get("query_word", "")),
+                "rank": rank,
+                "similar_word": str(row.get("similar_word", "")),
+                "cosine_similarity": round(cosine, 4),
+            }
+        )
+
+    models = sorted({item["model"] for item in out_rows if item["model"]})
+    query_words = sorted({item["query_word"] for item in out_rows if item["query_word"]})
+
+    return {
+        "rows": out_rows,
+        "models": models,
+        "query_words": query_words,
+    }
+
+
 def load_dashboard_data() -> dict[str, Any]:
     task_cards = _build_task_cards()
     task5 = _build_task5_payload()
     task5_training = _build_task5_training_payload()
     task4_detail = _build_task4_payload()
+    synonyms = _build_synonyms_payload()
 
     task4_neighbors = _safe_read_csv(
         TASK4_RESULTS / "task4_neighbors_overlap.csv",
@@ -284,6 +337,7 @@ def load_dashboard_data() -> dict[str, Any]:
         "task5": task5,
         "task5_training": task5_training,
         "task4_detail": task4_detail,
+        "synonyms": synonyms,
         "task4_overlap": {
             "neighbor_avg_jaccard": round(neighbor_avg, 4),
             "equation_avg_jaccard": round(equation_avg, 4),

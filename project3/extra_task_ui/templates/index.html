@@ -43,9 +43,16 @@
         </div>
       </header>
 
-      <section class="cards" id="taskCards"></section>
+      <nav class="view-nav glass" aria-label="Dashboard sections">
+        <button id="navOverview" class="nav-btn active" type="button" data-view-target="overview">Overview</button>
+        <button id="navTask4" class="nav-btn" type="button" data-view-target="task4">Task 4</button>
+        <button id="navTask5" class="nav-btn" type="button" data-view-target="task5">Task 5</button>
+        <button id="navSynonyms" class="nav-btn" type="button" data-view-target="synonyms">Synonym Finder</button>
+      </nav>
 
-      <section class="grid-two">
+      <section class="cards dashboard-view" id="taskCards" data-view="overview"></section>
+
+      <section class="grid-two dashboard-view" data-view="overview">
         <article class="panel glass">
           <div class="panel-head">
             <h2>Task 5 Bubble View</h2>
@@ -68,13 +75,25 @@
         <article class="panel glass">
           <div class="panel-head">
             <h2>Best Model by Feature</h2>
-            <p>Fast highlight for presentation and discussion.</p>
+            <p>Table view for quick comparison across feature families.</p>
           </div>
-          <div id="bestByFeature" class="best-list"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Best Model</th>
+                  <th>Accuracy</th>
+                  <th>Macro-F1</th>
+                </tr>
+              </thead>
+              <tbody id="bestByFeatureBody"></tbody>
+            </table>
+          </div>
         </article>
       </section>
 
-      <section class="panel glass">
+      <section class="panel glass dashboard-view" data-view="overview">
         <div class="panel-head split-head">
           <div>
             <h2>Training Race View</h2>
@@ -85,7 +104,7 @@
         <canvas id="raceCanvas" width="1100" height="320"></canvas>
       </section>
 
-      <section class="panel glass">
+      <section class="panel glass dashboard-view" data-view="task4">
         <div class="panel-head split-head">
           <div>
             <h2>Task 4 Comparison Tabs</h2>
@@ -123,7 +142,7 @@
         </div>
       </section>
 
-      <section class="panel glass">
+      <section class="panel glass dashboard-view" data-view="task5">
         <div class="panel-head">
           <h2>Task 5 Performance Table</h2>
           <p>Click Accuracy or Macro-F1 to sort.</p>
@@ -139,6 +158,47 @@
               </tr>
             </thead>
             <tbody id="perfBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel glass dashboard-view" data-view="synonyms">
+        <div class="panel-head">
+          <h2>Synonym Finder (Task 2 + Task 3)</h2>
+          <p>Search precomputed nearest neighbors from Skip-gram, CBOW, and GloVe.</p>
+        </div>
+        <div class="controls-row synonym-controls">
+          <label>
+            Model
+            <select id="synonymModelFilter"></select>
+          </label>
+          <label>
+            Query Word
+            <input id="synonymQueryInput" type="text" list="synonymWordOptions" placeholder="Type a query word" />
+            <datalist id="synonymWordOptions"></datalist>
+          </label>
+          <label>
+            Top K
+            <select id="synonymTopK">
+              <option value="3">Top 3</option>
+              <option value="5" selected>Top 5</option>
+              <option value="10">Top 10</option>
+            </select>
+          </label>
+          <div class="task4-meta" id="synonymMeta">Type a query word to view synonyms</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Query</th>
+                <th>Rank</th>
+                <th>Similar Word</th>
+                <th>Cosine Similarity</th>
+              </tr>
+            </thead>
+            <tbody id="synonymBody"></tbody>
           </table>
         </div>
       </section>
