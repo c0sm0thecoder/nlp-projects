@@ -12,7 +12,7 @@ This report summarizes Project 3 deliverables for Task 1-Task 5 and the Extra Ta
 - Both members: code review, artifact validation, and final report preparation.
 
 ## 1. Introduction and Dataset
-The project uses cleaned poem data from [poems_cleaned.parquet](poems_cleaned.parquet). Core experiments operate on the text field and preserve deterministic settings (seed = 42 in training/config artifacts).
+The project uses cleaned poem data from [poems_cleaned.parquet](poems_cleaned.parquet). Compared to the previous project's dataset ([poems_translated.parquet](../project2/poems_translated.parquet)), which contained 846 poems from 9 authors, the current dataset has been expanded to 1058 poems from 10 authors by adding 211 poems by a new author, **Aşıq Ələsgər**. Core experiments operate on the text field and preserve deterministic settings (seed = 42 in training/config artifacts).
 
 High-level scope:
 - Task 1: corpus statistics + term-document and word-word matrices.
