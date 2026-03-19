@@ -12,6 +12,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from scipy.spatial.distance import cosine
 
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+except Exception:
+    TfidfVectorizer = None
+    LogisticRegression = None
+
 ROOT = Path(__file__).resolve().parents[1]
 TASK1_RESULTS = ROOT / "task1" / "results"
 TASK2_RESULTS = ROOT / "task2" / "results"
@@ -66,6 +73,7 @@ def _is_missing(value: Any) -> bool:
 
 # Load embeddings and vocabularies for analogy lab
 _EMBEDDINGS_CACHE: dict[str, dict[str, Any]] = {}
+_AUTHOR_CLS_CACHE: dict[str, Any] = {}
 
 
 def _load_embeddings() -> dict[str, dict[str, Any]]:
@@ -179,6 +187,112 @@ def _compute_analogy(model: str, word_a: str, word_b: str, word_c: str, top_k: i
 
     except Exception as e:
         return {"error": str(e)}
+
+
+def _load_author_dataset() -> tuple[pd.DataFrame, str, str]:
+    task5_config = _safe_read_json(TASK5_RESULTS / "task5_config.json")
+    configured_input = str(task5_config.get("input", "")).strip()
+    text_col = str(task5_config.get("text_col", "text")).strip() or "text"
+    label_col = str(task5_config.get("label_col", "author")).strip() or "author"
+
+    if configured_input:
+        parquet_path = (ROOT / configured_input).resolve()
+        if parquet_path.exists() and parquet_path.suffix.lower() == ".parquet":
+            try:
+                df = pd.read_parquet(parquet_path)
+                if text_col in df.columns and label_col in df.columns:
+                    subset = df[[text_col, label_col]].copy()
+                    subset[text_col] = subset[text_col].fillna("").astype(str)
+                    subset[label_col] = subset[label_col].fillna("unknown").astype(str)
+                    subset = subset[subset[text_col].str.strip() != ""].reset_index(drop=True)
+                    if not subset.empty:
+                        return subset, text_col, label_col
+            except Exception:
+                pass
+
+    fallback = _safe_read_csv(TASK1_RESULTS / "task1_documents.csv", default_columns=["author", "title"])
+    if fallback.empty or "author" not in fallback.columns or "title" not in fallback.columns:
+        return pd.DataFrame(columns=["title", "author"]), "title", "author"
+
+    subset = fallback[["title", "author"]].copy()
+    subset["title"] = subset["title"].fillna("").astype(str)
+    subset["author"] = subset["author"].fillna("unknown").astype(str)
+    subset = subset[subset["title"].str.strip() != ""].reset_index(drop=True)
+    return subset, "title", "author"
+
+
+def _load_author_classifier() -> dict[str, Any]:
+    if _AUTHOR_CLS_CACHE:
+        return _AUTHOR_CLS_CACHE
+
+    if TfidfVectorizer is None or LogisticRegression is None:
+        _AUTHOR_CLS_CACHE["error"] = "scikit-learn is not available in this environment"
+        return _AUTHOR_CLS_CACHE
+
+    df, text_col, label_col = _load_author_dataset()
+    if df.empty:
+        _AUTHOR_CLS_CACHE["error"] = "No author-labeled text data available for classification"
+        return _AUTHOR_CLS_CACHE
+
+    label_counts = df[label_col].value_counts()
+    valid_labels = label_counts[label_counts >= 2].index.tolist()
+    train_df = df[df[label_col].isin(valid_labels)].reset_index(drop=True)
+
+    if train_df[label_col].nunique() < 2:
+        _AUTHOR_CLS_CACHE["error"] = "Need at least two authors with at least two texts each"
+        return _AUTHOR_CLS_CACHE
+
+    vectorizer = TfidfVectorizer(max_features=3000, ngram_range=(1, 2), min_df=1)
+    x_train = vectorizer.fit_transform(train_df[text_col].tolist())
+
+    classifier = LogisticRegression(max_iter=1200, random_state=42)
+    classifier.fit(x_train, train_df[label_col].tolist())
+
+    _AUTHOR_CLS_CACHE.update(
+        {
+            "vectorizer": vectorizer,
+            "classifier": classifier,
+            "classes": [str(cls) for cls in classifier.classes_.tolist()],
+            "source": f"{text_col} -> {label_col}",
+            "size": int(len(train_df)),
+        }
+    )
+    return _AUTHOR_CLS_CACHE
+
+
+def _predict_author(text: str, *, top_k: int = 3) -> dict[str, Any]:
+    query = str(text or "").strip()
+    if not query:
+        return {"error": "Text is required"}
+
+    model_bundle = _load_author_classifier()
+    if "error" in model_bundle:
+        return {"error": str(model_bundle["error"])}
+
+    vectorizer = model_bundle["vectorizer"]
+    classifier = model_bundle["classifier"]
+    classes = model_bundle["classes"]
+
+    x_query = vectorizer.transform([query])
+    probabilities = classifier.predict_proba(x_query)[0]
+
+    k = max(1, min(_to_int(top_k, 3), len(classes)))
+    top_indices = np.argsort(probabilities)[::-1][:k]
+
+    ranked = [
+        {
+            "author": str(classes[idx]),
+            "probability": round(float(probabilities[idx]), 4),
+        }
+        for idx in top_indices
+    ]
+
+    return {
+        "predicted_author": ranked[0]["author"] if ranked else "",
+        "top_predictions": ranked,
+        "source": model_bundle.get("source", "unknown"),
+        "training_size": model_bundle.get("size", 0),
+    }
 
 
 def _build_task_cards() -> list[dict[str, Any]]:
@@ -453,6 +567,8 @@ def load_dashboard_data() -> dict[str, Any]:
 
     # Analogy lab available models
     analogy_models = list(_load_embeddings().keys())
+    task5_config = _safe_read_json(TASK5_RESULTS / "task5_config.json")
+    class_names = task5_config.get("class_names", [])
 
     return {
         "task_cards": task_cards,
@@ -466,6 +582,9 @@ def load_dashboard_data() -> dict[str, Any]:
         },
         "analogy_lab": {
             "models": analogy_models,
+        },
+        "author_lab": {
+            "class_names": [str(item) for item in class_names],
         },
     }
 
@@ -499,3 +618,21 @@ def analogy_api(model: str = "word2vec_skipgram", a: str = "", b: str = "", c: s
 
     result = _compute_analogy(model, a, b, c, top_k)
     return JSONResponse(result)
+
+
+@app.post("/api/author-classify")
+async def author_classify_api(request: Request) -> JSONResponse:
+    """
+    API endpoint for author classification.
+    Body JSON: {"text": "...", "top_k": 3}
+    """
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    text = str(payload.get("text", ""))
+    top_k = _to_int(payload.get("top_k", 3), 3)
+    result = _predict_author(text, top_k=top_k)
+    status = 400 if "error" in result else 200
+    return JSONResponse(result, status_code=status)

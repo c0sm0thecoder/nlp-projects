@@ -834,6 +834,78 @@ function initAnalogLab() {
   inputC.placeholder = "e.g., king";
 }
 
+async function performAuthorClassification() {
+  const input = document.getElementById("authorInput");
+  const topKSelect = document.getElementById("authorTopK");
+  const meta = document.getElementById("authorMeta");
+  const body = document.getElementById("authorPredictionBody");
+
+  const text = String(input.value || "").trim();
+  const topK = Number(topKSelect.value || 3);
+
+  if (!text) {
+    meta.textContent = "Please enter text before prediction.";
+    body.innerHTML = "<tr><td colspan='3'>No prediction yet.</td></tr>";
+    return;
+  }
+
+  meta.textContent = "Predicting author...";
+
+  try {
+    const response = await fetch("/api/author-classify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text, top_k: topK }),
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      meta.textContent = `Error: ${data.error}`;
+      body.innerHTML = "<tr><td colspan='3'>Prediction failed.</td></tr>";
+      return;
+    }
+
+    const rows = Array.isArray(data.top_predictions) ? data.top_predictions : [];
+    if (rows.length === 0) {
+      body.innerHTML = "<tr><td colspan='3'>No predictions returned.</td></tr>";
+      meta.textContent = "No predictions returned.";
+      return;
+    }
+
+    body.innerHTML = "";
+    rows.forEach((row, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${row.author}</td>
+        <td>${prettyPercent(row.probability)}</td>
+      `;
+      body.appendChild(tr);
+    });
+
+    meta.textContent = `Predicted: ${data.predicted_author} (trained on ${Number(data.training_size || 0)} texts)`;
+  } catch (error) {
+    meta.textContent = `Network error: ${error.message}`;
+    body.innerHTML = "<tr><td colspan='3'>Prediction failed.</td></tr>";
+  }
+}
+
+function initAuthorLab() {
+  const button = document.getElementById("authorClassifyBtn");
+  const input = document.getElementById("authorInput");
+
+  if (!button || !input) return;
+
+  button.addEventListener("click", performAuthorClassification);
+  input.addEventListener("keypress", (event) => {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      performAuthorClassification();
+    }
+  });
+}
+
 function boot(data) {
   buildSeriesColorMap();
   initViewNavigation();
@@ -844,6 +916,7 @@ function boot(data) {
   initTask4Filters();
   initSynonymFinder();
   initAnalogLab();
+  initAuthorLab();
   initInteractions();
   renderTask4Tab();
   rerenderInteractive();

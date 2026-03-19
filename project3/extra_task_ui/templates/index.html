@@ -148,6 +148,40 @@
           <h2>Task 5 Performance Table</h2>
           <p>Click Accuracy or Macro-F1 to sort.</p>
         </div>
+        <div class="panel-head" style="margin-top: 1rem;">
+          <h2>Author Classification Lab</h2>
+          <p>Enter a poem line or short passage to predict likely author.</p>
+        </div>
+        <div class="controls-row author-controls">
+          <label style="flex: 1 1 520px; min-width: 320px;">
+            Text Input
+            <textarea id="authorInput" rows="4" placeholder="Paste a poem line or short text for author prediction"></textarea>
+          </label>
+          <label>
+            Top K
+            <select id="authorTopK">
+              <option value="1">Top 1</option>
+              <option value="3" selected>Top 3</option>
+              <option value="5">Top 5</option>
+            </select>
+          </label>
+          <button id="authorClassifyBtn" class="action-btn" type="button">Predict Author</button>
+          <div class="task4-meta" id="authorMeta">Ready. Enter text and run prediction.</div>
+        </div>
+        <div class="table-wrap" style="margin-bottom: 1rem;">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Author</th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="authorPredictionBody">
+              <tr><td colspan="3">No prediction yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
