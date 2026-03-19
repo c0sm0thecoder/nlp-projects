@@ -735,6 +735,105 @@ function initInteractions() {
   document.getElementById("playRace").addEventListener("click", playRaceAnimation);
 }
 
+async function performAnalogy() {
+  const model = document.getElementById("analogyModel").value;
+  const wordA = document.getElementById("analogyA").value.trim();
+  const wordB = document.getElementById("analogyB").value.trim();
+  const wordC = document.getElementById("analogyC").value.trim();
+
+  const meta = document.getElementById("analogyMeta");
+  const resultsContainer = document.getElementById("analogyResultsContainer");
+  const errorContainer = document.getElementById("analogyErrorContainer");
+  const resultsBody = document.getElementById("analogyResultsBody");
+  const formula = document.getElementById("analogyFormula");
+  const message = document.getElementById("analogyMessage");
+  const errorText = document.getElementById("analogyErrorText");
+
+  if (!wordA || !wordB || !wordC) {
+    errorContainer.style.display = "block";
+    resultsContainer.style.display = "none";
+    errorText.textContent = "Please fill in all three words (A, B, C)";
+    meta.textContent = "All three words required";
+    return;
+  }
+
+  meta.textContent = "Solving...";
+  errorContainer.style.display = "none";
+
+  try {
+    const params = new URLSearchParams({
+      model,
+      a: wordA,
+      b: wordB,
+      c: wordC,
+      top_k: 5,
+    });
+
+    const response = await fetch(`/api/analogy?${params}`);
+    const data = await response.json();
+
+    if (data.error) {
+      errorContainer.style.display = "block";
+      resultsContainer.style.display = "none";
+      errorText.textContent = `Error: ${data.error}`;
+      meta.textContent = "Error";
+      return;
+    }
+
+    formula.textContent = `${wordA} : ${wordB} :: ${wordC} : ?`;
+    message.textContent = "Top candidates for the missing word:";
+
+    resultsBody.innerHTML = "";
+    if (data.results && data.results.length > 0) {
+      data.results.forEach((result, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><strong>${result.word}</strong></td>
+          <td>${toFixed(result.similarity, 4)}</td>
+        `;
+        resultsBody.appendChild(tr);
+      });
+      meta.textContent = `Computed using ${model.replace(/_/g, " ").toUpperCase()}`;
+    } else {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td colspan='3'>No results found</td>";
+      resultsBody.appendChild(tr);
+    }
+
+    resultsContainer.style.display = "block";
+    errorContainer.style.display = "none";
+  } catch (err) {
+    errorContainer.style.display = "block";
+    resultsContainer.style.display = "none";
+    errorText.textContent = `Network error: ${err.message}`;
+    meta.textContent = "Error";
+  }
+}
+
+function initAnalogLab() {
+  const button = document.getElementById("analogyButton");
+  const inputA = document.getElementById("analogyA");
+  const inputB = document.getElementById("analogyB");
+  const inputC = document.getElementById("analogyC");
+
+  button.addEventListener("click", performAnalogy);
+
+  // Allow solving with Enter key
+  [inputA, inputB, inputC].forEach((input) => {
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        performAnalogy();
+      }
+    });
+  });
+
+  // Set some example values on load
+  inputA.placeholder = "e.g., man";
+  inputB.placeholder = "e.g., woman";
+  inputC.placeholder = "e.g., king";
+}
+
 function boot(data) {
   buildSeriesColorMap();
   initViewNavigation();
@@ -744,6 +843,7 @@ function boot(data) {
   initFilters(appState.allRows);
   initTask4Filters();
   initSynonymFinder();
+  initAnalogLab();
   initInteractions();
   renderTask4Tab();
   rerenderInteractive();

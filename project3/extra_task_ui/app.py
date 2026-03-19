@@ -4,11 +4,13 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from scipy.spatial.distance import cosine
 
 ROOT = Path(__file__).resolve().parents[1]
 TASK1_RESULTS = ROOT / "task1" / "results"
@@ -60,6 +62,123 @@ def _is_missing(value: Any) -> bool:
     if isinstance(value, str) and value.strip().lower() in {"", "nan", "none", "null"}:
         return True
     return False
+
+
+# Load embeddings and vocabularies for analogy lab
+_EMBEDDINGS_CACHE: dict[str, dict[str, Any]] = {}
+
+
+def _load_embeddings() -> dict[str, dict[str, Any]]:
+    """Load all embeddings and vocabularies on demand."""
+    if _EMBEDDINGS_CACHE:
+        return _EMBEDDINGS_CACHE
+
+    # Load Task 2 embeddings (Skip-gram and CBOW)
+    for model_name, emb_file in [
+        ("skipgram", TASK2_RESULTS / "task2_skipgram_embeddings.npy"),
+        ("cbow", TASK2_RESULTS / "task2_cbow_embeddings.npy"),
+    ]:
+        vocab_df = _safe_read_csv(
+            TASK2_RESULTS / "task2_vocab.csv",
+            default_columns=["token_id", "token", "corpus_frequency"],
+        )
+        if not vocab_df.empty and emb_file.exists():
+            try:
+                emb = np.load(str(emb_file))
+                vocab_dict = {str(row["token"]).lower(): idx for idx, row in vocab_df.iterrows()}
+                _EMBEDDINGS_CACHE[f"word2vec_{model_name}"] = {
+                    "embeddings": emb,
+                    "vocab": vocab_dict,
+                    "reverse_vocab": {idx: str(row["token"]) for idx, row in vocab_df.iterrows()},
+                }
+            except Exception:
+                pass
+
+    # Load Task 3 embeddings (GloVe)
+    vocab_df = _safe_read_csv(
+        TASK3_RESULTS / "task3_vocab.csv",
+        default_columns=["token_id", "token", "corpus_frequency"],
+    )
+    glove_file = TASK3_RESULTS / "task3_glove_embeddings.npy"
+    if not vocab_df.empty and glove_file.exists():
+        try:
+            emb = np.load(str(glove_file))
+            vocab_dict = {str(row["token"]).lower(): idx for idx, row in vocab_df.iterrows()}
+            _EMBEDDINGS_CACHE["glove"] = {
+                "embeddings": emb,
+                "vocab": vocab_dict,
+                "reverse_vocab": {idx: str(row["token"]) for idx, row in vocab_df.iterrows()},
+            }
+        except Exception:
+            pass
+
+    return _EMBEDDINGS_CACHE
+
+
+def _compute_analogy(model: str, word_a: str, word_b: str, word_c: str, top_k: int = 5) -> dict[str, Any]:
+    """
+    Solve analogy: a:b::c:?
+    Returns top_k candidates with cosine similarities.
+    """
+    embeddings = _load_embeddings()
+    if model not in embeddings:
+        return {"error": f"Model '{model}' not found"}
+
+    model_data = embeddings[model]
+    emb_matrix = model_data["embeddings"]
+    vocab = model_data["vocab"]
+    reverse_vocab = model_data["reverse_vocab"]
+
+    # Normalize word inputs
+    word_a = word_a.lower().strip()
+    word_b = word_b.lower().strip()
+    word_c = word_c.lower().strip()
+
+    # Check all words exist in vocab
+    if word_a not in vocab:
+        return {"error": f"Word '{word_a}' not in vocabulary"}
+    if word_b not in vocab:
+        return {"error": f"Word '{word_b}' not in vocabulary"}
+    if word_c not in vocab:
+        return {"error": f"Word '{word_c}' not in vocabulary"}
+
+    try:
+        # Get word vectors
+        vec_a = emb_matrix[vocab[word_a]]
+        vec_b = emb_matrix[vocab[word_b]]
+        vec_c = emb_matrix[vocab[word_c]]
+
+        # Compute target vector: c + (b - a)
+        target_vec = vec_c + (vec_b - vec_a)
+        # Normalize target vector
+        target_vec = target_vec / (np.linalg.norm(target_vec) + 1e-10)
+
+        # Compute cosine similarity with all words
+        similarities = []
+        exclude_words = {word_a, word_b, word_c}
+
+        for idx in range(len(emb_matrix)):
+            word = reverse_vocab.get(idx, "")
+            if word.lower() in exclude_words:
+                continue
+            word_vec = emb_matrix[idx]
+            word_vec = word_vec / (np.linalg.norm(word_vec) + 1e-10)
+            sim = float(1 - cosine(target_vec, word_vec))
+            similarities.append((word, sim))
+
+        # Sort by similarity and take top_k
+        similarities.sort(key=lambda x: x[1], reverse=True)
+        top_results = [
+            {"word": word, "similarity": round(sim, 4)} for word, sim in similarities[:top_k]
+        ]
+
+        return {
+            "analogy": f"{word_a}:{word_b}::{word_c}:?",
+            "results": top_results,
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def _build_task_cards() -> list[dict[str, Any]]:
@@ -332,6 +451,9 @@ def load_dashboard_data() -> dict[str, Any]:
         else 0.0
     )
 
+    # Analogy lab available models
+    analogy_models = list(_load_embeddings().keys())
+
     return {
         "task_cards": task_cards,
         "task5": task5,
@@ -341,6 +463,9 @@ def load_dashboard_data() -> dict[str, Any]:
         "task4_overlap": {
             "neighbor_avg_jaccard": round(neighbor_avg, 4),
             "equation_avg_jaccard": round(equation_avg, 4),
+        },
+        "analogy_lab": {
+            "models": analogy_models,
         },
     }
 
@@ -360,3 +485,17 @@ def index(request: Request):
 @app.get("/api/dashboard")
 def dashboard_api() -> JSONResponse:
     return JSONResponse(load_dashboard_data())
+
+
+@app.get("/api/analogy")
+def analogy_api(model: str = "word2vec_skipgram", a: str = "", b: str = "", c: str = "", top_k: int = 5) -> JSONResponse:
+    """
+    API endpoint for word analogy computation.
+    Query params: model, a, b, c, top_k
+    Example: /api/analogy?model=word2vec_skipgram&a=man&b=woman&c=king&top_k=5
+    """
+    if not all([a.strip(), b.strip(), c.strip()]):
+        return JSONResponse({"error": "All four words (a, b, c, model) must be provided"}, status_code=400)
+
+    result = _compute_analogy(model, a, b, c, top_k)
+    return JSONResponse(result)

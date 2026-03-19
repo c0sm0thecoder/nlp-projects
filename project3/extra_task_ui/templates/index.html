@@ -48,6 +48,7 @@
         <button id="navTask4" class="nav-btn" type="button" data-view-target="task4">Task 4</button>
         <button id="navTask5" class="nav-btn" type="button" data-view-target="task5">Task 5</button>
         <button id="navSynonyms" class="nav-btn" type="button" data-view-target="synonyms">Synonym Finder</button>
+        <button id="navAnalogy" class="nav-btn" type="button" data-view-target="analogy">Analogy Lab</button>
       </nav>
 
       <section class="cards dashboard-view" id="taskCards" data-view="overview"></section>
@@ -200,6 +201,58 @@
             </thead>
             <tbody id="synonymBody"></tbody>
           </table>
+        </div>
+      </section>
+
+      <section class="panel glass dashboard-view is-hidden" data-view="analogy">
+        <div class="panel-head">
+          <h2>Analogy Lab</h2>
+          <p>Solve word analogies: a:b::c:? using learned embeddings.</p>
+        </div>
+        <div class="controls-row synonym-controls">
+          <label>
+            Model
+            <select id="analogyModel">
+              <option value="word2vec_skipgram">Word2Vec Skip-gram</option>
+              <option value="word2vec_cbow">Word2Vec CBOW</option>
+              <option value="glove">GloVe</option>
+            </select>
+          </label>
+          <label>
+            Word A
+            <input id="analogyA" type="text" placeholder="e.g., man" />
+          </label>
+          <label>
+            Word B
+            <input id="analogyB" type="text" placeholder="e.g., woman" />
+          </label>
+          <label>
+            Word C
+            <input id="analogyC" type="text" placeholder="e.g., king" />
+          </label>
+          <button id="analogyButton" type="button" class="button" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">Solve Analogy</button>
+          <div class="task4-meta" id="analogyMeta" style="flex: 1; text-align: right;"></div>
+        </div>
+        <div id="analogyResultsContainer" style="display: none; margin-top: 2rem;">
+          <div style="margin-bottom: 1rem;">
+            <h3 id="analogyFormula" style="font-family: monospace; font-size: 1.2rem;"></h3>
+            <p id="analogyMessage" style="color: var(--dim); margin-top: 0.5rem;"></p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Word</th>
+                  <th>Cosine Similarity</th>
+                </tr>
+              </thead>
+              <tbody id="analogyResultsBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="analogyErrorContainer" style="display: none; margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; border-radius: 4px;">
+          <p id="analogyErrorText" style="color: #ef4444; margin: 0;"></p>
         </div>
       </section>
     </main>
