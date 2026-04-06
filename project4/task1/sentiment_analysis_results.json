@@ -1,0 +1,425 @@
+{
+  "model_architecture": {
+    "model_name": "nlptown/bert-base-multilingual-uncased-sentiment",
+    "base_model": "bert-base-multilingual-uncased",
+    "num_classes": 5,
+    "class_labels": {
+      "0": "1 star",
+      "1": "2 stars",
+      "2": "3 stars",
+      "3": "4 stars",
+      "4": "5 stars"
+    },
+    "max_sequence_length": 512,
+    "vocab_size": 105879,
+    "hidden_size": 768,
+    "num_attention_heads": 12,
+    "num_hidden_layers": 12,
+    "intermediate_size": 3072,
+    "total_parameters": 167360261,
+    "trainable_parameters": 167360261
+  },
+  "input_output_analysis": {
+    "sample_text": "This product is amazing! I love it so much.",
+    "input_format": {
+      "description": "Text string tokenized into input_ids and attention_mask tensors",
+      "input_keys": [
+        "input_ids",
+        "token_type_ids",
+        "attention_mask"
+      ],
+      "input_ids_shape": [
+        1,
+        13
+      ],
+      "tokens": [
+        "[CLS]",
+        "this",
+        "product",
+        "is",
+        "amazing",
+        "!",
+        "i",
+        "love",
+        "it",
+        "so",
+        "much",
+        ".",
+        "[SEP]"
+      ]
+    },
+    "output_format": {
+      "description": "Logits tensor for each class, convertible to probabilities via softmax",
+      "logits_shape": [
+        1,
+        5
+      ],
+      "raw_logits": [
+        -2.450078010559082,
+        -2.8995492458343506,
+        -1.3867995738983154,
+        1.3222798109054565,
+        4.378785610198975
+      ],
+      "probabilities": [
+        0.0010286412434652448,
+        0.0006562376511283219,
+        0.00297879078425467,
+        0.0447278656065464,
+        0.9506085515022278
+      ],
+      "predicted_class": 4,
+      "predicted_label": "5 stars",
+      "confidence": 0.9506085515022278
+    }
+  },
+  "case_sensitivity_analysis": {
+    "is_uncased_model": true,
+    "tokenizer_lowercases": true,
+    "case_affects_accuracy": false,
+    "explanation": "This is an UNCASED model - all text is lowercased before tokenization, so case differences do not affect predictions.",
+    "test_results": [
+      {
+        "lower_text": "The food was delicious and the service was excellent!",
+        "upper_text": "THE FOOD WAS DELICIOUS AND THE SERVICE WAS EXCELLENT!",
+        "tokens_match": true,
+        "lower_prediction": "5 stars",
+        "upper_prediction": "5 stars",
+        "lower_confidence": 0.7565588355064392,
+        "upper_confidence": 0.7565588355064392,
+        "predictions_match": true
+      },
+      {
+        "lower_text": "terrible experience, would not recommend",
+        "upper_text": "TERRIBLE EXPERIENCE, WOULD NOT RECOMMEND",
+        "tokens_match": true,
+        "lower_prediction": "1 star",
+        "upper_prediction": "1 star",
+        "lower_confidence": 0.821956217288971,
+        "upper_confidence": 0.821956217288971,
+        "predictions_match": true
+      },
+      {
+        "lower_text": "It was okay, nothing special",
+        "upper_text": "IT WAS OKAY, NOTHING SPECIAL",
+        "tokens_match": true,
+        "lower_prediction": "3 stars",
+        "upper_prediction": "3 stars",
+        "lower_confidence": 0.8019357323646545,
+        "upper_confidence": 0.8019357323646545,
+        "predictions_match": true
+      },
+      {
+        "lower_text": "I hate this product, worst purchase ever",
+        "upper_text": "I HATE THIS PRODUCT, WORST PURCHASE EVER",
+        "tokens_match": true,
+        "lower_prediction": "1 star",
+        "upper_prediction": "1 star",
+        "lower_confidence": 0.9746290445327759,
+        "upper_confidence": 0.9746290445327759,
+        "predictions_match": true
+      },
+      {
+        "lower_text": "Best thing I have ever bought!",
+        "upper_text": "BEST THING I HAVE EVER BOUGHT!",
+        "tokens_match": true,
+        "lower_prediction": "5 stars",
+        "upper_prediction": "5 stars",
+        "lower_confidence": 0.971184492111206,
+        "upper_confidence": 0.971184492111206,
+        "predictions_match": true
+      }
+    ],
+    "all_predictions_match": true
+  },
+  "azerbaijani_analysis": {
+    "azerbaijani_in_mbert_vocab": true,
+    "model_finetuned_languages": [
+      "English",
+      "Dutch",
+      "German",
+      "French",
+      "Spanish",
+      "Italian"
+    ],
+    "azerbaijani_is_finetuned_language": false,
+    "is_agglutinative": true,
+    "agglutinative_challenge": "Azerbaijani words with multiple suffixes get heavily fragmented into subwords, losing morphological information.",
+    "comparison_results": [
+      {
+        "azerbaijani_text": "Bu məhsul əladır! Çox xoşuma gəldi.",
+        "english_text": "This product is great! I liked it very much.",
+        "expected_sentiment": "positive",
+        "azerbaijani_prediction": "5 stars",
+        "english_prediction": "5 stars",
+        "azerbaijani_confidence": 0.5168159604072571,
+        "english_confidence": 0.8251684308052063,
+        "azerbaijani_tokens": [
+          "[CLS]",
+          "bu",
+          "m",
+          "##ə",
+          "##hs",
+          "##ul",
+          "əl",
+          "##adı",
+          "##r",
+          "!",
+          "cox",
+          "xo",
+          "##suma",
+          "g",
+          "##əl",
+          "##di",
+          ".",
+          "[SEP]"
+        ],
+        "english_tokens": [
+          "[CLS]",
+          "this",
+          "product",
+          "is",
+          "great",
+          "!",
+          "i",
+          "like",
+          "##d",
+          "it",
+          "very",
+          "much",
+          ".",
+          "[SEP]"
+        ]
+      },
+      {
+        "azerbaijani_text": "Pis keyfiyyət, heç xoşuma gəlmədi.",
+        "english_text": "Bad quality, I didn't like it at all.",
+        "expected_sentiment": "negative",
+        "azerbaijani_prediction": "2 stars",
+        "english_prediction": "1 star",
+        "azerbaijani_confidence": 0.2949347496032715,
+        "english_confidence": 0.6913585662841797,
+        "azerbaijani_tokens": [
+          "[CLS]",
+          "pis",
+          "key",
+          "##fi",
+          "##yyət",
+          ",",
+          "hec",
+          "xo",
+          "##suma",
+          "g",
+          "##əl",
+          "##mə",
+          "##di",
+          ".",
+          "[SEP]"
+        ],
+        "english_tokens": [
+          "[CLS]",
+          "bad",
+          "quality",
+          ",",
+          "i",
+          "didn",
+          "'",
+          "t",
+          "like",
+          "it",
+          "at",
+          "all",
+          ".",
+          "[SEP]"
+        ]
+      },
+      {
+        "azerbaijani_text": "Normal məhsuldur, pis deyil.",
+        "english_text": "It's a normal product, not bad.",
+        "expected_sentiment": "neutral",
+        "azerbaijani_prediction": "2 stars",
+        "english_prediction": "3 stars",
+        "azerbaijani_confidence": 0.4095930755138397,
+        "english_confidence": 0.5249125361442566,
+        "azerbaijani_tokens": [
+          "[CLS]",
+          "normal",
+          "m",
+          "##ə",
+          "##hs",
+          "##uldu",
+          "##r",
+          ",",
+          "pis",
+          "deyil",
+          ".",
+          "[SEP]"
+        ],
+        "english_tokens": [
+          "[CLS]",
+          "it",
+          "'",
+          "s",
+          "a",
+          "normal",
+          "product",
+          ",",
+          "not",
+          "bad",
+          ".",
+          "[SEP]"
+        ]
+      },
+      {
+        "azerbaijani_text": "Ən yaxşı alış-verişim! Tövsiyə edirəm.",
+        "english_text": "Best purchase! I recommend it.",
+        "expected_sentiment": "positive",
+        "azerbaijani_prediction": "5 stars",
+        "english_prediction": "5 stars",
+        "azerbaijani_confidence": 0.8976486325263977,
+        "english_confidence": 0.88383549451828,
+        "azerbaijani_tokens": [
+          "[CLS]",
+          "ən",
+          "yaxsı",
+          "al",
+          "##ıs",
+          "-",
+          "veri",
+          "##sim",
+          "!",
+          "to",
+          "##vsi",
+          "##yə",
+          "edir",
+          "##əm",
+          ".",
+          "[SEP]"
+        ],
+        "english_tokens": [
+          "[CLS]",
+          "best",
+          "purchase",
+          "!",
+          "i",
+          "rec",
+          "##ommen",
+          "##d",
+          "it",
+          ".",
+          "[SEP]"
+        ]
+      },
+      {
+        "azerbaijani_text": "Çox pisdir, almayın.",
+        "english_text": "Very bad, don't buy it.",
+        "expected_sentiment": "negative",
+        "azerbaijani_prediction": "1 star",
+        "english_prediction": "1 star",
+        "azerbaijani_confidence": 0.4361938536167145,
+        "english_confidence": 0.88226318359375,
+        "azerbaijani_tokens": [
+          "[CLS]",
+          "cox",
+          "pis",
+          "##dir",
+          ",",
+          "alma",
+          "##yı",
+          "##n",
+          ".",
+          "[SEP]"
+        ],
+        "english_tokens": [
+          "[CLS]",
+          "very",
+          "bad",
+          ",",
+          "don",
+          "'",
+          "t",
+          "buy",
+          "it",
+          ".",
+          "[SEP]"
+        ]
+      }
+    ],
+    "tokenization_analysis": [
+      {
+        "azerbaijani_word": "məhsullarımızdan",
+        "english_meaning": "from our products",
+        "subword_tokens": [
+          "m",
+          "##ə",
+          "##hs",
+          "##ulla",
+          "##rı",
+          "##mı",
+          "##zda",
+          "##n"
+        ],
+        "num_subwords": 8
+      },
+      {
+        "azerbaijani_word": "keyfiyyətsizlikləri",
+        "english_meaning": "their lack of quality",
+        "subword_tokens": [
+          "key",
+          "##fi",
+          "##yyət",
+          "##siz",
+          "##liklə",
+          "##ri"
+        ],
+        "num_subwords": 6
+      },
+      {
+        "azerbaijani_word": "xoşbəxtliklərimiz",
+        "english_meaning": "our happinesses",
+        "subword_tokens": [
+          "xo",
+          "##sb",
+          "##ə",
+          "##xt",
+          "##liklə",
+          "##rimi",
+          "##z"
+        ],
+        "num_subwords": 7
+      }
+    ],
+    "recommendation": "For better Azerbaijani sentiment analysis, fine-tune the model on Azerbaijani product reviews or use a model specifically trained for Turkic languages.",
+    "conclusion": "The model CAN process Azerbaijani text since it's in mBERT vocabulary, but performance is degraded compared to fine-tuned languages due to: (1) no Azerbaijani training data, (2) heavy subword fragmentation of agglutinative words."
+  },
+  "summary": {
+    "question_1_inputs_outputs": {
+      "inputs": "Text string, tokenized into input_ids (token indices) and attention_mask (1 for real tokens, 0 for padding)",
+      "outputs": "Logits tensor of shape (batch_size, num_classes), converted to probabilities via softmax"
+    },
+    "question_2_num_classes": {
+      "answer": 5,
+      "description": "5 classes representing star ratings from 1-star (very negative) to 5-stars (very positive)"
+    },
+    "question_3_input_size": {
+      "max_sequence_length": 512,
+      "vocab_size": 105879,
+      "note": "Texts longer than 512 tokens are truncated"
+    },
+    "question_4_case_sensitivity": {
+      "is_case_sensitive": false,
+      "explanation": "This is an UNCASED model - all text is lowercased before tokenization, so case differences do not affect predictions.",
+      "accuracy_impact": "None - case differences do not affect model predictions"
+    },
+    "question_5_azerbaijani_support": {
+      "is_possible": true,
+      "quality": "Degraded compared to fine-tuned languages",
+      "reasons": [
+        "Azerbaijani is in mBERT vocabulary but not in fine-tuning data",
+        "Agglutinative morphology causes heavy subword fragmentation",
+        "Model lacks understanding of Azerbaijani sentiment expressions"
+      ],
+      "recommendation": "For better Azerbaijani sentiment analysis, fine-tune the model on Azerbaijani product reviews or use a model specifically trained for Turkic languages."
+    }
+  }
+}
