@@ -1,0 +1,252 @@
+{
+  "model_architecture": {
+    "name": "BiDAF (Bidirectional Attention Flow)",
+    "paper": "Seo et al. (2017) - Bidirectional Attention Flow for Machine Comprehension",
+    "arxiv": "https://arxiv.org/abs/1611.01603",
+    "framework": "PyTorch",
+    "layers": {
+      "1_character_embedding": {
+        "description": "CNN over character sequences to capture morphological features",
+        "components": [
+          "Character Embedding",
+          "1D Convolution",
+          "Max Pooling"
+        ],
+        "output_dim": "char_num_filters (100)"
+      },
+      "2_word_embedding": {
+        "description": "Pre-trained word embeddings (GloVe/Word2Vec)",
+        "output_dim": "word_embed_dim (100)"
+      },
+      "3_highway_network": {
+        "description": "Combines character and word embeddings with gating mechanism",
+        "num_layers": 2,
+        "formula": "y = g * H(x) + (1-g) * x, where g = sigmoid(W_g * x)"
+      },
+      "4_contextual_embedding": {
+        "description": "BiLSTM to capture temporal interactions",
+        "type": "Bidirectional LSTM",
+        "output_dim": "hidden_dim * 2 (200)"
+      },
+      "5_attention_flow": {
+        "description": "Bidirectional attention between context and query",
+        "components": {
+          "similarity_matrix": "S(i,j) = w^T [h_i; u_j; h_i * u_j]",
+          "context_to_query": "For each context word, weighted sum of query words",
+          "query_to_context": "Most relevant context word for each position"
+        },
+        "output": "G = [H; U_tilde; H*U_tilde; H*H_tilde]",
+        "output_dim": "hidden_dim * 8 (800)"
+      },
+      "6_modeling_layer": {
+        "description": "Stacked BiLSTM to capture interactions among context words",
+        "type": "2-layer Bidirectional LSTM",
+        "output_dim": "hidden_dim * 2 (200)"
+      },
+      "7_output_layer": {
+        "description": "Predicts start and end positions of answer span",
+        "start_prediction": "softmax(W_start * [G; M])",
+        "end_prediction": "softmax(W_end * [G; M2]) where M2 = BiLSTM(M)"
+      }
+    }
+  },
+  "model_parameters": {
+    "by_component": {
+      "dropout": {
+        "total": 0,
+        "trainable": 0
+      },
+      "Word Embedding": {
+        "total": 1000000,
+        "trainable": 1000000
+      },
+      "Character Embedding": {
+        "total": 4900,
+        "trainable": 4900
+      },
+      "Highway Network": {
+        "total": 160800,
+        "trainable": 160800
+      },
+      "Contextual Embedding (BiLSTM)": {
+        "total": 241600,
+        "trainable": 241600
+      },
+      "Attention Flow Layer": {
+        "total": 600,
+        "trainable": 600
+      },
+      "Modeling Layer (BiLSTM)": {
+        "total": 963200,
+        "trainable": 963200
+      },
+      "Output Layer": {
+        "total": 243602,
+        "trainable": 243602
+      }
+    },
+    "total_parameters": 2614702,
+    "trainable_parameters": 2614702
+  },
+  "input_output_demonstration": {
+    "input_format": {
+      "context_word_ids": {
+        "shape": [
+          2,
+          50
+        ],
+        "description": "Word indices for context passage"
+      },
+      "context_char_ids": {
+        "shape": [
+          2,
+          50,
+          16
+        ],
+        "description": "Character indices for each word in context"
+      },
+      "query_word_ids": {
+        "shape": [
+          2,
+          15
+        ],
+        "description": "Word indices for question"
+      },
+      "query_char_ids": {
+        "shape": [
+          2,
+          15,
+          16
+        ],
+        "description": "Character indices for each word in question"
+      },
+      "context_mask": {
+        "shape": [
+          2,
+          50
+        ],
+        "description": "Mask for valid context tokens (1=valid, 0=padding)"
+      },
+      "query_mask": {
+        "shape": [
+          2,
+          15
+        ],
+        "description": "Mask for valid query tokens (1=valid, 0=padding)"
+      }
+    },
+    "output_format": {
+      "start_logits": {
+        "shape": [
+          2,
+          50
+        ],
+        "description": "Logits for answer start position",
+        "example_values": [
+          -0.04501161351799965,
+          -0.06721463799476624,
+          -0.06200626119971275,
+          -0.07199373841285706,
+          -0.058423738926649094
+        ]
+      },
+      "end_logits": {
+        "shape": [
+          2,
+          50
+        ],
+        "description": "Logits for answer end position",
+        "example_values": [
+          -0.0010824967175722122,
+          -0.03310196101665497,
+          -0.032909467816352844,
+          -0.023570800200104713,
+          -0.01847795955836773
+        ]
+      }
+    },
+    "predictions": {
+      "start_positions": [
+        34,
+        28
+      ],
+      "end_positions": [
+        0,
+        38
+      ],
+      "start_confidence": [
+        0.020435165613889694,
+        0.020557301118969917
+      ],
+      "end_confidence": [
+        0.02079186774790287,
+        0.020610928535461426
+      ]
+    }
+  },
+  "loss_computation": {
+    "loss_function": "Cross Entropy",
+    "formula": "loss = (CE(start_logits, start_pos) + CE(end_logits, end_pos)) / 2",
+    "example_loss": 4.01309871673584,
+    "ground_truth_start": [
+      10,
+      25
+    ],
+    "ground_truth_end": [
+      15,
+      30
+    ]
+  },
+  "hyperparameters": {
+    "word_embed_dim": {
+      "value": 100,
+      "description": "Dimension of word embeddings (GloVe-100d recommended)"
+    },
+    "char_embed_dim": {
+      "value": 8,
+      "description": "Dimension of character embeddings"
+    },
+    "char_num_filters": {
+      "value": 100,
+      "description": "Number of CNN filters for character embedding"
+    },
+    "hidden_dim": {
+      "value": 100,
+      "description": "Hidden dimension for BiLSTM layers"
+    },
+    "num_highway_layers": {
+      "value": 2,
+      "description": "Number of highway network layers"
+    },
+    "num_modeling_layers": {
+      "value": 2,
+      "description": "Number of BiLSTM layers in modeling layer"
+    },
+    "dropout": {
+      "value": 0.2,
+      "description": "Dropout rate"
+    },
+    "learning_rate": {
+      "value": 0.5,
+      "description": "Initial learning rate (with Adadelta optimizer)"
+    },
+    "batch_size": {
+      "value": 60,
+      "description": "Training batch size"
+    }
+  },
+  "summary": {
+    "description": "BiDAF (Bidirectional Attention Flow) is a reading comprehension model that uses bidirectional attention to fuse information from context and query.",
+    "key_innovation": "The attention flow layer computes attention in both directions (context-to-query and query-to-context) without early summarization.",
+    "inputs": [
+      "Question (query) - tokenized into word and character indices",
+      "Context passage - tokenized into word and character indices"
+    ],
+    "outputs": [
+      "Start position logits - probability distribution over context tokens",
+      "End position logits - probability distribution over context tokens"
+    ],
+    "answer_extraction": "The answer span is extracted from context[start_pos:end_pos+1]",
+    "total_parameters": 2614702
+  }
+}
