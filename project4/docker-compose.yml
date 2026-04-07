@@ -1,0 +1,7 @@
+services:
+  extra-task-ui:
+    build:
+      context: .
+      dockerfile: extra_task_ui/Dockerfile
+    ports:
+      - "8000:8000"

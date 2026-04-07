@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Project 4 — NLP Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
+
+  <main class="container">
+    <!-- Hero -->
+    <header class="hero glass">
+      <div class="hero-copy">
+        <p class="eyebrow">Extra Task · UI Showcase</p>
+        <h1>Sentiment &amp; QA Dashboard</h1>
+        <p>Unified view of Task 1 (BERT Sentiment Analysis) and Task 2 (BiDAF Reading Comprehension) results.</p>
+      </div>
+      <div class="hero-badges">
+        <div class="badge">
+          <span>Sentiment Model</span>
+          <strong id="badgeModel">—</strong>
+        </div>
+        <div class="badge">
+          <span>Best Baseline F1</span>
+          <strong id="badgeBaseF1">—</strong>
+        </div>
+        <div class="badge">
+          <span>Best BERT F1</span>
+          <strong id="badgeBertF1">—</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Nav -->
+    <nav class="view-nav glass" aria-label="Dashboard sections">
+      <button class="nav-btn active" type="button" data-view="overview">Overview</button>
+      <button class="nav-btn" type="button" data-view="task1">Task 1 — Sentiment</button>
+      <button class="nav-btn" type="button" data-view="task2">Task 2 — QA Training</button>
+    </nav>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section class="cards dashboard-view" data-section="overview" id="overviewCards"></section>
+
+    <!-- ============ TASK 1 ============ -->
+    <!-- Model Architecture -->
+    <section class="panel glass dashboard-view is-hidden" data-section="task1">
+      <div class="panel-head">
+        <h2>Model Architecture</h2>
+        <p>Key properties of the sentiment analysis BERT model.</p>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th>Property</th><th>Value</th>
+        </tr></thead><tbody id="archBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- Case Sensitivity -->
+    <section class="panel glass dashboard-view is-hidden" data-section="task1">
+      <div class="panel-head">
+        <h2>Case Sensitivity Analysis</h2>
+        <p>Comparing lowercase vs uppercase predictions — model is uncased so results are identical.</p>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th>Text</th><th>Prediction</th><th>Confidence</th><th>Match</th>
+        </tr></thead><tbody id="caseBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- Azerbaijani -->
+    <section class="panel glass dashboard-view is-hidden" data-section="task1">
+      <div class="panel-head">
+        <h2>Azerbaijani Language Support</h2>
+        <p>Comparing Azerbaijani vs English sentiment predictions — agglutinative language challenge.</p>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th>Azerbaijani</th><th>English</th><th>Expected</th>
+          <th>AZ Pred</th><th>EN Pred</th><th>AZ Conf</th><th>EN Conf</th>
+        </tr></thead><tbody id="azBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- Tokenization -->
+    <section class="panel glass dashboard-view is-hidden" data-section="task1">
+      <div class="panel-head">
+        <h2>Agglutinative Tokenization</h2>
+        <p>How mBERT fragments Azerbaijani words into subword tokens.</p>
+      </div>
+      <div id="tokenizationCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0.8rem;"></div>
+    </section>
+
+
+    <!-- ============ TASK 2 ============ -->
+    <!-- Comparison Table -->
+    <section class="panel glass dashboard-view is-hidden" data-section="task2">
+      <div class="panel-head">
+        <h2>Model Comparison</h2>
+        <p>Baseline BiDAF (GloVe) vs BiDAF-BERT (frozen mBERT) on SQuAD v1.1.</p>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th>Metric</th><th>Baseline BiDAF</th><th>BiDAF-BERT</th><th>Δ</th>
+        </tr></thead><tbody id="compBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- Training Curves -->
+    <section class="grid-two dashboard-view is-hidden" data-section="task2">
+      <article class="panel glass">
+        <div class="panel-head">
+          <h2>Validation Loss</h2>
+          <p>Per-epoch validation loss for both models.</p>
+        </div>
+        <canvas id="lossCanvas" class="chart-canvas" width="540" height="320"></canvas>
+      </article>
+      <article class="panel glass">
+        <div class="panel-head">
+          <h2>F1 Score Progression</h2>
+          <p>Per-epoch F1 on the validation set.</p>
+        </div>
+        <canvas id="f1Canvas" class="chart-canvas" width="540" height="320"></canvas>
+      </article>
+    </section>
+
+    <!-- Epoch History -->
+    <section class="panel glass dashboard-view is-hidden" data-section="task2">
+      <div class="panel-head split-head">
+        <div>
+          <h2>Epoch-by-Epoch History</h2>
+          <p>Detailed training metrics per epoch.</p>
+        </div>
+        <div>
+          <select id="historyModelSelect" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:10px;padding:0.42rem 0.58rem;">
+            <option value="baseline">Baseline BiDAF</option>
+            <option value="bert">BiDAF-BERT</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th>Epoch</th><th>Train Loss</th><th>Val Loss</th><th>EM (%)</th><th>F1 (%)</th><th>Time (s)</th>
+        </tr></thead><tbody id="historyBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- Hyperparameters -->
+    <section class="grid-two dashboard-view is-hidden" data-section="task2">
+      <article class="panel glass">
+        <div class="panel-head">
+          <h2>Baseline Hyperparameters</h2>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+          <tbody id="hpBaseBody"></tbody></table>
+        </div>
+      </article>
+      <article class="panel glass">
+        <div class="panel-head">
+          <h2>BERT Hyperparameters</h2>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+          <tbody id="hpBertBody"></tbody></table>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <script id="initialData" type="application/json">{{ data_json | safe }}</script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+{
+  "dataset": "SQuAD v1.1",
+  "train_size": 5000,
+  "val_size": 1000,
+  "device": "cuda",
+  "baseline_bidaf": {
+    "model": "BiDAF (GloVe + Char CNN)",
+    "embedding": "GloVe 6B 100d + Character CNN",
+    "total_parameters": 3085474,
+    "trainable_parameters": 1615774,
+    "best_val_f1": 30.11,
+    "final_val_em": 19.7,
+    "final_val_f1": 30.11,
+    "final_val_loss": 3.5638,
+    "training_history": [
+      {
+        "epoch": 1,
+        "train_loss": 4.0259,
+        "val_loss": 3.8836,
+        "val_em": 2.0,
+        "val_f1": 6.93,
+        "time_sec": 33.3
+      },
+      {
+        "epoch": 2,
+        "train_loss": 3.6498,
+        "val_loss": 3.7273,
+        "val_em": 2.7,
+        "val_f1": 8.29,
+        "time_sec": 30.4
+      },
+      {
+        "epoch": 3,
+        "train_loss": 3.4417,
+        "val_loss": 3.4804,
+        "val_em": 8.4,
+        "val_f1": 14.42,
+        "time_sec": 31.6
+      },
+      {
+        "epoch": 4,
+        "train_loss": 3.0757,
+        "val_loss": 3.2077,
+        "val_em": 12.7,
+        "val_f1": 19.55,
+        "time_sec": 30.9
+      },
+      {
+        "epoch": 5,
+        "train_loss": 2.8268,
+        "val_loss": 3.0659,
+        "val_em": 13.9,
+        "val_f1": 21.2,
+        "time_sec": 31.8
+      },
+      {
+        "epoch": 6,
+        "train_loss": 2.6245,
+        "val_loss": 3.0652,
+        "val_em": 15.4,
+        "val_f1": 23.87,
+        "time_sec": 31.3
+      },
+      {
+        "epoch": 7,
+        "train_loss": 2.4376,
+        "val_loss": 3.0359,
+        "val_em": 16.1,
+        "val_f1": 24.86,
+        "time_sec": 31.9
+      },
+      {
+        "epoch": 8,
+        "train_loss": 2.2827,
+        "val_loss": 2.9654,
+        "val_em": 16.3,
+        "val_f1": 25.71,
+        "time_sec": 31.8
+      },
+      {
+        "epoch": 9,
+        "train_loss": 2.1141,
+        "val_loss": 3.0146,
+        "val_em": 16.3,
+        "val_f1": 25.41,
+        "time_sec": 31.1
+      },
+      {
+        "epoch": 10,
+        "train_loss": 1.9463,
+        "val_loss": 3.0117,
+        "val_em": 18.3,
+        "val_f1": 27.73,
+        "time_sec": 32.2
+      },
+      {
+        "epoch": 11,
+        "train_loss": 1.7922,
+        "val_loss": 3.0492,
+        "val_em": 18.5,
+        "val_f1": 28.62,
+        "time_sec": 31.5
+      },
+      {
+        "epoch": 12,
+        "train_loss": 1.6482,
+        "val_loss": 3.1606,
+        "val_em": 18.0,
+        "val_f1": 27.1,
+        "time_sec": 32.2
+      },
+      {
+        "epoch": 13,
+        "train_loss": 1.4891,
+        "val_loss": 3.2417,
+        "val_em": 18.3,
+        "val_f1": 28.76,
+        "time_sec": 31.3
+      },
+      {
+        "epoch": 14,
+        "train_loss": 1.37,
+        "val_loss": 3.2361,
+        "val_em": 19.4,
+        "val_f1": 29.64,
+        "time_sec": 31.8
+      },
+      {
+        "epoch": 15,
+        "train_loss": 1.2106,
+        "val_loss": 3.5638,
+        "val_em": 19.7,
+        "val_f1": 30.11,
+        "time_sec": 31.7
+      }
+    ],
+    "hyperparameters": {
+      "epochs": 15,
+      "batch_size": 32,
+      "learning_rate": 0.001,
+      "hidden_dim": 100,
+      "optimizer": "Adam",
+      "grad_clip": 5.0
+    }
+  },
+  "bert_bidaf": {
+    "model": "BiDAF-BERT (Frozen mBERT)",
+    "embedding": "Frozen bert-base-multilingual-uncased (768-dim)",
+    "total_parameters": 168959218,
+    "trainable_parameters": 1602802,
+    "best_val_f1": 24.31,
+    "final_val_em": 16.4,
+    "final_val_f1": 24.0,
+    "final_val_loss": 2.6904,
+    "training_history": [
+      {
+        "epoch": 1,
+        "train_loss": 3.6269,
+        "val_loss": 3.3943,
+        "val_em": 6.3,
+        "val_f1": 9.61,
+        "time_sec": 128.7
+      },
+      {
+        "epoch": 2,
+        "train_loss": 3.3141,
+        "val_loss": 3.3336,
+        "val_em": 7.1,
+        "val_f1": 10.85,
+        "time_sec": 127.4
+      },
+      {
+        "epoch": 3,
+        "train_loss": 3.1613,
+        "val_loss": 3.1238,
+        "val_em": 9.2,
+        "val_f1": 14.37,
+        "time_sec": 127.7
+      },
+      {
+        "epoch": 4,
+        "train_loss": 2.9087,
+        "val_loss": 2.9846,
+        "val_em": 10.5,
+        "val_f1": 16.38,
+        "time_sec": 128.5
+      },
+      {
+        "epoch": 5,
+        "train_loss": 2.7579,
+        "val_loss": 2.8857,
+        "val_em": 12.8,
+        "val_f1": 18.28,
+        "time_sec": 127.9
+      },
+      {
+        "epoch": 6,
+        "train_loss": 2.6385,
+        "val_loss": 2.8379,
+        "val_em": 13.4,
+        "val_f1": 19.51,
+        "time_sec": 128.1
+      },
+      {
+        "epoch": 7,
+        "train_loss": 2.5303,
+        "val_loss": 2.8082,
+        "val_em": 12.2,
+        "val_f1": 18.97,
+        "time_sec": 127.9
+      },
+      {
+        "epoch": 8,
+        "train_loss": 2.4442,
+        "val_loss": 2.7065,
+        "val_em": 15.2,
+        "val_f1": 22.24,
+        "time_sec": 128.0
+      },
+      {
+        "epoch": 9,
+        "train_loss": 2.3604,
+        "val_loss": 2.6792,
+        "val_em": 14.9,
+        "val_f1": 21.83,
+        "time_sec": 128.2
+      },
+      {
+        "epoch": 10,
+        "train_loss": 2.2963,
+        "val_loss": 2.7514,
+        "val_em": 15.7,
+        "val_f1": 23.02,
+        "time_sec": 128.2
+      },
+      {
+        "epoch": 11,
+        "train_loss": 2.2278,
+        "val_loss": 2.7311,
+        "val_em": 15.6,
+        "val_f1": 22.34,
+        "time_sec": 128.5
+      },
+      {
+        "epoch": 12,
+        "train_loss": 2.1572,
+        "val_loss": 2.7624,
+        "val_em": 16.4,
+        "val_f1": 23.84,
+        "time_sec": 128.6
+      },
+      {
+        "epoch": 13,
+        "train_loss": 2.0937,
+        "val_loss": 2.7297,
+        "val_em": 17.0,
+        "val_f1": 24.31,
+        "time_sec": 128.0
+      },
+      {
+        "epoch": 14,
+        "train_loss": 2.0205,
+        "val_loss": 2.7178,
+        "val_em": 16.4,
+        "val_f1": 22.87,
+        "time_sec": 128.4
+      },
+      {
+        "epoch": 15,
+        "train_loss": 1.9955,
+        "val_loss": 2.6904,
+        "val_em": 16.4,
+        "val_f1": 24.0,
+        "time_sec": 127.6
+      }
+    ],
+    "hyperparameters": {
+      "epochs": 15,
+      "batch_size": 16,
+      "learning_rate": 0.001,
+      "hidden_dim": 100,
+      "optimizer": "Adam",
+      "grad_clip": 5.0,
+      "bert_frozen": true
+    }
+  },
+  "comparison": {
+    "em_improvement": -3.3,
+    "f1_improvement": -6.11
+  }
+}

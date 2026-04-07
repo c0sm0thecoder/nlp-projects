@@ -1,0 +1,14 @@
+\BOOKMARK [1][-]{section.1}{Team Member Contributions}{}% 1
+\BOOKMARK [1][-]{section.2}{Motivation}{}% 2
+\BOOKMARK [1][-]{section.3}{Task 1: Sentiment Analysis using BERT}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Method}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Inputs and Outputs}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Case Sensitivity}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.4}{Azerbaijani Language Support}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{Task 2: Reading Comprehension with BiDAF}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{BiDAF Architecture \(Task 2.1\)}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{BERT Integration \(Task 2.2\)}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.3}{Training and Evaluation \(Task 2.3\)}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.4}{Analysis of Results}{section.4}% 12
+\BOOKMARK [1][-]{section.5}{Extra Task: Web Dashboard}{}% 13
+\BOOKMARK [1][-]{section.6}{Discussion and Conclusion}{}% 14

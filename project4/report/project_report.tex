@@ -1,0 +1,225 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\geometry{margin=1.7cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\textfloatsep}{8pt}
+\setlength{\floatsep}{6pt}
+\setlength{\intextsep}{6pt}
+\setlist{itemsep=2pt,topsep=2pt,parsep=0pt,partopsep=0pt}
+\captionsetup{font=small,skip=4pt}
+\renewcommand{\arraystretch}{0.95}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{6pt}{3pt}
+\titlespacing*{\subsubsection}{0pt}{5pt}{2pt}
+\linespread{0.96}
+
+\title{NLP Project 4: Sentiment Analysis using BERT and QA Systems with BiDAF}
+\author{Fatulla Bashirov \and Kamal Aghazada}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report documents Project~4, which covers two main tasks: (1)~analysis of a fine-tuned BERT model for sentiment analysis, including case sensitivity and agglutinative language support, and (2)~implementation and evaluation of a Bidirectional Attention Flow (BiDAF) reading comprehension system with both traditional GloVe embeddings and frozen BERT contextual embeddings. We train and evaluate both BiDAF variants on a 5\,000-example subset of SQuAD~v1.1, reporting Exact Match and F1 metrics. An interactive web dashboard is provided as the extra task.
+\end{abstract}
+
+\section{Team Member Contributions}
+
+\begin{itemize}
+    \item \textbf{Fatulla Bashirov}: implemented and analyzed \textbf{Task~1} (BERT sentiment analysis, case sensitivity experiments, Azerbaijani language evaluation) and the \textbf{Extra Task} (unified FastAPI dashboard with Docker deployment).
+    \item \textbf{Kamal Aghazada}: implemented and analyzed \textbf{Task~2} (BiDAF architecture, BERT integration, SQuAD training and evaluation pipeline).
+\end{itemize}
+
+Both team members collaborated on report writing, result validation, and presentation preparation.
+
+\section{Motivation}
+
+Sentiment analysis and reading comprehension are two fundamental NLP tasks that benefit from pre-trained language models. This project investigates: (1)~how a multilingual BERT model handles sentiment classification across languages, particularly for agglutinative languages like Azerbaijani, and (2)~whether contextual BERT embeddings improve a BiDAF reading comprehension model compared to traditional static word embeddings.
+
+
+\section{Task 1: Sentiment Analysis using BERT}
+
+\subsection{Method}
+
+We analyzed the pre-trained \texttt{nlptown/bert-base-multilingual-uncased-sentiment} model, which is fine-tuned on product reviews in six languages (English, Dutch, German, French, Spanish, Italian) for 5-class star-rating prediction. The model is based on \texttt{bert-base-multilingual-uncased} (mBERT) with 167M parameters, 12 attention heads, 12 hidden layers, and a hidden size of 768.
+
+The analysis script (\texttt{task1\_sentiment\_bert.py}) loads the model and systematically answers five questions through programmatic experiments, saving all results to JSON.
+
+\subsection{Inputs and Outputs}
+
+\begin{itemize}
+    \item \textbf{Input}: raw text string, tokenized into \texttt{input\_ids} (token indices), \texttt{token\_type\_ids}, and \texttt{attention\_mask} tensors. Maximum sequence length is 512 tokens; longer texts are truncated.
+    \item \textbf{Output}: logits tensor of shape \texttt{(batch\_size, 5)}, converted to class probabilities via softmax. The 5 classes represent star ratings from 1-star (very negative) to 5-stars (very positive).
+\end{itemize}
+
+\subsection{Case Sensitivity}
+
+Since this is an \emph{uncased} model, all input text is lowercased before tokenization. We verified this empirically with 5 test pairs (lowercase vs.\ uppercase), confirming that tokenization, predictions, and confidence scores are identical in all cases. Case does not affect accuracy.
+
+\subsection{Azerbaijani Language Support}
+
+Azerbaijani is an agglutinative Turkic language present in mBERT's vocabulary but absent from the model's fine-tuning data. We tested 5 Azerbaijani--English sentence pairs:
+
+\begin{table}[H]
+\centering
+\caption{Azerbaijani vs English sentiment predictions}
+\label{tab:az-comparison}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Expected} & \textbf{AZ Pred} & \textbf{EN Pred} & \textbf{AZ Conf} & \textbf{EN Conf} \\
+\midrule
+Positive & 5 stars & 5 stars & 51.7\% & 82.5\% \\
+Negative & 2 stars & 1 star  & 29.5\% & 69.1\% \\
+Neutral  & 2 stars & 3 stars & 41.0\% & 52.5\% \\
+Positive & 5 stars & 5 stars & 89.8\% & 88.4\% \\
+Negative & 1 star  & 1 star  & 43.6\% & 88.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Key findings: the model \emph{can} process Azerbaijani text, but confidence is consistently lower (avg.\ 51.1\% vs.\ 76.1\% for English). Agglutinative words suffer heavy subword fragmentation---e.g., ``m\textsuperscript{e}hsullar\textsuperscript{i}m\textsuperscript{i}zdan'' (``from our products'') is split into 8 subword tokens, losing morphological coherence. For production use, fine-tuning on Azerbaijani data or using a Turkic-specific model is recommended.
+
+
+\section{Task 2: Reading Comprehension with BiDAF}
+
+\subsection{BiDAF Architecture (Task 2.1)}
+
+We implemented the Bidirectional Attention Flow model~\cite{seo2017bidaf} in PyTorch (\texttt{bidaf\_model.py}). The architecture consists of seven layers:
+
+\begin{enumerate}
+    \item \textbf{Character Embedding}: CNN over character sequences (8-dim embeddings, 100 filters, kernel size 5) with max-pooling.
+    \item \textbf{Word Embedding}: Pre-trained GloVe 6B 100d vectors (frozen during training).
+    \item \textbf{Highway Network}: 2-layer gated combination of character and word embeddings.
+    \item \textbf{Contextual Embedding}: Bidirectional LSTM (hidden dim 100, output dim 200).
+    \item \textbf{Attention Flow}: Computes similarity matrix $S_{ij} = \mathbf{w}^\top[\mathbf{h}_i; \mathbf{u}_j; \mathbf{h}_i \circ \mathbf{u}_j]$, then derives context-to-query and query-to-context attention. Output: $\mathbf{G} = [\mathbf{H}; \tilde{\mathbf{U}}; \mathbf{H} \circ \tilde{\mathbf{U}}; \mathbf{H} \circ \tilde{\mathbf{H}}]$.
+    \item \textbf{Modeling Layer}: 2-layer BiLSTM over the attention output.
+    \item \textbf{Output Layer}: Linear projections over $[\mathbf{G}; \mathbf{M}]$ for start logits, and $[\mathbf{G}; \mathbf{M}_2]$ (with an additional BiLSTM) for end logits.
+\end{enumerate}
+
+The model takes word and character indices for both context and query, and outputs start/end position logits over the context. Loss is the average of cross-entropy for start and end positions.
+
+\subsection{BERT Integration (Task 2.2)}
+
+We created a separate \texttt{BiDAF\_BERT} model (\texttt{bidaf\_bert\_model.py}) that replaces layers 1--3 (character embedding, word embedding, highway network) with frozen \texttt{bert-base-multilingual-uncased} contextual embeddings. The BERT output (768-dim) is projected to 200-dim via a linear layer with ReLU and dropout, then fed into the same contextual BiLSTM, attention flow, modeling, and output layers as the baseline.
+
+This design isolates the embedding source as the only variable, making the comparison between GloVe and BERT embeddings clean and interpretable.
+
+\subsection{Training and Evaluation (Task 2.3)}
+
+\textbf{Dataset}: SQuAD v1.1 via HuggingFace Datasets, using 5\,000 training and 1\,000 validation examples.
+
+\textbf{Evaluation metrics}: Exact Match (EM) and token-level F1 score, computed with standard SQuAD normalization (lowercasing, article/punctuation removal).
+
+\textbf{Training setup}: Adam optimizer, learning rate $10^{-3}$, gradient clipping at 5.0, ReduceLROnPlateau scheduler (patience 3), 15 epochs. Baseline uses batch size 32; BERT variant uses batch size 16 (due to memory).
+
+\begin{table}[H]
+\centering
+\caption{Model comparison on SQuAD v1.1 validation set}
+\label{tab:task2-comparison}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{EM (\%)} & \textbf{F1 (\%)} & \textbf{Trainable Params} & \textbf{Total Params} \\
+\midrule
+BiDAF (GloVe + Char CNN) & 19.70 & 30.11 & 1,615,774 & 3,085,474 \\
+BiDAF-BERT (Frozen mBERT) & 16.40 & 24.00 & 1,602,802 & 168,959,218 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Training progression (selected epochs)}
+\label{tab:task2-epochs}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+& \multicolumn{4}{c}{\textbf{Baseline BiDAF}} & \multicolumn{4}{c}{\textbf{BiDAF-BERT}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+\textbf{Epoch} & \textbf{T.Loss} & \textbf{V.Loss} & \textbf{EM} & \textbf{F1} & \textbf{T.Loss} & \textbf{V.Loss} & \textbf{EM} & \textbf{F1} \\
+\midrule
+1  & 4.03 & 3.88 & 2.0  & 6.9  & 3.63 & 3.39 & 6.3  & 9.6 \\
+5  & 2.83 & 3.07 & 13.9 & 21.2 & 2.76 & 2.89 & 12.8 & 18.3 \\
+10 & 1.95 & 3.01 & 18.3 & 27.7 & 2.30 & 2.75 & 15.7 & 23.0 \\
+15 & 1.21 & 3.56 & 19.7 & 30.1 & 2.00 & 2.69 & 16.4 & 24.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Analysis of Results}
+
+Contrary to the common expectation that BERT embeddings improve downstream task performance, the baseline BiDAF with GloVe embeddings outperformed the BERT variant by 3.3 EM points and 6.1 F1 points. Several factors explain this:
+
+\begin{enumerate}
+    \item \textbf{Frozen BERT}: the BERT encoder was completely frozen, meaning its representations were not adapted to the QA task. The 768$\to$200 projection layer is the only learned mapping, which may lose information.
+    \item \textbf{Tokenization mismatch}: BERT uses WordPiece subword tokenization, while the BiDAF attention mechanism was designed for word-level tokens. Subword-level attention may dilute the signal for answer span detection.
+    \item \textbf{Small training set}: with only 5\,000 examples, the projection layer and downstream BiDAF components have limited data to learn an effective mapping from BERT space.
+    \item \textbf{Multilingual model}: \texttt{bert-base-multilingual-uncased} distributes its capacity across 104 languages, making its English representations weaker than a dedicated English BERT.
+    \item \textbf{Character-level features}: the baseline benefits from character CNN embeddings that capture morphological patterns, which the BERT variant lacks.
+\end{enumerate}
+
+Notably, the BERT variant achieves lower validation loss (2.69 vs.\ 3.56) despite lower EM/F1, suggesting it produces better-calibrated probability distributions but less precise span boundaries. Fine-tuning BERT or using \texttt{bert-base-uncased} would likely improve results significantly.
+
+\section{Extra Task: Web Dashboard}
+
+We built a unified FastAPI dashboard (\texttt{extra\_task\_ui/}) with the same glass-card visual style as previous projects, deployed via Docker Compose. The UI provides:
+
+\begin{itemize}
+    \item \textbf{Overview}: summary cards with key metrics from both tasks.
+    \item \textbf{Task~1 tab}: model architecture details, case sensitivity test results, Azerbaijani vs.\ English comparison table, and subword tokenization visualization.
+    \item \textbf{Task~2 tab}: model comparison table with deltas, canvas-drawn training curves (validation loss and F1), epoch-by-epoch history with model selector, and hyperparameter panels.
+\end{itemize}
+
+Deployment: \texttt{docker compose up --build} from the \texttt{project4/} directory serves the dashboard at \texttt{http://localhost:8000}.
+
+\section{Discussion and Conclusion}
+
+This project demonstrates two key findings:
+
+\begin{enumerate}
+    \item \textbf{Multilingual BERT for sentiment analysis} works across languages present in its vocabulary, but performance degrades significantly for languages not in the fine-tuning data. Azerbaijani predictions are directionally correct but with much lower confidence, primarily due to aggressive subword fragmentation of agglutinative morphology.
+    \item \textbf{BERT embeddings do not automatically improve BiDAF} when frozen and used with a small training set. The GloVe baseline with character-level features outperforms frozen mBERT, highlighting that architecture-embedding compatibility, fine-tuning strategy, and training data volume all matter more than raw embedding quality.
+\end{enumerate}
+
+Future work should explore fine-tuning BERT end-to-end within the BiDAF framework, using an English-specific BERT model, and training on the full SQuAD dataset to better leverage contextual embeddings.
+
+\begin{thebibliography}{9}
+\bibitem{seo2017bidaf}
+M.~Seo, A.~Kembhavi, A.~Farhadi, and H.~Hajishirzi,
+``Bidirectional Attention Flow for Machine Comprehension,''
+\textit{arXiv:1611.01603}, 2017.
+
+\bibitem{devlin2019bert}
+J.~Devlin, M.-W.~Chang, K.~Lee, and K.~Toutanova,
+``BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding,''
+\textit{arXiv:1810.04805}, 2019.
+
+\bibitem{rajpurkar2016squad}
+P.~Rajpurkar, J.~Zhang, K.~Lopyrev, and P.~Liang,
+``SQuAD: 100,000+ Questions for Machine Comprehension of Text,''
+\textit{arXiv:1606.05250}, 2016.
+
+\bibitem{pennington2014glove}
+J.~Pennington, R.~Socher, and C.~Manning,
+``GloVe: Global Vectors for Word Representation,''
+\textit{EMNLP}, 2014.
+\end{thebibliography}
+
+\end{document}
