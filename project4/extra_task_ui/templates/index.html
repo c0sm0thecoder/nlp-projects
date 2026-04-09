@@ -43,6 +43,7 @@
       <button class="nav-btn active" type="button" data-view="overview">Overview</button>
       <button class="nav-btn" type="button" data-view="task1">Task 1 — Sentiment</button>
       <button class="nav-btn" type="button" data-view="task2">Task 2 — QA Training</button>
+      <button class="nav-btn" type="button" data-view="live">Live Sentiment Test</button>
     </nav>
 
     <!-- ============ OVERVIEW ============ -->
@@ -172,6 +173,71 @@
           <tbody id="hpBertBody"></tbody></table>
         </div>
       </article>
+    </section>
+
+    <!-- ============ LIVE SENTIMENT ============ -->
+    <section class="panel glass dashboard-view is-hidden" data-section="live">
+      <div class="panel-head">
+        <h2>Live Azerbaijani Sentiment Test</h2>
+        <p>Test the fine-tuned mBERT model on custom Azerbaijani text.</p>
+      </div>
+      <div class="sentiment-tester">
+        <div class="input-row">
+          <textarea id="sentimentInput" placeholder="Azərbaycanca mətn daxil edin... (Enter Azerbaijani text)"
+            rows="3" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:10px;padding:0.8rem;font-size:1rem;resize:vertical;"></textarea>
+        </div>
+        <div class="controls-row" style="display:flex;gap:1rem;align-items:center;margin-top:0.8rem;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+            <input type="checkbox" id="useFinetuned" checked style="width:18px;height:18px;accent-color:#8b5cf6;"/>
+            <span>Use Fine-tuned Model</span>
+          </label>
+          <button id="predictBtn" type="button" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;color:white;padding:0.6rem 1.5rem;border-radius:10px;font-weight:600;cursor:pointer;">
+            Analyze Sentiment
+          </button>
+          <button id="compareBtn" type="button" style="background:linear-gradient(135deg,#0ea5e9,#22d3ee);border:none;color:white;padding:0.6rem 1.5rem;border-radius:10px;font-weight:600;cursor:pointer;">
+            Compare Models
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Single Prediction Result -->
+    <section class="panel glass dashboard-view is-hidden" data-section="live" id="singleResult" style="display:none;">
+      <div class="panel-head">
+        <h2>Prediction Result</h2>
+      </div>
+      <div class="result-content">
+        <div class="stars-display" id="starsDisplay" style="font-size:2.5rem;margin-bottom:0.5rem;"></div>
+        <div id="predictionText" style="font-size:1.2rem;font-weight:600;"></div>
+        <div id="confidenceText" style="color:var(--muted);margin-top:0.3rem;"></div>
+        <div id="modelUsed" style="color:var(--muted);font-size:0.9rem;margin-top:0.5rem;"></div>
+        <div class="prob-bars" id="probBars" style="margin-top:1rem;"></div>
+      </div>
+    </section>
+
+    <!-- Comparison Result -->
+    <section class="panel glass dashboard-view is-hidden" data-section="live" id="compareResult" style="display:none;">
+      <div class="panel-head">
+        <h2>Model Comparison</h2>
+        <p id="compareText" style="font-style:italic;"></p>
+      </div>
+      <div class="grid-two" style="gap:1rem;">
+        <div class="comparison-card" id="originalCard" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:1.2rem;">
+          <h3 style="color:#fb7185;margin:0 0 0.8rem;">Original mBERT</h3>
+          <div class="stars-display" id="origStars" style="font-size:2rem;"></div>
+          <div id="origPred" style="font-weight:600;"></div>
+          <div id="origConf" style="color:var(--muted);font-size:0.9rem;"></div>
+          <div id="origProbs" style="margin-top:0.8rem;"></div>
+        </div>
+        <div class="comparison-card" id="finetunedCard" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:1.2rem;">
+          <h3 style="color:#34d399;margin:0 0 0.8rem;">Fine-tuned (Azerbaijani)</h3>
+          <div class="stars-display" id="ftStars" style="font-size:2rem;"></div>
+          <div id="ftPred" style="font-weight:600;"></div>
+          <div id="ftConf" style="color:var(--muted);font-size:0.9rem;"></div>
+          <div id="ftProbs" style="margin-top:0.8rem;"></div>
+        </div>
+      </div>
+      <div id="improvementBadge" style="margin-top:1rem;text-align:center;font-size:1.1rem;"></div>
     </section>
 
   </main>

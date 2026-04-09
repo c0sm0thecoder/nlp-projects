@@ -255,3 +255,108 @@ document.getElementById("historyModelSelect").addEventListener("change", e => {
   fill("hpBaseBody", base.hyperparameters);
   fill("hpBertBody", bert.hyperparameters);
 })();
+
+
+/* ── Live Sentiment Testing ── */
+const sentimentInput = document.getElementById("sentimentInput");
+const useFinetuned = document.getElementById("useFinetuned");
+const predictBtn = document.getElementById("predictBtn");
+const compareBtn = document.getElementById("compareBtn");
+
+function renderStars(n) {
+  return "★".repeat(n) + "☆".repeat(5 - n);
+}
+
+function renderProbBars(probs, containerId) {
+  const container = document.getElementById(containerId);
+  const labels = ["1 Star", "2 Stars", "3 Stars", "4 Stars", "5 Stars"];
+  const colors = ["#ef4444", "#f97316", "#fbbf24", "#84cc16", "#22c55e"];
+  container.innerHTML = probs.map((p, i) => `
+    <div style="display:flex;align-items:center;gap:0.5rem;margin:0.3rem 0;">
+      <span style="width:55px;font-size:0.8rem;color:var(--muted);">${labels[i]}</span>
+      <div style="flex:1;background:rgba(255,255,255,0.1);border-radius:4px;height:16px;overflow:hidden;">
+        <div style="width:${p}%;background:${colors[i]};height:100%;transition:width 0.3s;"></div>
+      </div>
+      <span style="width:45px;text-align:right;font-size:0.8rem;">${p}%</span>
+    </div>
+  `).join("");
+}
+
+predictBtn.addEventListener("click", async () => {
+  const text = sentimentInput.value.trim();
+  if (!text) return;
+
+  predictBtn.disabled = true;
+  predictBtn.textContent = "Analyzing...";
+
+  try {
+    const res = await fetch("/api/sentiment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, use_finetuned: useFinetuned.checked }),
+    });
+    const data = await res.json();
+
+    // Show single result
+    document.getElementById("singleResult").style.display = "block";
+    document.getElementById("compareResult").style.display = "none";
+
+    document.getElementById("starsDisplay").textContent = renderStars(data.prediction);
+    document.getElementById("predictionText").textContent = `${data.prediction} Star${data.prediction > 1 ? "s" : ""} Rating`;
+    document.getElementById("confidenceText").textContent = `Confidence: ${data.confidence}%`;
+    document.getElementById("modelUsed").textContent = `Model: ${data.model_used}`;
+    renderProbBars(data.all_probabilities, "probBars");
+
+  } catch (err) {
+    alert("Error: " + err.message);
+  } finally {
+    predictBtn.disabled = false;
+    predictBtn.textContent = "Analyze Sentiment";
+  }
+});
+
+compareBtn.addEventListener("click", async () => {
+  const text = sentimentInput.value.trim();
+  if (!text) return;
+
+  compareBtn.disabled = true;
+  compareBtn.textContent = "Comparing...";
+
+  try {
+    const res = await fetch(`/api/sentiment/compare?text=${encodeURIComponent(text)}`);
+    const data = await res.json();
+
+    // Show comparison result
+    document.getElementById("singleResult").style.display = "none";
+    document.getElementById("compareResult").style.display = "block";
+
+    document.getElementById("compareText").textContent = `"${data.text}"`;
+
+    // Original model
+    document.getElementById("origStars").textContent = renderStars(data.original.prediction);
+    document.getElementById("origPred").textContent = `${data.original.prediction} Star${data.original.prediction > 1 ? "s" : ""}`;
+    document.getElementById("origConf").textContent = `Confidence: ${data.original.confidence}%`;
+    renderProbBars(data.original.probabilities, "origProbs");
+
+    // Fine-tuned model
+    document.getElementById("ftStars").textContent = renderStars(data.finetuned.prediction);
+    document.getElementById("ftPred").textContent = `${data.finetuned.prediction} Star${data.finetuned.prediction > 1 ? "s" : ""}`;
+    document.getElementById("ftConf").textContent = `Confidence: ${data.finetuned.confidence}%`;
+    renderProbBars(data.finetuned.probabilities, "ftProbs");
+
+    // Improvement badge
+    const improv = data.improvement;
+    const color = improv > 0 ? "#22c55e" : improv < 0 ? "#ef4444" : "#94a3b8";
+    const sign = improv > 0 ? "+" : "";
+    document.getElementById("improvementBadge").innerHTML =
+      `<span style="background:${color};padding:0.4rem 1rem;border-radius:20px;font-weight:600;">
+        Confidence Change: ${sign}${improv}%
+      </span>`;
+
+  } catch (err) {
+    alert("Error: " + err.message);
+  } finally {
+    compareBtn.disabled = false;
+    compareBtn.textContent = "Compare Models";
+  }
+});
