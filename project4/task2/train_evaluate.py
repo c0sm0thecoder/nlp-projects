@@ -245,8 +245,13 @@ def train_baseline(
         optimizer, mode="max", factor=0.5, patience=3
     )
 
+    # Prepare save directory
+    save_dir = Path(__file__).resolve().parent / "results"
+    save_dir.mkdir(parents=True, exist_ok=True)
+
     history = []
     best_f1 = 0.0
+    best_state = None
 
     for epoch in range(1, num_epochs + 1):
         t0 = time.time()
@@ -268,6 +273,7 @@ def train_baseline(
 
         if val_metrics["f1"] > best_f1:
             best_f1 = val_metrics["f1"]
+            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
 
         print(
             f"  Epoch {epoch:2d}/{num_epochs} | "
@@ -277,6 +283,27 @@ def train_baseline(
             f"F1={val_metrics['f1']:.2f}% | "
             f"{elapsed:.1f}s"
         )
+
+    # Save best model checkpoint + vocabulary
+    ckpt_path = save_dir / "baseline_bidaf_best.pt"
+    torch.save({
+        "model_state_dict": best_state,
+        "word_vocab_size": vocab.word_vocab_size,
+        "char_vocab_size": vocab.char_vocab_size,
+        "word_embed_dim": GLOVE_DIM,
+        "hidden_dim": hidden_dim,
+        "best_val_f1": best_f1,
+    }, ckpt_path)
+    print(f"  Saved best baseline checkpoint to {ckpt_path}")
+
+    # Save vocabulary for inference
+    vocab_path = save_dir / "baseline_vocab.json"
+    with vocab_path.open("w", encoding="utf-8") as f:
+        json.dump({
+            "word2idx": vocab.word2idx,
+            "char2idx": vocab.char2idx,
+        }, f, ensure_ascii=False)
+    print(f"  Saved vocabulary to {vocab_path}")
 
     # Final evaluation
     final = evaluate(model, val_loader, device, "baseline")
@@ -346,8 +373,13 @@ def train_bert_bidaf(
         optimizer, mode="max", factor=0.5, patience=3
     )
 
+    # Prepare save directory
+    save_dir = Path(__file__).resolve().parent / "results"
+    save_dir.mkdir(parents=True, exist_ok=True)
+
     history = []
     best_f1 = 0.0
+    best_state = None
 
     for epoch in range(1, num_epochs + 1):
         t0 = time.time()
@@ -369,6 +401,13 @@ def train_bert_bidaf(
 
         if val_metrics["f1"] > best_f1:
             best_f1 = val_metrics["f1"]
+            # Only save non-BERT parameters (BERT is frozen and loaded from HF)
+            non_bert_state = {
+                k: v.cpu().clone()
+                for k, v in model.state_dict().items()
+                if not k.startswith("bert.")
+            }
+            best_state = non_bert_state
 
         print(
             f"  Epoch {epoch:2d}/{num_epochs} | "
@@ -378,6 +417,16 @@ def train_bert_bidaf(
             f"F1={val_metrics['f1']:.2f}% | "
             f"{elapsed:.1f}s"
         )
+
+    # Save best model checkpoint (non-BERT weights only, much smaller)
+    ckpt_path = save_dir / "bert_bidaf_best.pt"
+    torch.save({
+        "model_state_dict": best_state,
+        "bert_model_name": bert_model_name,
+        "hidden_dim": hidden_dim,
+        "best_val_f1": best_f1,
+    }, ckpt_path)
+    print(f"  Saved best BERT-BiDAF checkpoint to {ckpt_path}")
 
     # Final evaluation
     final = evaluate(model, val_loader, device, "bert")

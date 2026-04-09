@@ -15,229 +15,141 @@
   <div class="bg-orb orb-c"></div>
 
   <main class="container">
-    <!-- Hero -->
     <header class="hero glass">
       <div class="hero-copy">
         <p class="eyebrow">Extra Task · UI Showcase</p>
         <h1>Sentiment &amp; QA Dashboard</h1>
-        <p>Unified view of Task 1 (BERT Sentiment Analysis) and Task 2 (BiDAF Reading Comprehension) results.</p>
+        <p>Unified view of Task 1 (BERT Sentiment) and Task 2 (BiDAF QA) with live inference.</p>
       </div>
       <div class="hero-badges">
-        <div class="badge">
-          <span>Sentiment Model</span>
-          <strong id="badgeModel">—</strong>
-        </div>
-        <div class="badge">
-          <span>Best Baseline F1</span>
-          <strong id="badgeBaseF1">—</strong>
-        </div>
-        <div class="badge">
-          <span>Best BERT F1</span>
-          <strong id="badgeBertF1">—</strong>
-        </div>
+        <div class="badge"><span>Sentiment Model</span><strong id="badgeModel">—</strong></div>
+        <div class="badge"><span>Best Baseline F1</span><strong id="badgeBaseF1">—</strong></div>
+        <div class="badge"><span>Best BERT F1</span><strong id="badgeBertF1">—</strong></div>
       </div>
     </header>
 
-    <!-- Nav -->
     <nav class="view-nav glass" aria-label="Dashboard sections">
       <button class="nav-btn active" type="button" data-view="overview">Overview</button>
       <button class="nav-btn" type="button" data-view="task1">Task 1 — Sentiment</button>
       <button class="nav-btn" type="button" data-view="task2">Task 2 — QA Training</button>
-      <button class="nav-btn" type="button" data-view="live">Live Sentiment Test</button>
+      <button class="nav-btn" type="button" data-view="live">Live Inference</button>
     </nav>
 
-    <!-- ============ OVERVIEW ============ -->
+    <!-- ===== OVERVIEW ===== -->
     <section class="cards dashboard-view" data-section="overview" id="overviewCards"></section>
 
-    <!-- ============ TASK 1 ============ -->
-    <!-- Model Architecture -->
+    <!-- ===== TASK 1 ===== -->
     <section class="panel glass dashboard-view is-hidden" data-section="task1">
-      <div class="panel-head">
-        <h2>Model Architecture</h2>
-        <p>Key properties of the sentiment analysis BERT model.</p>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr>
-          <th>Property</th><th>Value</th>
-        </tr></thead><tbody id="archBody"></tbody></table>
-      </div>
+      <div class="panel-head"><h2>Model Architecture</h2><p>Key properties of the sentiment BERT model.</p></div>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody id="archBody"></tbody></table></div>
     </section>
-
-    <!-- Case Sensitivity -->
     <section class="panel glass dashboard-view is-hidden" data-section="task1">
-      <div class="panel-head">
-        <h2>Case Sensitivity Analysis</h2>
-        <p>Comparing lowercase vs uppercase predictions — model is uncased so results are identical.</p>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr>
-          <th>Text</th><th>Prediction</th><th>Confidence</th><th>Match</th>
-        </tr></thead><tbody id="caseBody"></tbody></table>
-      </div>
+      <div class="panel-head"><h2>Case Sensitivity Analysis</h2><p>Uncased model — case has no effect.</p></div>
+      <div class="table-wrap"><table><thead><tr><th>Text</th><th>Prediction</th><th>Confidence</th><th>Match</th></tr></thead><tbody id="caseBody"></tbody></table></div>
     </section>
-
-    <!-- Azerbaijani -->
     <section class="panel glass dashboard-view is-hidden" data-section="task1">
-      <div class="panel-head">
-        <h2>Azerbaijani Language Support</h2>
-        <p>Comparing Azerbaijani vs English sentiment predictions — agglutinative language challenge.</p>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr>
-          <th>Azerbaijani</th><th>English</th><th>Expected</th>
-          <th>AZ Pred</th><th>EN Pred</th><th>AZ Conf</th><th>EN Conf</th>
-        </tr></thead><tbody id="azBody"></tbody></table>
-      </div>
+      <div class="panel-head"><h2>Azerbaijani Language Support</h2><p>Azerbaijani vs English sentiment predictions.</p></div>
+      <div class="table-wrap"><table><thead><tr><th>Azerbaijani</th><th>English</th><th>Expected</th><th>AZ Pred</th><th>EN Pred</th><th>AZ Conf</th><th>EN Conf</th></tr></thead><tbody id="azBody"></tbody></table></div>
     </section>
-
-    <!-- Tokenization -->
     <section class="panel glass dashboard-view is-hidden" data-section="task1">
-      <div class="panel-head">
-        <h2>Agglutinative Tokenization</h2>
-        <p>How mBERT fragments Azerbaijani words into subword tokens.</p>
-      </div>
+      <div class="panel-head"><h2>Agglutinative Tokenization</h2><p>How mBERT fragments Azerbaijani words.</p></div>
       <div id="tokenizationCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0.8rem;"></div>
     </section>
 
-
-    <!-- ============ TASK 2 ============ -->
-    <!-- Comparison Table -->
+    <!-- ===== TASK 2 ===== -->
     <section class="panel glass dashboard-view is-hidden" data-section="task2">
-      <div class="panel-head">
-        <h2>Model Comparison</h2>
-        <p>Baseline BiDAF (GloVe) vs BiDAF-BERT (frozen mBERT) on SQuAD v1.1.</p>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr>
-          <th>Metric</th><th>Baseline BiDAF</th><th>BiDAF-BERT</th><th>Δ</th>
-        </tr></thead><tbody id="compBody"></tbody></table>
-      </div>
+      <div class="panel-head"><h2>Model Comparison</h2><p>Baseline BiDAF (GloVe) vs BiDAF-BERT (frozen mBERT) on SQuAD v1.1.</p></div>
+      <div class="table-wrap"><table><thead><tr><th>Metric</th><th>Baseline BiDAF</th><th>BiDAF-BERT</th><th>Δ</th></tr></thead><tbody id="compBody"></tbody></table></div>
     </section>
-
-    <!-- Training Curves -->
     <section class="grid-two dashboard-view is-hidden" data-section="task2">
       <article class="panel glass">
-        <div class="panel-head">
-          <h2>Validation Loss</h2>
-          <p>Per-epoch validation loss for both models.</p>
-        </div>
+        <div class="panel-head"><h2>Validation Loss</h2><p>Per-epoch validation loss.</p></div>
         <canvas id="lossCanvas" class="chart-canvas" width="540" height="320"></canvas>
       </article>
       <article class="panel glass">
-        <div class="panel-head">
-          <h2>F1 Score Progression</h2>
-          <p>Per-epoch F1 on the validation set.</p>
-        </div>
+        <div class="panel-head"><h2>F1 Score Progression</h2><p>Per-epoch F1 on validation set.</p></div>
         <canvas id="f1Canvas" class="chart-canvas" width="540" height="320"></canvas>
       </article>
     </section>
-
-    <!-- Epoch History -->
     <section class="panel glass dashboard-view is-hidden" data-section="task2">
       <div class="panel-head split-head">
-        <div>
-          <h2>Epoch-by-Epoch History</h2>
-          <p>Detailed training metrics per epoch.</p>
-        </div>
-        <div>
-          <select id="historyModelSelect" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:10px;padding:0.42rem 0.58rem;">
-            <option value="baseline">Baseline BiDAF</option>
-            <option value="bert">BiDAF-BERT</option>
-          </select>
-        </div>
+        <div><h2>Epoch-by-Epoch History</h2><p>Detailed training metrics per epoch.</p></div>
+        <select id="historyModelSelect" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:10px;padding:0.42rem 0.58rem;">
+          <option value="baseline">Baseline BiDAF</option>
+          <option value="bert">BiDAF-BERT</option>
+        </select>
       </div>
-      <div class="table-wrap">
-        <table><thead><tr>
-          <th>Epoch</th><th>Train Loss</th><th>Val Loss</th><th>EM (%)</th><th>F1 (%)</th><th>Time (s)</th>
-        </tr></thead><tbody id="historyBody"></tbody></table>
-      </div>
+      <div class="table-wrap"><table><thead><tr><th>Epoch</th><th>Train Loss</th><th>Val Loss</th><th>EM (%)</th><th>F1 (%)</th><th>Time (s)</th></tr></thead><tbody id="historyBody"></tbody></table></div>
     </section>
-
-    <!-- Hyperparameters -->
     <section class="grid-two dashboard-view is-hidden" data-section="task2">
       <article class="panel glass">
-        <div class="panel-head">
-          <h2>Baseline Hyperparameters</h2>
-        </div>
-        <div class="table-wrap">
-          <table><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
-          <tbody id="hpBaseBody"></tbody></table>
-        </div>
+        <div class="panel-head"><h2>Baseline Hyperparameters</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody id="hpBaseBody"></tbody></table></div>
       </article>
       <article class="panel glass">
-        <div class="panel-head">
-          <h2>BERT Hyperparameters</h2>
-        </div>
-        <div class="table-wrap">
-          <table><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
-          <tbody id="hpBertBody"></tbody></table>
-        </div>
+        <div class="panel-head"><h2>BERT Hyperparameters</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody id="hpBertBody"></tbody></table></div>
       </article>
     </section>
 
-    <!-- ============ LIVE SENTIMENT ============ -->
+
+    <!-- ===== LIVE INFERENCE ===== -->
+    <!-- Sentiment -->
     <section class="panel glass dashboard-view is-hidden" data-section="live">
       <div class="panel-head">
-        <h2>Live Azerbaijani Sentiment Test</h2>
-        <p>Test the fine-tuned mBERT model on custom Azerbaijani text.</p>
+        <h2>Live Sentiment Analysis</h2>
+        <p>Type any text to get a star-rating prediction from the mBERT sentiment model.</p>
       </div>
-      <div class="sentiment-tester">
-        <div class="input-row">
-          <textarea id="sentimentInput" placeholder="Azərbaycanca mətn daxil edin... (Enter Azerbaijani text)"
-            rows="3" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:10px;padding:0.8rem;font-size:1rem;resize:vertical;"></textarea>
+      <div class="controls-row" style="align-items:end;">
+        <label style="flex:1;min-width:300px;">
+          Input Text
+          <textarea id="sentimentInput" rows="3" placeholder="e.g. This product is amazing! I love it."></textarea>
+        </label>
+        <button id="sentimentBtn" class="action-btn" type="button">Analyze</button>
+      </div>
+      <div id="sentimentResult" style="margin-top:0.8rem;display:none;">
+        <div style="display:flex;gap:1rem;align-items:center;margin-bottom:0.6rem;">
+          <span style="font-size:2rem;font-weight:800;" id="sentimentStars"></span>
+          <span style="color:var(--muted);font-size:0.9rem;" id="sentimentConf"></span>
         </div>
-        <div class="controls-row" style="display:flex;gap:1rem;align-items:center;margin-top:0.8rem;flex-wrap:wrap;">
-          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
-            <input type="checkbox" id="useFinetuned" checked style="width:18px;height:18px;accent-color:#8b5cf6;"/>
-            <span>Use Fine-tuned Model</span>
+        <div class="table-wrap">
+          <table><thead><tr><th>Class</th><th>Score</th><th>Bar</th></tr></thead>
+          <tbody id="sentimentScoresBody"></tbody></table>
+        </div>
+      </div>
+      <div id="sentimentLoading" style="display:none;color:var(--cool);margin-top:0.8rem;">Loading model (first request may take ~30s)...</div>
+      <div id="sentimentError" style="display:none;color:var(--hot);margin-top:0.8rem;"></div>
+    </section>
+
+    <!-- QA with BiDAF-BERT -->
+    <section class="panel glass dashboard-view is-hidden" data-section="live">
+      <div class="panel-head">
+        <h2>Live Question Answering — BiDAF-BERT</h2>
+        <p>Uses your trained BiDAF-BERT model checkpoint. Provide a context passage and a question.</p>
+      </div>
+      <div class="controls-row" style="flex-direction:column;gap:0.6rem;">
+        <label style="width:100%;">
+          Context Passage
+          <textarea id="qaContext" rows="5" placeholder="Paste a paragraph of text here..."></textarea>
+        </label>
+        <div style="display:flex;gap:0.8rem;align-items:end;">
+          <label style="flex:1;min-width:250px;">
+            Question
+            <input id="qaQuestion" type="text" placeholder="e.g. What is the capital of France?" style="width:100%;"/>
           </label>
-          <button id="predictBtn" type="button" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;color:white;padding:0.6rem 1.5rem;border-radius:10px;font-weight:600;cursor:pointer;">
-            Analyze Sentiment
-          </button>
-          <button id="compareBtn" type="button" style="background:linear-gradient(135deg,#0ea5e9,#22d3ee);border:none;color:white;padding:0.6rem 1.5rem;border-radius:10px;font-weight:600;cursor:pointer;">
-            Compare Models
-          </button>
+          <button id="qaBtn" class="action-btn" type="button">Ask</button>
         </div>
       </div>
-    </section>
-
-    <!-- Single Prediction Result -->
-    <section class="panel glass dashboard-view is-hidden" data-section="live" id="singleResult" style="display:none;">
-      <div class="panel-head">
-        <h2>Prediction Result</h2>
-      </div>
-      <div class="result-content">
-        <div class="stars-display" id="starsDisplay" style="font-size:2.5rem;margin-bottom:0.5rem;"></div>
-        <div id="predictionText" style="font-size:1.2rem;font-weight:600;"></div>
-        <div id="confidenceText" style="color:var(--muted);margin-top:0.3rem;"></div>
-        <div id="modelUsed" style="color:var(--muted);font-size:0.9rem;margin-top:0.5rem;"></div>
-        <div class="prob-bars" id="probBars" style="margin-top:1rem;"></div>
-      </div>
-    </section>
-
-    <!-- Comparison Result -->
-    <section class="panel glass dashboard-view is-hidden" data-section="live" id="compareResult" style="display:none;">
-      <div class="panel-head">
-        <h2>Model Comparison</h2>
-        <p id="compareText" style="font-style:italic;"></p>
-      </div>
-      <div class="grid-two" style="gap:1rem;">
-        <div class="comparison-card" id="originalCard" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:1.2rem;">
-          <h3 style="color:#fb7185;margin:0 0 0.8rem;">Original mBERT</h3>
-          <div class="stars-display" id="origStars" style="font-size:2rem;"></div>
-          <div id="origPred" style="font-weight:600;"></div>
-          <div id="origConf" style="color:var(--muted);font-size:0.9rem;"></div>
-          <div id="origProbs" style="margin-top:0.8rem;"></div>
+      <div id="qaResult" style="margin-top:0.8rem;display:none;">
+        <div style="background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.25);border-radius:12px;padding:1rem;margin-bottom:0.6rem;">
+          <div style="color:var(--muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Answer</div>
+          <div style="font-size:1.3rem;font-weight:700;" id="qaAnswer"></div>
+          <div style="color:var(--muted);font-size:0.85rem;margin-top:0.3rem;" id="qaScore"></div>
         </div>
-        <div class="comparison-card" id="finetunedCard" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:1.2rem;">
-          <h3 style="color:#34d399;margin:0 0 0.8rem;">Fine-tuned (Azerbaijani)</h3>
-          <div class="stars-display" id="ftStars" style="font-size:2rem;"></div>
-          <div id="ftPred" style="font-weight:600;"></div>
-          <div id="ftConf" style="color:var(--muted);font-size:0.9rem;"></div>
-          <div id="ftProbs" style="margin-top:0.8rem;"></div>
-        </div>
+        <div style="color:var(--muted);font-size:0.85rem;" id="qaSpan"></div>
       </div>
-      <div id="improvementBadge" style="margin-top:1rem;text-align:center;font-size:1.1rem;"></div>
+      <div id="qaLoading" style="display:none;color:var(--cool);margin-top:0.8rem;">Loading BiDAF-BERT model (first request may take ~30s)...</div>
+      <div id="qaError" style="display:none;color:var(--hot);margin-top:0.8rem;"></div>
     </section>
 
   </main>

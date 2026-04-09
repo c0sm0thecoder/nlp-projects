@@ -26,7 +26,7 @@ document.getElementById("badgeBaseF1").textContent = base.best_val_f1 != null ? 
 document.getElementById("badgeBertF1").textContent = bert.best_val_f1 != null ? bert.best_val_f1 + "%" : "—";
 
 /* ── Overview Cards ── */
-(function buildOverviewCards() {
+(function() {
   const cards = [
     { label: "Task 1", title: "Sentiment Classes", metric: arch.num_classes || "—", sub: "1–5 star ratings", bg: "linear-gradient(135deg,#6366f1,#8b5cf6)" },
     { label: "Task 1", title: "Max Input Length", metric: arch.max_sequence_length || "—", sub: "tokens", bg: "linear-gradient(135deg,#0ea5e9,#22d3ee)" },
@@ -43,58 +43,42 @@ document.getElementById("badgeBertF1").textContent = bert.best_val_f1 != null ? 
   });
 })();
 
-
-/* ── Task 1: Architecture Table ── */
-(function buildArchTable() {
+/* ── Task 1: Architecture ── */
+(function() {
   const rows = [
-    ["Model Name", arch.model_name],
-    ["Base Model", arch.base_model],
-    ["Classes", arch.num_classes],
-    ["Max Sequence Length", arch.max_sequence_length],
-    ["Vocab Size", arch.vocab_size?.toLocaleString()],
-    ["Hidden Size", arch.hidden_size],
-    ["Attention Heads", arch.num_attention_heads],
-    ["Hidden Layers", arch.num_hidden_layers],
+    ["Model Name", arch.model_name], ["Base Model", arch.base_model],
+    ["Classes", arch.num_classes], ["Max Sequence Length", arch.max_sequence_length],
+    ["Vocab Size", arch.vocab_size?.toLocaleString()], ["Hidden Size", arch.hidden_size],
+    ["Attention Heads", arch.num_attention_heads], ["Hidden Layers", arch.num_hidden_layers],
     ["Total Parameters", arch.total_parameters?.toLocaleString()],
   ];
   const body = document.getElementById("archBody");
-  rows.forEach(([k, v]) => {
-    body.innerHTML += `<tr><td>${k}</td><td>${v ?? "—"}</td></tr>`;
-  });
+  rows.forEach(([k, v]) => { body.innerHTML += `<tr><td>${k}</td><td>${v ?? "—"}</td></tr>`; });
 })();
 
 /* ── Task 1: Case Sensitivity ── */
-(function buildCaseTable() {
+(function() {
   const tests = t1.case_sensitivity_analysis?.test_results || [];
   const body = document.getElementById("caseBody");
   tests.forEach(t => {
-    body.innerHTML += `<tr>
-      <td>${t.lower_text}</td>
-      <td>${t.lower_prediction}</td>
-      <td>${(t.lower_confidence * 100).toFixed(1)}%</td>
-      <td>${t.predictions_match ? "✅" : "❌"}</td>
-    </tr>`;
+    body.innerHTML += `<tr><td>${t.lower_text}</td><td>${t.lower_prediction}</td>
+      <td>${(t.lower_confidence * 100).toFixed(1)}%</td><td>${t.predictions_match ? "✅" : "❌"}</td></tr>`;
   });
 })();
 
-/* ── Task 1: Azerbaijani Comparison ── */
-(function buildAzTable() {
+/* ── Task 1: Azerbaijani ── */
+(function() {
   const items = t1.azerbaijani_analysis?.comparison_results || [];
   const body = document.getElementById("azBody");
   items.forEach(r => {
-    const azConf = (r.azerbaijani_confidence * 100).toFixed(1);
-    const enConf = (r.english_confidence * 100).toFixed(1);
-    body.innerHTML += `<tr>
-      <td>${r.azerbaijani_text}</td><td>${r.english_text}</td>
-      <td>${r.expected_sentiment}</td>
-      <td>${r.azerbaijani_prediction}</td><td>${r.english_prediction}</td>
-      <td>${azConf}%</td><td>${enConf}%</td>
-    </tr>`;
+    body.innerHTML += `<tr><td>${r.azerbaijani_text}</td><td>${r.english_text}</td>
+      <td>${r.expected_sentiment}</td><td>${r.azerbaijani_prediction}</td><td>${r.english_prediction}</td>
+      <td>${(r.azerbaijani_confidence*100).toFixed(1)}%</td><td>${(r.english_confidence*100).toFixed(1)}%</td></tr>`;
   });
 })();
 
-/* ── Task 1: Tokenization Cards ── */
-(function buildTokenCards() {
+/* ── Task 1: Tokenization ── */
+(function() {
   const items = t1.azerbaijani_analysis?.tokenization_analysis || [];
   const wrap = document.getElementById("tokenizationCards");
   items.forEach(t => {
@@ -105,14 +89,13 @@ document.getElementById("badgeBertF1").textContent = bert.best_val_f1 != null ? 
     wrap.innerHTML += `<div class="panel glass" style="padding:1rem;">
       <h3 style="margin:0 0 0.3rem;font-size:1.1rem;">${t.azerbaijani_word}</h3>
       <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">"${t.english_meaning}" → ${t.num_subwords} subwords</p>
-      <div>${pills}</div>
-    </div>`;
+      <div>${pills}</div></div>`;
   });
 })();
 
 
 /* ── Task 2: Comparison Table ── */
-(function buildCompTable() {
+(function() {
   const body = document.getElementById("compBody");
   const rows = [
     ["Exact Match (%)", base.final_val_em, bert.final_val_em],
@@ -143,220 +126,124 @@ function drawLineChart(canvasId, datasets, yLabel) {
   const ctx = canvas.getContext("2d");
   const W = canvas.width, H = canvas.height;
   const pad = { top: 20, right: 20, bottom: 40, left: 55 };
-  const plotW = W - pad.left - pad.right;
-  const plotH = H - pad.top - pad.bottom;
-
-  // Compute bounds
-  let allVals = [];
-  datasets.forEach(ds => allVals.push(...ds.values));
-  let yMin = Math.min(...allVals);
-  let yMax = Math.max(...allVals);
-  const yPad = (yMax - yMin) * 0.1 || 1;
-  yMin -= yPad; yMax += yPad;
+  const plotW = W - pad.left - pad.right, plotH = H - pad.top - pad.bottom;
+  let allVals = []; datasets.forEach(ds => allVals.push(...ds.values));
+  let yMin = Math.min(...allVals), yMax = Math.max(...allVals);
+  const yPad = (yMax - yMin) * 0.1 || 1; yMin -= yPad; yMax += yPad;
   const xMax = Math.max(...datasets.map(ds => ds.values.length));
-
   const toX = i => pad.left + (i / (xMax - 1)) * plotW;
   const toY = v => pad.top + (1 - (v - yMin) / (yMax - yMin)) * plotH;
-
-  // Clear
   ctx.clearRect(0, 0, W, H);
-
-  // Grid
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(255,255,255,0.08)"; ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
     const y = pad.top + (i / 4) * plotH;
     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
     ctx.fillStyle = "#94a3b8"; ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "right";
-    const val = yMax - (i / 4) * (yMax - yMin);
-    ctx.fillText(val.toFixed(2), pad.left - 8, y + 4);
+    ctx.fillText((yMax - (i / 4) * (yMax - yMin)).toFixed(2), pad.left - 8, y + 4);
   }
-
-  // X labels
   ctx.fillStyle = "#94a3b8"; ctx.textAlign = "center";
-  for (let i = 0; i < xMax; i++) {
-    if (xMax <= 20 || i % Math.ceil(xMax / 10) === 0) {
-      ctx.fillText(i + 1, toX(i), H - pad.bottom + 18);
-    }
-  }
+  for (let i = 0; i < xMax; i++) { if (xMax <= 20 || i % Math.ceil(xMax / 10) === 0) ctx.fillText(i + 1, toX(i), H - pad.bottom + 18); }
   ctx.fillText("Epoch", pad.left + plotW / 2, H - 4);
-
-  // Y label
-  ctx.save(); ctx.translate(14, pad.top + plotH / 2);
-  ctx.rotate(-Math.PI / 2); ctx.fillText(yLabel, 0, 0); ctx.restore();
-
-  // Lines
-  const colors = ["#22d3ee", "#fb7185", "#34d399", "#fbbf24"];
+  ctx.save(); ctx.translate(14, pad.top + plotH / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(yLabel, 0, 0); ctx.restore();
+  const colors = ["#22d3ee", "#fb7185"];
   datasets.forEach((ds, di) => {
-    ctx.strokeStyle = colors[di % colors.length];
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ds.values.forEach((v, i) => {
-      const x = toX(i), y = toY(v);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-
-    // Dots
-    ctx.fillStyle = colors[di % colors.length];
-    ds.values.forEach((v, i) => {
-      ctx.beginPath(); ctx.arc(toX(i), toY(v), 3, 0, Math.PI * 2); ctx.fill();
-    });
-
-    // Legend
+    ctx.strokeStyle = colors[di]; ctx.lineWidth = 2.5; ctx.beginPath();
+    ds.values.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); }); ctx.stroke();
+    ctx.fillStyle = colors[di];
+    ds.values.forEach((v, i) => { ctx.beginPath(); ctx.arc(toX(i), toY(v), 3, 0, Math.PI * 2); ctx.fill(); });
     const lx = pad.left + 10 + di * 150;
-    ctx.fillStyle = colors[di % colors.length];
     ctx.fillRect(lx, pad.top + 4, 14, 3);
     ctx.fillStyle = "#e2e8f0"; ctx.font = "12px Inter,sans-serif"; ctx.textAlign = "left";
     ctx.fillText(ds.label, lx + 20, pad.top + 10);
   });
 }
+const baseHist = base.training_history || [], bertHist = bert.training_history || [];
+drawLineChart("lossCanvas", [{ label: "Baseline", values: baseHist.map(h => h.val_loss) }, { label: "BERT", values: bertHist.map(h => h.val_loss) }], "Val Loss");
+drawLineChart("f1Canvas", [{ label: "Baseline", values: baseHist.map(h => h.val_f1) }, { label: "BERT", values: bertHist.map(h => h.val_f1) }], "F1 (%)");
 
-const baseHist = base.training_history || [];
-const bertHist = bert.training_history || [];
-
-drawLineChart("lossCanvas", [
-  { label: "Baseline", values: baseHist.map(h => h.val_loss) },
-  { label: "BERT", values: bertHist.map(h => h.val_loss) },
-], "Val Loss");
-
-drawLineChart("f1Canvas", [
-  { label: "Baseline", values: baseHist.map(h => h.val_f1) },
-  { label: "BERT", values: bertHist.map(h => h.val_f1) },
-], "F1 (%)");
-
-
-/* ── Task 2: Epoch History Table ── */
+/* ── Task 2: Epoch History ── */
 function renderHistory(model) {
   const hist = model === "bert" ? bertHist : baseHist;
-  const body = document.getElementById("historyBody");
-  body.innerHTML = "";
-  hist.forEach(h => {
-    body.innerHTML += `<tr>
-      <td>${h.epoch}</td><td>${h.train_loss}</td><td>${h.val_loss}</td>
-      <td>${h.val_em}</td><td>${h.val_f1}</td><td>${h.time_sec}</td>
-    </tr>`;
-  });
+  const body = document.getElementById("historyBody"); body.innerHTML = "";
+  hist.forEach(h => { body.innerHTML += `<tr><td>${h.epoch}</td><td>${h.train_loss}</td><td>${h.val_loss}</td><td>${h.val_em}</td><td>${h.val_f1}</td><td>${h.time_sec}</td></tr>`; });
 }
 renderHistory("baseline");
-document.getElementById("historyModelSelect").addEventListener("change", e => {
-  renderHistory(e.target.value);
-});
+document.getElementById("historyModelSelect").addEventListener("change", e => renderHistory(e.target.value));
 
 /* ── Task 2: Hyperparameters ── */
-(function buildHpTables() {
-  const fill = (bodyId, hp) => {
-    const body = document.getElementById(bodyId);
-    if (!hp) return;
-    Object.entries(hp).forEach(([k, v]) => {
-      body.innerHTML += `<tr><td>${k}</td><td>${v}</td></tr>`;
-    });
-  };
-  fill("hpBaseBody", base.hyperparameters);
-  fill("hpBertBody", bert.hyperparameters);
+(function() {
+  const fill = (id, hp) => { const b = document.getElementById(id); if (!hp) return; Object.entries(hp).forEach(([k, v]) => { b.innerHTML += `<tr><td>${k}</td><td>${v}</td></tr>`; }); };
+  fill("hpBaseBody", base.hyperparameters); fill("hpBertBody", bert.hyperparameters);
 })();
 
 
-/* ── Live Sentiment Testing ── */
-const sentimentInput = document.getElementById("sentimentInput");
-const useFinetuned = document.getElementById("useFinetuned");
-const predictBtn = document.getElementById("predictBtn");
-const compareBtn = document.getElementById("compareBtn");
+/* ══════════════════════════════════════════════════════════
+   LIVE INFERENCE
+   ══════════════════════════════════════════════════════════ */
 
-function renderStars(n) {
-  return "★".repeat(n) + "☆".repeat(5 - n);
-}
-
-function renderProbBars(probs, containerId) {
-  const container = document.getElementById(containerId);
-  const labels = ["1 Star", "2 Stars", "3 Stars", "4 Stars", "5 Stars"];
-  const colors = ["#ef4444", "#f97316", "#fbbf24", "#84cc16", "#22c55e"];
-  container.innerHTML = probs.map((p, i) => `
-    <div style="display:flex;align-items:center;gap:0.5rem;margin:0.3rem 0;">
-      <span style="width:55px;font-size:0.8rem;color:var(--muted);">${labels[i]}</span>
-      <div style="flex:1;background:rgba(255,255,255,0.1);border-radius:4px;height:16px;overflow:hidden;">
-        <div style="width:${p}%;background:${colors[i]};height:100%;transition:width 0.3s;"></div>
-      </div>
-      <span style="width:45px;text-align:right;font-size:0.8rem;">${p}%</span>
-    </div>
-  `).join("");
-}
-
-predictBtn.addEventListener("click", async () => {
-  const text = sentimentInput.value.trim();
+/* ── Sentiment ── */
+document.getElementById("sentimentBtn").addEventListener("click", async () => {
+  const text = document.getElementById("sentimentInput").value.trim();
   if (!text) return;
-
-  predictBtn.disabled = true;
-  predictBtn.textContent = "Analyzing...";
+  const resultDiv = document.getElementById("sentimentResult");
+  const loadingDiv = document.getElementById("sentimentLoading");
+  const errorDiv = document.getElementById("sentimentError");
+  resultDiv.style.display = "none"; errorDiv.style.display = "none"; loadingDiv.style.display = "block";
 
   try {
     const res = await fetch("/api/sentiment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, use_finetuned: useFinetuned.checked }),
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
     });
     const data = await res.json();
+    loadingDiv.style.display = "none";
+    if (data.error) { errorDiv.textContent = data.error; errorDiv.style.display = "block"; return; }
 
-    // Show single result
-    document.getElementById("singleResult").style.display = "block";
-    document.getElementById("compareResult").style.display = "none";
+    const starNum = parseInt(data.prediction);
+    document.getElementById("sentimentStars").textContent = "★".repeat(starNum) + "☆".repeat(5 - starNum);
+    document.getElementById("sentimentConf").textContent = data.prediction + " — " + (data.confidence * 100).toFixed(1) + "% confidence";
 
-    document.getElementById("starsDisplay").textContent = renderStars(data.prediction);
-    document.getElementById("predictionText").textContent = `${data.prediction} Star${data.prediction > 1 ? "s" : ""} Rating`;
-    document.getElementById("confidenceText").textContent = `Confidence: ${data.confidence}%`;
-    document.getElementById("modelUsed").textContent = `Model: ${data.model_used}`;
-    renderProbBars(data.all_probabilities, "probBars");
-
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    predictBtn.disabled = false;
-    predictBtn.textContent = "Analyze Sentiment";
+    const body = document.getElementById("sentimentScoresBody"); body.innerHTML = "";
+    data.all_scores.sort((a, b) => parseInt(a.label) - parseInt(b.label));
+    data.all_scores.forEach(s => {
+      const pct = (s.score * 100).toFixed(1);
+      const color = s.label === data.prediction ? "var(--cool)" : "rgba(255,255,255,0.15)";
+      body.innerHTML += `<tr><td>${s.label}</td><td>${pct}%</td>
+        <td><div style="width:100%;height:16px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+        <div style="width:${Math.max(s.score*100,1)}%;height:100%;background:${color};border-radius:8px;"></div></div></td></tr>`;
+    });
+    resultDiv.style.display = "block";
+  } catch (e) {
+    loadingDiv.style.display = "none";
+    errorDiv.textContent = "Request failed: " + e.message; errorDiv.style.display = "block";
   }
 });
 
-compareBtn.addEventListener("click", async () => {
-  const text = sentimentInput.value.trim();
-  if (!text) return;
-
-  compareBtn.disabled = true;
-  compareBtn.textContent = "Comparing...";
+/* ── QA (BiDAF-BERT) ── */
+document.getElementById("qaBtn").addEventListener("click", async () => {
+  const context = document.getElementById("qaContext").value.trim();
+  const question = document.getElementById("qaQuestion").value.trim();
+  if (!context || !question) return;
+  const resultDiv = document.getElementById("qaResult");
+  const loadingDiv = document.getElementById("qaLoading");
+  const errorDiv = document.getElementById("qaError");
+  resultDiv.style.display = "none"; errorDiv.style.display = "none"; loadingDiv.style.display = "block";
 
   try {
-    const res = await fetch(`/api/sentiment/compare?text=${encodeURIComponent(text)}`);
+    const res = await fetch("/api/qa", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, context }),
+    });
     const data = await res.json();
+    loadingDiv.style.display = "none";
+    if (data.error) { errorDiv.textContent = data.error; errorDiv.style.display = "block"; return; }
 
-    // Show comparison result
-    document.getElementById("singleResult").style.display = "none";
-    document.getElementById("compareResult").style.display = "block";
-
-    document.getElementById("compareText").textContent = `"${data.text}"`;
-
-    // Original model
-    document.getElementById("origStars").textContent = renderStars(data.original.prediction);
-    document.getElementById("origPred").textContent = `${data.original.prediction} Star${data.original.prediction > 1 ? "s" : ""}`;
-    document.getElementById("origConf").textContent = `Confidence: ${data.original.confidence}%`;
-    renderProbBars(data.original.probabilities, "origProbs");
-
-    // Fine-tuned model
-    document.getElementById("ftStars").textContent = renderStars(data.finetuned.prediction);
-    document.getElementById("ftPred").textContent = `${data.finetuned.prediction} Star${data.finetuned.prediction > 1 ? "s" : ""}`;
-    document.getElementById("ftConf").textContent = `Confidence: ${data.finetuned.confidence}%`;
-    renderProbBars(data.finetuned.probabilities, "ftProbs");
-
-    // Improvement badge
-    const improv = data.improvement;
-    const color = improv > 0 ? "#22c55e" : improv < 0 ? "#ef4444" : "#94a3b8";
-    const sign = improv > 0 ? "+" : "";
-    document.getElementById("improvementBadge").innerHTML =
-      `<span style="background:${color};padding:0.4rem 1rem;border-radius:20px;font-weight:600;">
-        Confidence Change: ${sign}${improv}%
-      </span>`;
-
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    compareBtn.disabled = false;
-    compareBtn.textContent = "Compare Models";
+    document.getElementById("qaAnswer").textContent = data.answer || "(no answer found)";
+    document.getElementById("qaScore").textContent = "Confidence: " + (data.score * 100).toFixed(1) + "%";
+    document.getElementById("qaSpan").textContent = "Token span: [" + data.start_token + ", " + data.end_token + "] | Char span: [" + data.char_start + ", " + data.char_end + "]";
+    resultDiv.style.display = "block";
+  } catch (e) {
+    loadingDiv.style.display = "none";
+    errorDiv.textContent = "Request failed: " + e.message; errorDiv.style.display = "block";
   }
 });

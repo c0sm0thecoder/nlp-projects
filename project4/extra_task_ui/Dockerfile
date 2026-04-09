@@ -12,6 +12,9 @@ RUN python -m pip install -r /tmp/requirements.txt
 COPY extra_task_ui /app/extra_task_ui
 COPY task1/sentiment_analysis_results.json /app/task1/sentiment_analysis_results.json
 COPY task2/results /app/task2/results
+COPY task2/bidaf_model.py /app/task2/bidaf_model.py
+COPY task2/bidaf_bert_model.py /app/task2/bidaf_bert_model.py
+COPY models /app/models
 
 EXPOSE 8000
 
