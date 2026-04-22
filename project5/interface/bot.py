@@ -437,7 +437,7 @@ def _route_question(question: str, from_user: str) -> tuple[str, str]:
 
     # Fetch all channels bot is in and pick best match
     try:
-        resp = client.conversations_list(types="public_channel,private_channel", limit=200)
+        resp = client.conversations_list(types="public_channel", limit=200)
         channels = resp.get("channels", [])
     except SlackApiError as e:
         return f"Failed to fetch channels: {e}", "HTML"
@@ -447,12 +447,21 @@ def _route_question(question: str, from_user: str) -> tuple[str, str]:
 
     # Keywords to channel name matching
     topic_keywords = {
-        "engineering": ["deploy", "code", "bug", "api", "build", "release", "github", "jenkins", "service"],
-        "hr": ["pto", "vacation", "leave", "benefits", "onboarding", "hiring", "salary", "policy"],
-        "sales": ["customer", "deal", "pricing", "contract", "client", "revenue"],
-        "marketing": ["campaign", "brand", "content", "social", "ads"],
-        "finance": ["budget", "expense", "invoice", "payment", "cost"],
+        "engineering": ["deploy", "code", "bug", "api", "build", "release", "github", "jenkins", "service", "ci", "cd", "pipeline", "test", "merge", "pr", "commit"],
+        "hr": ["pto", "vacation", "leave", "benefits", "onboarding", "hiring", "salary", "policy", "employee", "hr"],
+        "sales": ["customer", "deal", "pricing", "contract", "client", "revenue", "sale", "lead"],
+        "marketing": ["campaign", "brand", "content", "social", "ads", "seo", "email"],
+        "finance": ["budget", "expense", "invoice", "payment", "cost", "reimbursement"],
         "general": [],  # fallback
+    }
+
+    # Channel name aliases for each topic
+    channel_aliases = {
+        "engineering": ["engineering", "eng", "dev", "developers", "tech", "backend", "frontend"],
+        "hr": ["hr", "human-resources", "people", "hr-updates"],
+        "sales": ["sales", "revenue", "deals"],
+        "marketing": ["marketing", "growth", "brand"],
+        "finance": ["finance", "accounting", "budget"],
     }
 
     # Find best channel
@@ -461,10 +470,10 @@ def _route_question(question: str, from_user: str) -> tuple[str, str]:
 
     for keyword_group, keywords in topic_keywords.items():
         if any(kw in q for kw in keywords):
-            # Find channel matching this topic
+            aliases = channel_aliases.get(keyword_group, [keyword_group])
             for ch in channels:
                 ch_name = ch.get("name", "").lower()
-                if keyword_group in ch_name or ch_name in keyword_group:
+                if any(alias in ch_name or ch_name in alias for alias in aliases):
                     best_channel = ch["id"]
                     best_channel_name = ch["name"]
                     break
