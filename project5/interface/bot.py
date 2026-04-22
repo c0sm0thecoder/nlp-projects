@@ -214,40 +214,96 @@ def _diff_page(page_title: str) -> tuple[str, str]:
 
 
 def _find_expert(topic: str) -> tuple[str, str]:
-    """Find who to talk to about a topic. Returns (text, parse_mode)."""
-    # First search the knowledge graph for relevant people
-    graph_results = []
-    results = kg.find_entity_by_name(topic)
-    people = [r for r in results if r["label"] == "Person"]
-    for p in people[:3]:
-        props = p["props"]
-        graph_results.append(f"👤 <b>{props.get('name')}</b> — {props.get('role')}\n     📧 <code>{props.get('email', 'N/A')}</code>")
+    """Find specific people to talk to about a topic. Returns (text, parse_mode)."""
+    driver = get_neo4j_driver()
+    experts = []
 
-    # Also check projects/services related to topic
-    projects = [r for r in results if r["label"] in ("Project", "Service")]
-    for proj in projects[:2]:
-        props = proj["props"]
-        owner = props.get("owner_dept") or props.get("owner_team", "Unknown")
-        graph_results.append(f"📁 <b>{props.get('name')}</b> — owned by {owner}")
+    with driver.session() as session:
+        # Search for people related to the topic via projects, technologies, or departments
+        result = list(session.run("""
+            // Direct name match
+            OPTIONAL MATCH (p1:Person)
+            WHERE toLower(p1.name) CONTAINS toLower($topic)
+               OR toLower(p1.role) CONTAINS toLower($topic)
 
-    prompt = f"""Topic: "{topic}"
+            // People who lead projects matching topic
+            OPTIONAL MATCH (p2:Person)-[:LEADS]->(proj:Project)
+            WHERE toLower(proj.name) CONTAINS toLower($topic)
 
-Who should someone talk to about this topic in a tech company? Give 1-2 specific role recommendations with brief reasoning. No markdown, plain text only."""
+            // People in departments matching topic
+            OPTIONAL MATCH (p3:Person)-[:WORKS_IN]->(d:Department)
+            WHERE toLower(d.name) CONTAINS toLower($topic)
 
-    llm = get_llm()
-    response = llm.invoke(prompt)
-    suggestion = response.content if hasattr(response, "content") else str(response)
+            // People who lead departments matching topic
+            OPTIONAL MATCH (p4:Person)-[:LEADS]->(d2:Department)
+            WHERE toLower(d2.name) CONTAINS toLower($topic)
+
+            // People working on projects using technology matching topic
+            OPTIONAL MATCH (p5:Person)-[:LEADS]->(proj2:Project)-[:USES]->(t:Technology)
+            WHERE toLower(t.name) CONTAINS toLower($topic)
+
+            WITH collect(DISTINCT p1) + collect(DISTINCT p2) + collect(DISTINCT p3) + collect(DISTINCT p4) + collect(DISTINCT p5) AS all_people
+            UNWIND all_people AS person
+            WITH DISTINCT person
+            WHERE person IS NOT NULL
+            RETURN person.name AS name, person.role AS role, person.email AS email,
+                   person.department AS dept, person.authority_score AS auth
+            ORDER BY person.authority_score DESC
+            LIMIT 5
+        """, topic=topic))
+
+        for row in result:
+            if row['name']:
+                experts.append({
+                    'name': row['name'],
+                    'role': row['role'] or 'Unknown',
+                    'email': row['email'] or 'N/A',
+                    'dept': row['dept'] or 'Unknown',
+                    'auth': row['auth'] or 0,
+                })
+
+    if not experts:
+        # Fallback: get highest authority people
+        with driver.session() as session:
+            fallback = list(session.run("""
+                MATCH (p:Person)
+                WHERE p.authority_score >= 7
+                RETURN p.name AS name, p.role AS role, p.email AS email,
+                       p.department AS dept, p.authority_score AS auth
+                ORDER BY p.authority_score DESC
+                LIMIT 3
+            """))
+            for row in fallback:
+                experts.append({
+                    'name': row['name'],
+                    'role': row['role'],
+                    'email': row['email'],
+                    'dept': row['dept'],
+                    'auth': row['auth'],
+                })
 
     result_parts = [
         f"<b>🎯 Expert Finder: {topic}</b>",
-        "━━━━━━━━━━━━━━━",
+        "━━━━━━━━━━━━━━━\n",
     ]
 
-    if graph_results:
-        result_parts.append("\n<b>From Knowledge Graph:</b>")
-        result_parts.extend(graph_results)
+    if experts:
+        for e in experts:
+            auth = e['auth']
+            if auth >= 10:
+                icon = "👑"
+            elif auth >= 7:
+                icon = "🔹"
+            else:
+                icon = "▫️"
 
-    result_parts.append(f"\n<b>💡 Suggestion:</b>\n{suggestion}")
+            result_parts.append(
+                f"{icon} <b>{e['name']}</b>\n"
+                f"     {e['role']} • {e['dept']}\n"
+                f"     📧 <code>{e['email']}</code>\n"
+            )
+    else:
+        result_parts.append("No specific experts found for this topic.")
 
     return "\n".join(result_parts), "HTML"
 
