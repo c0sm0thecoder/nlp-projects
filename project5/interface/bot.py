@@ -1,5 +1,5 @@
 """
-bot.py — Async Telegram bot interface for Athena with conversation memory.
+bot.py — Async Telegram bot interface for Athena with persistent conversation memory.
 
 Run from inside project5/:  python interface/bot.py
 """
@@ -8,11 +8,12 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from langchain_community.chat_message_histories import FileChatMessageHistory
+from langchain_core.messages import AIMessage, HumanMessage
 from telegram import Update
 from telegram.constants import ChatAction
 from telegram.ext import (
@@ -37,19 +38,37 @@ _GREETING = (
     "Use /clear to reset our conversation history."
 )
 
+_HISTORY_DIR = Path(__file__).resolve().parents[1] / "chat_history"
 _MAX_HISTORY = 10
-_conversation_history: dict[int, list[dict[str, str]]] = defaultdict(list)
+
+
+def _get_history(chat_id: int) -> FileChatMessageHistory:
+    _HISTORY_DIR.mkdir(exist_ok=True)
+    return FileChatMessageHistory(str(_HISTORY_DIR / f"{chat_id}.json"))
+
+
+def _history_to_list(chat_history: FileChatMessageHistory) -> list[dict[str, str]]:
+    messages = chat_history.messages[-_MAX_HISTORY * 2:]
+    result = []
+    for msg in messages:
+        if isinstance(msg, HumanMessage):
+            result.append({"role": "user", "content": msg.content})
+        elif isinstance(msg, AIMessage):
+            result.append({"role": "assistant", "content": msg.content})
+    return result
 
 
 async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
-    _conversation_history[chat_id].clear()
+    history = _get_history(chat_id)
+    history.clear()
     await update.message.reply_text(_GREETING, parse_mode="Markdown")
 
 
 async def clear_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
-    _conversation_history[chat_id].clear()
+    history = _get_history(chat_id)
+    history.clear()
     await update.message.reply_text("Conversation history cleared.")
 
 
@@ -59,7 +78,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
 
     chat_id = update.effective_chat.id
-    history = _conversation_history[chat_id]
+    chat_history = _get_history(chat_id)
 
     await context.bot.send_chat_action(
         chat_id=chat_id,
@@ -67,19 +86,17 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     )
 
     try:
+        history_list = _history_to_list(chat_history)
         loop = asyncio.get_event_loop()
         answer = await loop.run_in_executor(
-            None, resolver.ask, question, list(history)
+            None, resolver.ask, question, history_list
         )
     except Exception as exc:
         logger.error("Resolver error: %s", exc, exc_info=True)
         answer = "I'm sorry, I encountered an error while searching the knowledge base. Please try again."
 
-    history.append({"role": "user", "content": question})
-    history.append({"role": "assistant", "content": answer})
-
-    if len(history) > _MAX_HISTORY * 2:
-        _conversation_history[chat_id] = history[-_MAX_HISTORY * 2:]
+    chat_history.add_user_message(question)
+    chat_history.add_ai_message(answer)
 
     await update.message.reply_text(answer)
 
