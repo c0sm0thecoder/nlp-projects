@@ -194,11 +194,22 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await update.message.reply_text(answer)
 
 
+async def post_init(application) -> None:
+    """Register bot commands with Telegram."""
+    from telegram import BotCommand
+    commands = [
+        BotCommand("start", "Start conversation with Athena"),
+        BotCommand("clear", "Clear conversation history"),
+    ]
+    await application.bot.set_my_commands(commands)
+    logger.info("Bot commands registered.")
+
+
 def main() -> None:
     settings = get_settings()
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    app = Application.builder().token(settings.telegram_bot_token).build()
+    app = Application.builder().token(settings.telegram_bot_token).post_init(post_init).build()
     app.add_handler(CommandHandler("start", start_handler))
     app.add_handler(CommandHandler("clear", clear_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
