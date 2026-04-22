@@ -63,19 +63,22 @@ def _transcribe_voice(audio_bytes: bytes) -> str:
         Path(temp_path).unlink(missing_ok=True)
 
 
-def _text_to_speech(text: str) -> bytes:
-    """Convert text to speech using gTTS."""
-    from gtts import gTTS
+async def _text_to_speech(text: str) -> bytes:
+    """Convert text to speech using edge-tts (Microsoft)."""
+    import edge_tts
 
     # Clean text for TTS
     clean_text = text.replace("*", "").replace("_", "").replace("`", "")
 
-    tts = gTTS(text=clean_text, lang="en", slow=False)
+    # Use a natural-sounding voice
+    communicate = edge_tts.Communicate(clean_text, "en-US-AriaNeural")
 
     audio_buffer = BytesIO()
-    tts.write_to_fp(audio_buffer)
-    audio_buffer.seek(0)
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_buffer.write(chunk["data"])
 
+    audio_buffer.seek(0)
     return audio_buffer.read()
 
 
@@ -1181,13 +1184,13 @@ async def voice_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         if not answer.strip():
             answer = "I could not find any relevant information."
 
-        # Show text response
-        await msg.edit_text(f"💬 \"{question}\"\n\n{answer}")
-
-        # Generate voice response
+        # Generate voice response only
+        await msg.edit_text("🔊 Generating voice response...")
         await context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.RECORD_VOICE)
-        audio_response = await loop.run_in_executor(None, _text_to_speech, answer)
+        audio_response = await _text_to_speech(answer)
 
+        # Delete status message and send voice only
+        await msg.delete()
         await update.message.reply_voice(voice=BytesIO(audio_response))
 
         chat_history.add_user_message(question)
