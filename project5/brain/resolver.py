@@ -99,6 +99,55 @@ def _extract_time_filter(question: str) -> tuple[float | None, float | None, str
     return None, None, None
 
 
+_TOPIC_CHANNEL_MAP = {
+    "deploy": ("engineering", "Engineering team handles deployments"),
+    "deployment": ("engineering", "Engineering team handles deployments"),
+    "jenkins": ("engineering", "Engineering team manages CI/CD"),
+    "github": ("engineering", "Engineering team manages code repos"),
+    "code": ("engineering", "Engineering team handles code questions"),
+    "api": ("engineering", "Engineering team owns APIs"),
+    "bug": ("engineering", "Engineering team fixes bugs"),
+    "pto": ("hr-updates", "HR manages PTO policies"),
+    "vacation": ("hr-updates", "HR manages vacation policies"),
+    "leave": ("hr-updates", "HR manages leave policies"),
+    "benefits": ("hr-updates", "HR manages benefits"),
+    "onboarding": ("hr-updates", "HR handles onboarding"),
+    "salary": ("hr-updates", "HR handles compensation"),
+    "sales": ("sales", "Sales team handles customer inquiries"),
+    "customer": ("sales", "Sales team handles customer relations"),
+    "pricing": ("sales", "Sales team handles pricing"),
+    "contract": ("legal", "Legal team handles contracts"),
+    "compliance": ("legal", "Legal team handles compliance"),
+    "budget": ("finance", "Finance team handles budgets"),
+    "expense": ("finance", "Finance team handles expenses"),
+    "invoice": ("finance", "Finance team handles invoicing"),
+}
+
+
+def _suggest_channel_for_gap(question: str, entity_names: list[str]) -> str | None:
+    """Suggest a Slack channel to ask when no info is found."""
+    q = question.lower()
+
+    # Check topic keywords
+    for keyword, (channel, reason) in _TOPIC_CHANNEL_MAP.items():
+        if keyword in q:
+            return f"#{channel} - {reason}"
+
+    # Check entity names against departments
+    for entity in entity_names:
+        entity_lower = entity.lower()
+        if "engineer" in entity_lower or "dev" in entity_lower:
+            return "#engineering - Engineering team might know"
+        if "hr" in entity_lower or "human" in entity_lower:
+            return "#hr-updates - HR team might know"
+        if "sales" in entity_lower:
+            return "#sales - Sales team might know"
+        if "finance" in entity_lower or "budget" in entity_lower:
+            return "#finance - Finance team might know"
+
+    return None
+
+
 def _filter_docs_by_time(docs: list, start_ts: float | None, end_ts: float | None) -> list:
     """Filter documents to those within the time range."""
     if start_ts is None:
@@ -401,7 +450,12 @@ def ask_stream_with_status(question: str, history: list[dict[str, str]] | None =
     all_docs.sort(key=score)
 
     if not all_docs and not graph_entities:
-        yield "I could not find any relevant information in the knowledge base."
+        # Knowledge gap detected - suggest who to ask
+        suggestion = _suggest_channel_for_gap(question, entity_names)
+        if suggestion:
+            yield f"I don't have information on this topic in the knowledge base.\n\n💡 Try asking in {suggestion}"
+        else:
+            yield "I could not find any relevant information in the knowledge base.\n\n💡 Consider posting your question in a relevant Slack channel."
         return
 
     # Step 5: Build context and stream response
