@@ -284,6 +284,221 @@ def _sync_now() -> tuple[str, str]:
         "\n".join(results)
     ), "HTML"
 
+
+def _generate_org_graph() -> bytes | None:
+    """Generate org chart as PNG image."""
+    import graphviz
+    import tempfile
+
+    driver = get_neo4j_driver()
+
+    # Get all people with their departments and roles
+    with driver.session() as session:
+        people = list(session.run("""
+            MATCH (p:Person)
+            RETURN p.name AS name, p.role AS role, p.department AS dept, p.authority_score AS auth
+            ORDER BY p.authority_score DESC
+        """))
+
+        # Get LEADS relationships
+        leads = list(session.run("""
+            MATCH (p:Person)-[:LEADS]->(d:Department)
+            RETURN p.name AS person, d.name AS dept
+        """))
+
+        # Get department info
+        depts = list(session.run("""
+            MATCH (d:Department)
+            RETURN d.name AS name, d.head AS head
+        """))
+
+    if not people:
+        return None
+
+    # Create graph
+    dot = graphviz.Digraph(
+        'org_chart',
+        format='png',
+        graph_attr={
+            'rankdir': 'TB',
+            'splines': 'ortho',
+            'nodesep': '0.5',
+            'ranksep': '0.8',
+            'bgcolor': '#1a1a2e',
+            'pad': '0.5',
+        },
+        node_attr={
+            'shape': 'box',
+            'style': 'filled,rounded',
+            'fontname': 'Arial',
+            'fontsize': '11',
+            'margin': '0.2,0.1',
+        },
+        edge_attr={
+            'color': '#4a4a6a',
+            'arrowsize': '0.7',
+        }
+    )
+
+    # Color scheme by authority
+    def get_color(auth):
+        if auth >= 10:
+            return '#e94560', '#ffffff'  # Red for executives
+        elif auth >= 7:
+            return '#0f3460', '#ffffff'  # Blue for seniors
+        else:
+            return '#16213e', '#cccccc'  # Dark for juniors
+
+    # Create department subgraphs
+    dept_people = {}
+    for p in people:
+        dept = p['dept'] or 'Other'
+        if dept not in dept_people:
+            dept_people[dept] = []
+        dept_people[dept].append(p)
+
+    # Find department heads
+    dept_heads = {d['name']: d['head'] for d in depts}
+    lead_relations = {l['person']: l['dept'] for l in leads}
+
+    # Add nodes by department
+    for dept, members in dept_people.items():
+        with dot.subgraph(name=f'cluster_{dept.replace(" ", "_")}') as c:
+            c.attr(
+                label=dept,
+                style='filled,rounded',
+                color='#2a2a4a',
+                fillcolor='#0f0f23',
+                fontcolor='#ffffff',
+                fontname='Arial Bold',
+                fontsize='12',
+            )
+
+            for p in members:
+                bg, fg = get_color(p['auth'] or 0)
+                label = f"{p['name']}\\n{p['role']}"
+                c.node(
+                    p['name'],
+                    label=label,
+                    fillcolor=bg,
+                    fontcolor=fg,
+                )
+
+    # Add reporting edges (heads to their reports)
+    for dept, head_name in dept_heads.items():
+        if head_name:
+            # Connect head to other members in same dept
+            if dept in dept_people:
+                for p in dept_people[dept]:
+                    if p['name'] != head_name and (p['auth'] or 0) < 10:
+                        dot.edge(head_name, p['name'])
+
+    # Add cross-department leadership
+    for person, dept in lead_relations.items():
+        head = dept_heads.get(dept)
+        if head and head != person:
+            dot.edge(person, head, style='dashed', color='#e94560')
+
+    # Render to bytes
+    with tempfile.TemporaryDirectory() as tmpdir:
+        filepath = dot.render(directory=tmpdir, cleanup=True)
+        with open(filepath, 'rb') as f:
+            return f.read()
+
+
+def _generate_entity_graph(entity_name: str) -> bytes | None:
+    """Generate graph centered on an entity."""
+    import graphviz
+    import tempfile
+
+    driver = get_neo4j_driver()
+
+    with driver.session() as session:
+        # Find entity and its relationships
+        result = list(session.run("""
+            MATCH (center)
+            WHERE toLower(center.name) CONTAINS toLower($name)
+            OPTIONAL MATCH (center)-[r]-(related)
+            RETURN
+                labels(center)[0] AS center_label,
+                center.name AS center_name,
+                type(r) AS rel_type,
+                labels(related)[0] AS related_label,
+                related.name AS related_name
+            LIMIT 30
+        """, name=entity_name))
+
+    if not result or not result[0]['center_name']:
+        return None
+
+    dot = graphviz.Digraph(
+        'entity_graph',
+        format='png',
+        graph_attr={
+            'rankdir': 'LR',
+            'bgcolor': '#1a1a2e',
+            'pad': '0.5',
+        },
+        node_attr={
+            'shape': 'box',
+            'style': 'filled,rounded',
+            'fontname': 'Arial',
+            'fontsize': '10',
+            'margin': '0.15,0.08',
+        },
+        edge_attr={
+            'fontname': 'Arial',
+            'fontsize': '8',
+            'fontcolor': '#888888',
+        }
+    )
+
+    # Color by label type
+    label_colors = {
+        'Person': ('#e94560', '#ffffff'),
+        'Department': ('#0f3460', '#ffffff'),
+        'Project': ('#00b894', '#ffffff'),
+        'Service': ('#6c5ce7', '#ffffff'),
+        'Technology': ('#fdcb6e', '#000000'),
+        'Policy': ('#fab1a0', '#000000'),
+    }
+
+    center_name = result[0]['center_name']
+    center_label = result[0]['center_label']
+    bg, fg = label_colors.get(center_label, ('#16213e', '#ffffff'))
+
+    # Add center node (larger)
+    dot.node(
+        center_name,
+        label=f"⬤ {center_name}\\n({center_label})",
+        fillcolor=bg,
+        fontcolor=fg,
+        penwidth='2',
+    )
+
+    # Add related nodes and edges
+    added = set([center_name])
+    for row in result:
+        if row['related_name'] and row['related_name'] not in added:
+            r_label = row['related_label'] or 'Unknown'
+            bg, fg = label_colors.get(r_label, ('#16213e', '#ffffff'))
+
+            dot.node(
+                row['related_name'],
+                label=f"{row['related_name']}\\n({r_label})",
+                fillcolor=bg,
+                fontcolor=fg,
+            )
+            added.add(row['related_name'])
+
+            rel = row['rel_type'] or ''
+            dot.edge(center_name, row['related_name'], label=rel, color='#4a4a6a')
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        filepath = dot.render(directory=tmpdir, cleanup=True)
+        with open(filepath, 'rb') as f:
+            return f.read()
+
 _GREETING = (
     "<b>🏛 Welcome to Athena</b>\n"
     "━━━━━━━━━━━━━━━\n\n"
@@ -296,6 +511,7 @@ _GREETING = (
     "<b>🛠 Commands:</b>\n"
     "/whois — Look up a person\n"
     "/team — List department members\n"
+    "/graph — Visual org chart or entity graph\n"
     "/summarize — Summarize a channel\n"
     "/diff — Page change history\n"
     "/expert — Find who to ask\n"
@@ -506,6 +722,40 @@ async def sync_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(result, parse_mode=parse_mode)
 
 
+async def graph_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.UPLOAD_PHOTO)
+
+    try:
+        loop = asyncio.get_event_loop()
+
+        if context.args:
+            # Graph centered on specific entity
+            entity = " ".join(context.args)
+            image_bytes = await loop.run_in_executor(None, _generate_entity_graph, entity)
+            caption = f"🔗 <b>Graph: {entity}</b>"
+        else:
+            # Full org chart
+            image_bytes = await loop.run_in_executor(None, _generate_org_graph)
+            caption = "📊 <b>Organization Chart</b>"
+
+        if image_bytes:
+            from io import BytesIO
+            await update.message.reply_photo(
+                photo=BytesIO(image_bytes),
+                caption=caption,
+                parse_mode="HTML",
+            )
+        else:
+            await update.message.reply_text("❌ No data found for graph.", parse_mode="HTML")
+
+    except Exception as e:
+        logger.error("Graph error: %s", e, exc_info=True)
+        await update.message.reply_text(
+            f"❌ Error generating graph.\n\n<i>Make sure graphviz is installed:</i>\n<code>brew install graphviz</code>",
+            parse_mode="HTML"
+        )
+
+
 async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     question = update.message.text
     if not question or not question.strip():
@@ -548,6 +798,7 @@ async def post_init(application) -> None:
         BotCommand("clear", "Clear conversation history"),
         BotCommand("whois", "Look up a person: /whois Alex Chen"),
         BotCommand("team", "List department members: /team Engineering"),
+        BotCommand("graph", "Visual graph: /graph or /graph Auth Service"),
         BotCommand("summarize", "Summarize Slack channel: /summarize #general"),
         BotCommand("diff", "Page changes: /diff PTO Policy"),
         BotCommand("expert", "Find expert: /expert kubernetes"),
@@ -566,6 +817,7 @@ def main() -> None:
     app.add_handler(CommandHandler("clear", clear_handler))
     app.add_handler(CommandHandler("whois", whois_handler))
     app.add_handler(CommandHandler("team", team_handler))
+    app.add_handler(CommandHandler("graph", graph_handler))
     app.add_handler(CommandHandler("summarize", summarize_handler))
     app.add_handler(CommandHandler("diff", diff_handler))
     app.add_handler(CommandHandler("expert", expert_handler))
