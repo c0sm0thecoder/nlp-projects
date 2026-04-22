@@ -246,7 +246,7 @@ def _get_confluence_pages(settings):
 <h2>Other Benefits</h2>
 <ul>
 <li>$100/month wellness stipend (gym, mental health apps, etc.)</li>
-<li>$500/year learning & development budget</li>
+<li>$500/year learning and development budget</li>
 <li>Commuter benefits (pre-tax transit/parking)</li>
 <li>Free lunch in-office on Tuesdays and Thursdays</li>
 <li>Annual company retreat</li>
@@ -385,7 +385,7 @@ def _get_confluence_pages(settings):
 
 <h2>For Authors</h2>
 <ul>
-<li>Keep PRs small (< 400 lines preferred, never > 1000)</li>
+<li>Keep PRs small (under 400 lines preferred, never over 1000)</li>
 <li>Write a clear description: What, Why, and How to test</li>
 <li>Self-review before requesting reviews</li>
 <li>Add tests for new functionality</li>
@@ -395,10 +395,10 @@ def _get_confluence_pages(settings):
 <h2>For Reviewers</h2>
 <ul>
 <li>Review within 24 hours of request</li>
-<li>Be constructive and kind — critique code, not people</li>
-<li>Distinguish between "must fix" and "nit/suggestion"</li>
-<li>Approve when good enough, don't block on perfection</li>
-<li>Use "Request Changes" sparingly, only for critical issues</li>
+<li>Be constructive and kind - critique code, not people</li>
+<li>Distinguish between must fix and nit/suggestion</li>
+<li>Approve when good enough, do not block on perfection</li>
+<li>Use Request Changes sparingly, only for critical issues</li>
 </ul>
 
 <h2>What to Look For</h2>
@@ -418,7 +418,7 @@ def _get_confluence_pages(settings):
 </ul>
 
 <h2>Merge Strategy</h2>
-<p>Use "Squash and Merge" for feature branches. Keep main history clean.</p>
+<p>Use Squash and Merge for feature branches. Keep main history clean.</p>
 """,
         },
         {
