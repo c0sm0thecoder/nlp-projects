@@ -25,12 +25,204 @@ from telegram.ext import (
     filters,
 )
 
-from brain import resolver
-from core.clients import get_llm
+from brain import resolver, knowledge_graph as kg
+from core.clients import get_llm, get_neo4j_driver
 from core.config import get_settings
 from core.logger import get_logger
 
 logger = get_logger("athena_bot")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TOOL FUNCTIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _whois(name: str) -> str:
+    """Look up a person by name."""
+    results = kg.find_entity_by_name(name)
+    persons = [r for r in results if r["label"] == "Person"]
+
+    if not persons:
+        return f"No person found matching '{name}'."
+
+    lines = []
+    for p in persons[:3]:
+        props = p["props"]
+        lines.append(
+            f"Name: {props.get('name', 'Unknown')}\n"
+            f"Role: {props.get('role', 'Unknown')}\n"
+            f"Department: {props.get('department', 'Unknown')}\n"
+            f"Email: {props.get('email', 'N/A')}\n"
+            f"Authority: {props.get('authority_score', 'N/A')}"
+        )
+    return "\n\n".join(lines)
+
+
+def _team(department: str) -> str:
+    """List all people in a department."""
+    driver = get_neo4j_driver()
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (p:Person)
+            WHERE toLower(p.department) CONTAINS toLower($dept)
+            RETURN p.name AS name, p.role AS role, p.email AS email
+            ORDER BY p.authority_score DESC
+            """,
+            dept=department,
+        )
+        members = list(result)
+
+    if not members:
+        return f"No team members found in '{department}'."
+
+    lines = [f"Team: {department}\n"]
+    for m in members:
+        lines.append(f"- {m['name']} ({m['role']}) - {m['email']}")
+    return "\n".join(lines)
+
+
+def _summarize_channel(channel_name: str) -> str:
+    """Summarize recent Slack channel activity."""
+    from slack_sdk import WebClient
+    settings = get_settings()
+    client = WebClient(token=settings.slack_bot_token)
+
+    # Find channel ID
+    channel_name = channel_name.lstrip("#")
+    channel_id = None
+    cursor = None
+    while True:
+        resp = client.conversations_list(types="public_channel", limit=200, cursor=cursor)
+        for ch in resp.get("channels", []):
+            if ch.get("name") == channel_name:
+                channel_id = ch["id"]
+                break
+        if channel_id:
+            break
+        cursor = resp.get("response_metadata", {}).get("next_cursor", "")
+        if not cursor:
+            break
+
+    if not channel_id:
+        return f"Channel '#{channel_name}' not found."
+
+    # Fetch recent messages
+    resp = client.conversations_history(channel=channel_id, limit=30)
+    messages = resp.get("messages", [])
+
+    if not messages:
+        return f"No recent messages in #{channel_name}."
+
+    # Format messages for summarization
+    msg_texts = []
+    for msg in reversed(messages):
+        text = msg.get("text", "")[:200]
+        if text:
+            msg_texts.append(text)
+
+    prompt = f"""Summarize the following Slack channel activity from #{channel_name} in 3-5 bullet points. Focus on key discussions, decisions, and updates.
+
+Messages:
+{chr(10).join(msg_texts[:20])}
+
+Summary:"""
+
+    llm = get_llm()
+    response = llm.invoke(prompt)
+    return response.content if hasattr(response, "content") else str(response)
+
+
+def _diff_page(page_title: str) -> str:
+    """Show what changed in a Confluence page."""
+    from atlassian import Confluence
+    settings = get_settings()
+    cf = Confluence(
+        url=settings.confluence_url,
+        username=settings.confluence_user,
+        password=settings.confluence_api_token,
+        cloud=True,
+    )
+
+    # Search for the page
+    pages = cf.cql(f'title ~ "{page_title}" AND type = page', limit=1).get("results", [])
+    if not pages:
+        return f"Page '{page_title}' not found."
+
+    page_id = pages[0]["content"]["id"]
+    page = cf.get_page_by_id(page_id, expand="version,history.lastUpdated")
+
+    version = page.get("version", {})
+    current_version = version.get("number", 1)
+    modified_by = version.get("by", {}).get("displayName", "Unknown")
+    modified_at = version.get("when", "Unknown")
+    message = version.get("message", "No version message")
+
+    result = [
+        f"Page: {page.get('title')}",
+        f"Current Version: {current_version}",
+        f"Last Modified: {modified_at}",
+        f"Modified By: {modified_by}",
+        f"Change Note: {message}",
+    ]
+
+    if current_version > 1:
+        # Get previous version content for comparison summary
+        try:
+            history = cf.get_page_by_id(page_id, expand="body.storage", version=current_version - 1)
+            old_length = len(history.get("body", {}).get("storage", {}).get("value", ""))
+            current = cf.get_page_by_id(page_id, expand="body.storage")
+            new_length = len(current.get("body", {}).get("storage", {}).get("value", ""))
+            diff = new_length - old_length
+            result.append(f"Content Change: {'+' if diff > 0 else ''}{diff} characters")
+        except Exception:
+            pass
+
+    return "\n".join(result)
+
+
+def _find_expert(topic: str) -> str:
+    """Find who to talk to about a topic."""
+    prompt = f"""Based on this topic: "{topic}"
+
+Given a typical tech company structure with these departments and roles:
+- Engineering: CTO, VP Engineering, Lead Architect, Senior Engineers, DevOps
+- Product: Director of Product, Product Managers, UX Lead
+- HR: HR Lead
+- Sales: VP Sales
+- Marketing: Director of Marketing
+- Finance: CFO
+- Legal: General Counsel
+- IT Operations: Director of IT
+
+Who would be the best person(s) to talk to about this topic? Be specific about the role and why.
+Keep response to 2-3 sentences."""
+
+    llm = get_llm()
+    response = llm.invoke(prompt)
+    answer = response.content if hasattr(response, "content") else str(response)
+
+    # Also search the knowledge graph
+    results = kg.find_entity_by_name(topic)
+    if results:
+        people = [r for r in results if r["label"] == "Person"]
+        if people:
+            names = [p["props"].get("name") for p in people[:2]]
+            answer += f"\n\nRelated people in knowledge graph: {', '.join(names)}"
+
+    return answer
+
+
+def _sync_now() -> str:
+    """Trigger manual sync."""
+    import requests
+    try:
+        # Try to call sync service if running
+        requests.post("http://localhost:8000/sync/slack", timeout=2)
+        requests.post("http://localhost:8000/sync/confluence", timeout=2)
+        return "Sync triggered. Check sync service logs for progress."
+    except Exception:
+        return "Sync service not running. Start it with: python interface/sync_service.py"
 
 _GREETING = (
     "Hello! I am *Athena*, your Wise Company Historian.\n\n"
@@ -160,6 +352,89 @@ async def clear_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     await update.message.reply_text("Conversation history cleared.")
 
 
+async def whois_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /whois <name>")
+        return
+
+    name = " ".join(context.args)
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, _whois, name)
+    await update.message.reply_text(result)
+
+
+async def team_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /team <department>")
+        return
+
+    department = " ".join(context.args)
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, _team, department)
+    await update.message.reply_text(result)
+
+
+async def summarize_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /summarize <#channel>")
+        return
+
+    channel = " ".join(context.args)
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+
+    try:
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _summarize_channel, channel)
+        await update.message.reply_text(result)
+    except Exception as e:
+        logger.error("Summarize error: %s", e)
+        await update.message.reply_text(f"Error summarizing channel: {e}")
+
+
+async def diff_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /diff <page title>")
+        return
+
+    page_title = " ".join(context.args)
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+
+    try:
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _diff_page, page_title)
+        await update.message.reply_text(result)
+    except Exception as e:
+        logger.error("Diff error: %s", e)
+        await update.message.reply_text(f"Error getting page diff: {e}")
+
+
+async def expert_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not context.args:
+        await update.message.reply_text("Usage: /expert <topic>")
+        return
+
+    topic = " ".join(context.args)
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+
+    try:
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _find_expert, topic)
+        await update.message.reply_text(result)
+    except Exception as e:
+        logger.error("Expert error: %s", e)
+        await update.message.reply_text(f"Error finding expert: {e}")
+
+
+async def sync_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+    result = _sync_now()
+    await update.message.reply_text(result)
+
+
 async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     question = update.message.text
     if not question or not question.strip():
@@ -200,6 +475,12 @@ async def post_init(application) -> None:
     commands = [
         BotCommand("start", "Start conversation with Athena"),
         BotCommand("clear", "Clear conversation history"),
+        BotCommand("whois", "Look up a person: /whois Alex Chen"),
+        BotCommand("team", "List department members: /team Engineering"),
+        BotCommand("summarize", "Summarize Slack channel: /summarize #general"),
+        BotCommand("diff", "Page changes: /diff PTO Policy"),
+        BotCommand("expert", "Find expert: /expert kubernetes"),
+        BotCommand("sync", "Trigger manual sync"),
     ]
     await application.bot.set_my_commands(commands)
     logger.info("Bot commands registered.")
@@ -212,6 +493,12 @@ def main() -> None:
     app = Application.builder().token(settings.telegram_bot_token).post_init(post_init).build()
     app.add_handler(CommandHandler("start", start_handler))
     app.add_handler(CommandHandler("clear", clear_handler))
+    app.add_handler(CommandHandler("whois", whois_handler))
+    app.add_handler(CommandHandler("team", team_handler))
+    app.add_handler(CommandHandler("summarize", summarize_handler))
+    app.add_handler(CommandHandler("diff", diff_handler))
+    app.add_handler(CommandHandler("expert", expert_handler))
+    app.add_handler(CommandHandler("sync", sync_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
 
     logger.info("Athena bot is running. Waiting for messages...")
