@@ -332,7 +332,938 @@ def _get_confluence_pages(settings):
 <p>We are SOC 2 Type II certified and GDPR compliant. Annual security training is mandatory for all employees.</p>
 """,
         },
-        # ─── Engineering Space ────────────────────────────────────────────────
+        # ─── Department Pages ─────────────────────────────────────────────────
+        {
+            "space": space_wiki,
+            "title": "Engineering Department",
+            "body": """
+<h1>Engineering Department</h1>
+<p><strong>Head:</strong> Michael Torres (VP Engineering)</p>
+<p><strong>Email:</strong> engineering@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Build reliable, scalable, and intelligent systems that power the Athena platform.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Platform Team:</strong> Infrastructure, DevOps, SRE (Lead: Ryan Patel)</li>
+<li><strong>Core Services Team:</strong> Auth, API Gateway, Data Pipeline (Lead: Alex Chen)</li>
+<li><strong>Knowledge Team:</strong> RAG, Embeddings, ML (Lead: Emily Johnson)</li>
+<li><strong>Frontend Team:</strong> Web, Mobile, Design System (Lead: David Kim)</li>
+</ul>
+
+<h2>Key Projects</h2>
+<ul>
+<li><a href="#">Athena Core</a> - Main RAG platform</li>
+<li><a href="#">Auth Service</a> - Authentication and authorization</li>
+<li><a href="#">API Gateway</a> - Request routing and rate limiting</li>
+<li><a href="#">Knowledge Service</a> - Embeddings and retrieval</li>
+<li><a href="#">Data Pipeline</a> - ETL and data processing</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Product - Requirements, prioritization, user research</li>
+<li>IT Operations - Infrastructure, cloud resources</li>
+<li>Legal - Compliance requirements, security audits</li>
+</ul>
+
+<h2>Communication</h2>
+<ul>
+<li>Slack: #engineering, #eng-platform, #eng-frontend</li>
+<li>Stand-ups: Daily 10 AM PT</li>
+<li>Sprint Planning: Every other Monday</li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "Product Department",
+            "body": """
+<h1>Product Department</h1>
+<p><strong>Head:</strong> Lisa Nguyen (Director of Product)</p>
+<p><strong>Email:</strong> product@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Define and deliver products that solve real customer problems and drive business growth.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Core Product:</strong> Main platform features (PM: Lisa Nguyen)</li>
+<li><strong>Enterprise Product:</strong> SSO, compliance, admin (PM: Marcus Chen)</li>
+<li><strong>Growth Product:</strong> Onboarding, activation, retention (PM: Sarah Kim)</li>
+<li><strong>UX/Design:</strong> User research, design system (Lead: Rachel Park)</li>
+</ul>
+
+<h2>Key Initiatives</h2>
+<ul>
+<li>Enterprise Feature Expansion (Q2)</li>
+<li>RAG Accuracy Improvements</li>
+<li>Customer Portal Redesign</li>
+<li>Mobile App v2</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Engineering - Implementation capacity</li>
+<li>Sales - Customer feedback, feature requests</li>
+<li>Marketing - Positioning, launch coordination</li>
+</ul>
+
+<h2>Processes</h2>
+<ul>
+<li>PRD Template in Confluence</li>
+<li>Weekly Product Review (Wednesdays 2 PM)</li>
+<li>Customer Advisory Board (Monthly)</li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "Human Resources Department",
+            "body": """
+<h1>Human Resources Department</h1>
+<p><strong>Head:</strong> Sarah Mitchell (HR Lead)</p>
+<p><strong>Email:</strong> hr@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Attract, develop, and retain top talent while fostering an inclusive and engaging workplace.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Talent Acquisition:</strong> Recruiting, employer branding</li>
+<li><strong>People Operations:</strong> Onboarding, HRIS, compliance</li>
+<li><strong>Total Rewards:</strong> Compensation, benefits, equity</li>
+<li><strong>Learning and Development:</strong> Training, career growth</li>
+</ul>
+
+<h2>Key Projects</h2>
+<ul>
+<li><a href="#">HR Portal</a> - Self-service HR system</li>
+<li>Performance Management System Upgrade</li>
+<li>DEI Initiative</li>
+<li>Manager Training Program</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Legal - Employment law, contracts</li>
+<li>Finance - Payroll, compensation budgets</li>
+<li>IT Operations - Workday integration</li>
+</ul>
+
+<h2>Key Policies</h2>
+<ul>
+<li><a href="#">PTO Policy</a></li>
+<li><a href="#">Remote Work Policy</a></li>
+<li><a href="#">Performance Review Process</a></li>
+<li><a href="#">Benefits Overview</a></li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "Sales Department",
+            "body": """
+<h1>Sales Department</h1>
+<p><strong>Head:</strong> James Wilson (VP Sales)</p>
+<p><strong>Email:</strong> sales@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Drive revenue growth by helping customers succeed with the Athena platform.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Enterprise Sales:</strong> Large accounts, strategic deals ($100K+ ARR)</li>
+<li><strong>Mid-Market Sales:</strong> Growth accounts ($25K-100K ARR)</li>
+<li><strong>Sales Development:</strong> Lead qualification, outbound</li>
+<li><strong>Sales Engineering:</strong> Technical demos, POCs</li>
+<li><strong>Customer Success:</strong> Onboarding, expansion, renewals</li>
+</ul>
+
+<h2>Key Initiatives</h2>
+<ul>
+<li>Enterprise Expansion Program</li>
+<li>Partner Channel Development</li>
+<li>Sales CRM Integration (Salesforce)</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Product - Feature roadmap, demos</li>
+<li>Legal - Contract review, NDAs</li>
+<li>Marketing - Lead generation, content</li>
+</ul>
+
+<h2>Communication</h2>
+<ul>
+<li>Slack: #sales, #sales-wins, #customer-feedback</li>
+<li>Weekly Pipeline Review: Mondays 9 AM PT</li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "Marketing Department",
+            "body": """
+<h1>Marketing Department</h1>
+<p><strong>Head:</strong> Amanda Lee (Director of Marketing)</p>
+<p><strong>Email:</strong> marketing@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Build the Athena brand and drive demand through compelling content and campaigns.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Content Marketing:</strong> Blog, case studies, whitepapers</li>
+<li><strong>Demand Generation:</strong> Campaigns, events, webinars</li>
+<li><strong>Product Marketing:</strong> Positioning, launches, competitive</li>
+<li><strong>Brand and Creative:</strong> Design, video, brand guidelines</li>
+</ul>
+
+<h2>Key Projects</h2>
+<ul>
+<li><a href="#">Marketing Site</a> - Corporate website</li>
+<li>Q2 Product Launch Campaign</li>
+<li>Customer Webinar Series</li>
+<li>Brand Refresh Initiative</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Product - Roadmap, feature details</li>
+<li>Sales - Lead handoff, content requests</li>
+<li>Engineering - Website changes, integrations</li>
+</ul>
+
+<h2>Communication</h2>
+<ul>
+<li>Slack: #marketing, #content-requests</li>
+<li>Weekly Marketing Standup: Tuesdays 11 AM PT</li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "Finance Department",
+            "body": """
+<h1>Finance Department</h1>
+<p><strong>Head:</strong> Robert Chen (CFO)</p>
+<p><strong>Email:</strong> finance@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Ensure financial health and enable data-driven decision making across the organization.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Accounting:</strong> AR/AP, month-end close, audits</li>
+<li><strong>FP&A:</strong> Budgeting, forecasting, analysis</li>
+<li><strong>Treasury:</strong> Cash management, banking</li>
+<li><strong>Revenue Operations:</strong> Billing, collections</li>
+</ul>
+
+<h2>Key Projects</h2>
+<ul>
+<li><a href="#">Billing System</a> - Automated invoicing and payments</li>
+<li>ERP System Implementation</li>
+<li>Budget Planning Tool</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Sales - Revenue recognition, commissions</li>
+<li>HR - Payroll, headcount planning</li>
+<li>Legal - Contract terms, compliance</li>
+<li>All Departments - Budget approval</li>
+</ul>
+
+<h2>Key Processes</h2>
+<ul>
+<li>Expense Reimbursement via Expensify</li>
+<li>Monthly Close: 5th business day</li>
+<li>Annual Budget: October-November</li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "Legal and Compliance Department",
+            "body": """
+<h1>Legal and Compliance Department</h1>
+<p><strong>Head:</strong> Diana Park (General Counsel)</p>
+<p><strong>Email:</strong> legal@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Protect the company and enable business growth through sound legal and compliance practices.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Corporate Legal:</strong> Contracts, employment, IP</li>
+<li><strong>Compliance:</strong> SOC 2, GDPR, privacy</li>
+<li><strong>Security:</strong> Security audits, incident response</li>
+</ul>
+
+<h2>Key Projects</h2>
+<ul>
+<li><a href="#">Compliance Dashboard</a> - Real-time compliance monitoring</li>
+<li>SOC 2 Type II Certification (Renewal)</li>
+<li>GDPR Privacy Program</li>
+<li>Contract Automation Initiative</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Engineering - Security implementation, audit support</li>
+<li>Sales - Contract review, NDAs</li>
+<li>HR - Employment matters</li>
+<li>IT Operations - Security controls</li>
+</ul>
+
+<h2>Key Processes</h2>
+<ul>
+<li>Contract Review: Submit via #legal-requests</li>
+<li>Security Incidents: Report to security@athena-tech.com</li>
+<li>Compliance Questions: compliance@athena-tech.com</li>
+</ul>
+""",
+        },
+        {
+            "space": space_wiki,
+            "title": "IT Operations Department",
+            "body": """
+<h1>IT Operations Department</h1>
+<p><strong>Head:</strong> Ryan Patel (Director of IT)</p>
+<p><strong>Email:</strong> it-help@athena-tech.com</p>
+
+<h2>Mission</h2>
+<p>Provide reliable, secure, and efficient IT infrastructure and support for all employees.</p>
+
+<h2>Team Structure</h2>
+<ul>
+<li><strong>Infrastructure:</strong> Cloud, networking, data centers</li>
+<li><strong>IT Support:</strong> Help desk, equipment, onboarding</li>
+<li><strong>Security Operations:</strong> Monitoring, incident response</li>
+<li><strong>Enterprise Apps:</strong> Okta, Workday, Slack administration</li>
+</ul>
+
+<h2>Key Services</h2>
+<ul>
+<li>AWS Cloud Infrastructure</li>
+<li>Okta SSO Management</li>
+<li>Equipment Provisioning</li>
+<li>VPN and Network Access</li>
+<li>Security Monitoring (Datadog, Sentry)</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li>Engineering - Application infrastructure needs</li>
+<li>HR - Onboarding/offboarding coordination</li>
+<li>Legal - Security compliance</li>
+<li>Finance - Asset management</li>
+</ul>
+
+<h2>Support</h2>
+<ul>
+<li>Slack: #it-support</li>
+<li>Email: it-help@athena-tech.com</li>
+<li>On-call: PagerDuty rotation</li>
+</ul>
+""",
+        },
+        # ─── Project Pages ────────────────────────────────────────────────────────
+        {
+            "space": space_eng,
+            "title": "Athena Core Project",
+            "body": """
+<h1>Athena Core</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Engineering (Knowledge Team)</p>
+<p><strong>Tech Lead:</strong> Emily Johnson</p>
+
+<h2>Overview</h2>
+<p>Athena Core is the main RAG (Retrieval-Augmented Generation) platform that powers all of Athena's intelligent knowledge retrieval capabilities.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Python 3.13, FastAPI</li>
+<li>LangChain for orchestration</li>
+<li>Gemini 2.5 Flash for LLM</li>
+<li>Pinecone for vector storage</li>
+<li>Neo4j for knowledge graph</li>
+<li>Redis for caching</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Auth Service</strong> - User authentication</li>
+<li><strong>Knowledge Service</strong> - Embedding generation</li>
+<li><strong>API Gateway</strong> - Request routing</li>
+</ul>
+
+<h2>Architecture</h2>
+<p>Graph-first RAG pipeline: Entity extraction → Neo4j graph query → Pinecone vector search → LLM synthesis</p>
+
+<h2>Runbooks</h2>
+<ul>
+<li><a href="#">Deployment Runbook</a></li>
+<li><a href="#">Troubleshooting Guide</a></li>
+<li><a href="#">Scaling Procedures</a></li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Auth Service Project",
+            "body": """
+<h1>Auth Service</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Engineering (Core Services Team)</p>
+<p><strong>Tech Lead:</strong> Alex Chen</p>
+
+<h2>Overview</h2>
+<p>Central authentication and authorization service handling JWT tokens, OAuth flows, SSO integration, and RBAC.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Go 1.21</li>
+<li>PostgreSQL (user data)</li>
+<li>Redis (session cache)</li>
+<li>Okta integration</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>JWT token issuance and validation</li>
+<li>OAuth 2.0 / OIDC flows</li>
+<li>SSO via SAML and OIDC</li>
+<li>Role-based access control (RBAC)</li>
+<li>MFA support</li>
+</ul>
+
+<h2>API Endpoints</h2>
+<ul>
+<li>POST /auth/login</li>
+<li>POST /auth/logout</li>
+<li>POST /auth/refresh</li>
+<li>GET /auth/userinfo</li>
+<li>POST /auth/oauth/callback</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>PostgreSQL</strong> - User credentials, roles</li>
+<li><strong>Redis</strong> - Session tokens, rate limiting</li>
+<li><strong>Okta</strong> - Enterprise SSO</li>
+</ul>
+
+<h2>SLOs</h2>
+<ul>
+<li>Availability: 99.99%</li>
+<li>P99 Latency: less than 100ms</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Knowledge Service Project",
+            "body": """
+<h1>Knowledge Service</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Engineering (Knowledge Team)</p>
+<p><strong>Tech Lead:</strong> Emily Johnson</p>
+
+<h2>Overview</h2>
+<p>Handles document embedding generation, vector storage operations, and semantic search for the RAG pipeline.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Python 3.13, FastAPI</li>
+<li>Gemini embedding model</li>
+<li>Pinecone vector database</li>
+<li>Redis for embedding cache</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>Document chunking and embedding</li>
+<li>Semantic similarity search</li>
+<li>Namespace management</li>
+<li>Batch processing pipeline</li>
+</ul>
+
+<h2>API Endpoints</h2>
+<ul>
+<li>POST /embed - Generate embeddings</li>
+<li>POST /search - Semantic search</li>
+<li>POST /upsert - Add documents</li>
+<li>DELETE /documents - Remove documents</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Pinecone</strong> - Vector storage</li>
+<li><strong>Gemini API</strong> - Embeddings</li>
+<li><strong>Auth Service</strong> - Request authentication</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Customer Portal Project",
+            "body": """
+<h1>Customer Portal</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Engineering (Frontend Team)</p>
+<p><strong>Tech Lead:</strong> David Kim</p>
+
+<h2>Overview</h2>
+<p>Self-service web application for customers to manage their Athena subscription, view usage, and configure integrations.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Next.js 14, TypeScript</li>
+<li>React 18, Tailwind CSS</li>
+<li>Vercel deployment</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>Dashboard with usage metrics</li>
+<li>Integration management (Slack, Confluence)</li>
+<li>User and team administration</li>
+<li>Billing and invoices</li>
+<li>Support ticket submission</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Auth Service</strong> - User authentication</li>
+<li><strong>API Gateway</strong> - Backend communication</li>
+<li><strong>Billing System</strong> - Payment data</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Mobile App v2 Project",
+            "body": """
+<h1>Mobile App v2</h1>
+<p><strong>Status:</strong> Planning</p>
+<p><strong>Owner:</strong> Engineering (Frontend Team)</p>
+<p><strong>Tech Lead:</strong> David Kim</p>
+
+<h2>Overview</h2>
+<p>Next generation mobile app with native performance and offline support for iOS and Android.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>React Native 0.73</li>
+<li>TypeScript</li>
+<li>Expo for build/deploy</li>
+</ul>
+
+<h2>Planned Features</h2>
+<ul>
+<li>Offline-first architecture</li>
+<li>Push notifications</li>
+<li>Voice input for queries</li>
+<li>Widget support</li>
+<li>Biometric authentication</li>
+</ul>
+
+<h2>Timeline</h2>
+<ul>
+<li>Q2: Design and architecture</li>
+<li>Q3: MVP development</li>
+<li>Q4: Beta launch</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Auth Service</strong> - Mobile authentication</li>
+<li><strong>Push Service</strong> - Notifications</li>
+<li><strong>Athena Core</strong> - Query API</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Data Pipeline Project",
+            "body": """
+<h1>Data Pipeline</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Engineering (Platform Team)</p>
+<p><strong>Tech Lead:</strong> Ryan Patel</p>
+
+<h2>Overview</h2>
+<p>ETL pipeline for ingesting, transforming, and loading data from various sources into our analytics warehouse.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Apache Kafka for streaming</li>
+<li>Apache Airflow for orchestration</li>
+<li>dbt for transformations</li>
+<li>Snowflake for warehouse</li>
+<li>Python for custom processors</li>
+</ul>
+
+<h2>Data Sources</h2>
+<ul>
+<li>Application databases (PostgreSQL)</li>
+<li>Event streams (Kafka)</li>
+<li>Third-party APIs (Stripe, Salesforce)</li>
+<li>Log aggregators (Datadog)</li>
+</ul>
+
+<h2>Key Pipelines</h2>
+<ul>
+<li>User activity events</li>
+<li>Billing and revenue</li>
+<li>Product usage metrics</li>
+<li>Customer health scores</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Kafka</strong> - Event streaming</li>
+<li><strong>Snowflake</strong> - Data warehouse</li>
+<li><strong>Airflow</strong> - Job orchestration</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "API Gateway Project",
+            "body": """
+<h1>API Gateway</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Engineering (Core Services Team)</p>
+<p><strong>Tech Lead:</strong> Alex Chen</p>
+
+<h2>Overview</h2>
+<p>Central entry point for all API requests, handling routing, authentication, rate limiting, and request transformation.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Kong Gateway</li>
+<li>Lua plugins</li>
+<li>Redis for rate limiting</li>
+<li>PostgreSQL for config</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>Request routing and load balancing</li>
+<li>JWT validation (via Auth Service)</li>
+<li>Rate limiting (per user, per API)</li>
+<li>Request/response transformation</li>
+<li>API versioning</li>
+<li>Caching layer</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Kong</strong> - Gateway runtime</li>
+<li><strong>Redis</strong> - Rate limit counters</li>
+<li><strong>Auth Service</strong> - Token validation</li>
+</ul>
+
+<h2>SLOs</h2>
+<ul>
+<li>Availability: 99.99%</li>
+<li>P99 Latency overhead: less than 10ms</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Billing System Project",
+            "body": """
+<h1>Billing System</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Finance</p>
+<p><strong>Tech Lead:</strong> Chris Lee</p>
+
+<h2>Overview</h2>
+<p>Automated billing and invoicing system handling subscriptions, usage-based billing, and payment processing.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Python, FastAPI</li>
+<li>Stripe for payments</li>
+<li>PostgreSQL for billing data</li>
+<li>Redis for job queues</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>Subscription management</li>
+<li>Usage metering and tracking</li>
+<li>Invoice generation</li>
+<li>Payment processing (Stripe)</li>
+<li>Revenue recognition</li>
+</ul>
+
+<h2>Integrations</h2>
+<ul>
+<li>Stripe - Payment processing</li>
+<li>Salesforce - Customer data sync</li>
+<li>Snowflake - Revenue reporting</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Stripe</strong> - Payment provider</li>
+<li><strong>PostgreSQL</strong> - Billing records</li>
+<li><strong>Auth Service</strong> - Customer identity</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "HR Portal Project",
+            "body": """
+<h1>HR Portal</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> HR</p>
+<p><strong>Tech Lead:</strong> Taylor Smith</p>
+
+<h2>Overview</h2>
+<p>Internal employee self-service portal for HR-related tasks like PTO requests, benefits enrollment, and org chart.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>React, TypeScript</li>
+<li>Node.js backend</li>
+<li>Workday API integration</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>PTO request and approval</li>
+<li>Benefits enrollment</li>
+<li>Org chart and directory</li>
+<li>Onboarding checklists</li>
+<li>Policy acknowledgments</li>
+</ul>
+
+<h2>Integrations</h2>
+<ul>
+<li>Workday - HRIS data</li>
+<li>Okta - SSO</li>
+<li>Slack - Notifications</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Auth Service</strong> - Employee authentication</li>
+<li><strong>Workday API</strong> - HR data source</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Marketing Site Project",
+            "body": """
+<h1>Marketing Site</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Marketing</p>
+<p><strong>Tech Lead:</strong> Jordan Kim</p>
+
+<h2>Overview</h2>
+<p>Public-facing corporate website with product information, blog, documentation, and lead capture.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Next.js 14</li>
+<li>Contentful CMS</li>
+<li>Vercel hosting</li>
+<li>Algolia search</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>Product pages and pricing</li>
+<li>Blog and resources</li>
+<li>Documentation site</li>
+<li>Contact and demo forms</li>
+<li>Customer case studies</li>
+</ul>
+
+<h2>Integrations</h2>
+<ul>
+<li>Contentful - Content management</li>
+<li>HubSpot - Lead capture</li>
+<li>Google Analytics - Tracking</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Contentful</strong> - CMS</li>
+<li><strong>Vercel</strong> - Hosting and CDN</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Sales CRM Integration Project",
+            "body": """
+<h1>Sales CRM Integration</h1>
+<p><strong>Status:</strong> Planning</p>
+<p><strong>Owner:</strong> Sales</p>
+<p><strong>Tech Lead:</strong> Chris Lee</p>
+
+<h2>Overview</h2>
+<p>Bi-directional integration between Athena and Salesforce for customer data sync and sales automation.</p>
+
+<h2>Planned Features</h2>
+<ul>
+<li>Contact and account sync</li>
+<li>Usage data push to Salesforce</li>
+<li>Health score integration</li>
+<li>Renewal automation</li>
+<li>Churn risk alerts</li>
+</ul>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>Python integration service</li>
+<li>Salesforce REST API</li>
+<li>Kafka for event streaming</li>
+</ul>
+
+<h2>Timeline</h2>
+<ul>
+<li>Q2: Requirements and design</li>
+<li>Q3: Development</li>
+<li>Q4: Pilot and rollout</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Salesforce API</strong> - CRM platform</li>
+<li><strong>Data Pipeline</strong> - Event processing</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "Compliance Dashboard Project",
+            "body": """
+<h1>Compliance Dashboard</h1>
+<p><strong>Status:</strong> Active</p>
+<p><strong>Owner:</strong> Legal</p>
+<p><strong>Tech Lead:</strong> Amanda Garcia</p>
+
+<h2>Overview</h2>
+<p>Real-time dashboard for monitoring compliance posture, security metrics, and audit readiness.</p>
+
+<h2>Tech Stack</h2>
+<ul>
+<li>React, TypeScript</li>
+<li>Python backend</li>
+<li>PostgreSQL</li>
+<li>Data Pipeline integration</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+<li>SOC 2 control status</li>
+<li>GDPR compliance metrics</li>
+<li>Security vulnerability tracking</li>
+<li>Access review status</li>
+<li>Audit evidence collection</li>
+</ul>
+
+<h2>Data Sources</h2>
+<ul>
+<li>AWS Security Hub</li>
+<li>Datadog security monitoring</li>
+<li>Okta access logs</li>
+<li>GitHub audit logs</li>
+</ul>
+
+<h2>Dependencies</h2>
+<ul>
+<li><strong>Data Pipeline</strong> - Data aggregation</li>
+<li><strong>Auth Service</strong> - Access control</li>
+</ul>
+""",
+        },
+        # ─── ADRs (Architecture Decision Records) ─────────────────────────────────
+        {
+            "space": space_eng,
+            "title": "ADR-001 Graph RAG Architecture",
+            "body": """
+<h1>ADR-001: Graph RAG Architecture</h1>
+<p><strong>Status:</strong> Accepted</p>
+<p><strong>Date:</strong> 2024-03-15</p>
+<p><strong>Author:</strong> Emily Johnson</p>
+
+<h2>Context</h2>
+<p>Our current RAG pipeline uses pure vector search, which lacks understanding of relationships between entities. Questions like "Who leads the Engineering department?" or "What projects depend on Auth Service?" require graph traversal.</p>
+
+<h2>Decision</h2>
+<p>Implement a graph-first RAG architecture:</p>
+<ol>
+<li>Extract entities from questions using LLM</li>
+<li>Query Neo4j knowledge graph for related entities</li>
+<li>Use graph context to boost relevant vector results</li>
+<li>Synthesize answer with both graph and vector context</li>
+</ol>
+
+<h2>Consequences</h2>
+<ul>
+<li>Improved accuracy for relationship-based queries</li>
+<li>Additional infrastructure (Neo4j)</li>
+<li>Increased query latency (~200ms)</li>
+<li>Entity extraction adds LLM cost</li>
+</ul>
+
+<h2>Alternatives Considered</h2>
+<ul>
+<li>Knowledge graph only - Lacks semantic search</li>
+<li>Vector only - Lacks relationship understanding</li>
+<li>Hybrid without graph-first - Less accurate for entity queries</li>
+</ul>
+""",
+        },
+        {
+            "space": space_eng,
+            "title": "ADR-002 Migration to GitHub Actions",
+            "body": """
+<h1>ADR-002: Migration from Jenkins to GitHub Actions</h1>
+<p><strong>Status:</strong> Accepted</p>
+<p><strong>Date:</strong> 2024-02-01</p>
+<p><strong>Author:</strong> Alex Chen</p>
+
+<h2>Context</h2>
+<p>Our Jenkins infrastructure requires significant maintenance, and the team spends ~10 hours/week on CI/CD issues. GitHub Actions offers tighter integration with our code hosting.</p>
+
+<h2>Decision</h2>
+<p>Migrate all CI/CD pipelines from Jenkins to GitHub Actions.</p>
+
+<h2>Migration Plan</h2>
+<ol>
+<li>Convert Jenkinsfiles to GitHub Actions workflows</li>
+<li>Run in parallel for 2 weeks</li>
+<li>Decommission Jenkins after validation</li>
+</ol>
+
+<h2>Consequences</h2>
+<ul>
+<li>Reduced maintenance burden</li>
+<li>Better GitHub integration (PRs, checks)</li>
+<li>Cost reduction (no Jenkins servers)</li>
+<li>Learning curve for team</li>
+</ul>
+
+<h2>Note</h2>
+<p>The Confluence Deployment Guide still references Jenkins - this is outdated. GitHub Actions is now the source of truth for all deployments.</p>
+""",
+        },
+        # ─── Engineering Space (Original) ─────────────────────────────────────────
         {
             "space": space_eng,
             "title": "Deployment Guide",
@@ -885,6 +1816,193 @@ _SLACK_MESSAGES = [
         "channel_name": "random",
         "persona": "emily_johnson",
         "text": "@jordan_kim Yesss it's so good! Get the spicy miso with extra chashu. Totally worth the wait.",
+    },
+    # ─── More Engineering Discussions ─────────────────────────────────────
+    {
+        "channel_name": "engineering",
+        "persona": "alex_chen",
+        "text": "Team, we're seeing some issues with the Auth Service after the latest deploy. Rolling back to v2.3.0 while we investigate. Will keep you posted.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "alex_chen",
+        "text": "Update: Found the issue - a race condition in the token refresh logic. Fix is in PR #1842. Should have a new deploy by EOD.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "emily_johnson",
+        "text": "Knowledge Service update: We've switched from text-embedding-004 to gemini-embedding-001 for better performance. Embeddings are now 768 dimensions instead of 1024. All existing vectors have been re-indexed.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "ryan_patel",
+        "text": "FYI the Data Pipeline Airflow DAGs have been migrated to the new cluster. Old URLs will redirect but please update any bookmarks. New dashboard: airflow.internal.athena-tech.com",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "david_kim",
+        "text": "Frontend folks - we're standardizing on Tailwind CSS for all new components. The old styled-components are deprecated. Migration guide is in Confluence.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "amanda_garcia",
+        "text": "Security update: We've enabled GitHub secret scanning on all repos. If you get a notification about exposed secrets, rotate them immediately and ping me.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "taylor_smith",
+        "text": "Question: What's the recommended way to handle database migrations for the Billing System? Should I use Alembic or raw SQL?",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "chris_lee",
+        "text": "@taylor_smith Use Alembic - it's our standard. Make sure to include a downgrade step and test on staging first. See the Database Conventions doc in Confluence.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "michael_torres",
+        "text": "Great work on the Q1 reliability improvements everyone! Our P99 latency is down 40% and we had zero SEV1 incidents last month. Keep it up!",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "jordan_kim",
+        "text": "Anyone know why my local dev environment keeps crashing when running the Knowledge Service tests? Getting OOM errors.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "emily_johnson",
+        "text": "@jordan_kim The embedding tests load the full model into memory. You can skip them with pytest -m 'not embedding' for local dev. CI will run the full suite.",
+    },
+    # ─── More Product Discussions ─────────────────────────────────────────
+    {
+        "channel_name": "product",
+        "persona": "lisa_nguyen",
+        "text": "Customer interview insights: Top 3 feature requests this quarter: 1) Better Slack thread handling, 2) Document upload support, 3) Team-based permissions. Prioritization discussion tomorrow.",
+    },
+    {
+        "channel_name": "product",
+        "persona": "jennifer_wang",
+        "text": "Just got off a call with Acme Corp's CTO. They're willing to be a design partner for the enterprise SSO feature. This is huge - they have complex requirements that will stress-test our implementation.",
+    },
+    {
+        "channel_name": "product",
+        "persona": "michael_torres",
+        "text": "@lisa_nguyen Let's make sure we're capturing these requests in the product backlog with customer context. It helps Engineering understand the 'why' behind features.",
+    },
+    {
+        "channel_name": "product",
+        "persona": "lisa_nguyen",
+        "text": "Mobile App v2 kickoff scheduled for next Wednesday. Design will present initial mocks and we'll discuss scope. All stakeholders please review the PRD beforehand.",
+    },
+    # ─── More HR Updates ──────────────────────────────────────────────────
+    {
+        "channel_name": "hr-updates",
+        "persona": "sarah_mitchell",
+        "text": "Exciting news! We're launching a mentorship program next month. Senior folks who want to mentor, please fill out the interest form. Details in the #mentorship channel.",
+    },
+    {
+        "channel_name": "hr-updates",
+        "persona": "sarah_mitchell",
+        "text": "Reminder: Our annual company retreat is scheduled for October 15-17 in Lake Tahoe. Block your calendars! Travel details coming next week.",
+    },
+    {
+        "channel_name": "hr-updates",
+        "persona": "sarah_mitchell",
+        "text": "We've partnered with Modern Health for additional mental health support. All employees now have access to free therapy sessions and coaching. Check your benefits portal.",
+    },
+    # ─── Cross-department Discussions ─────────────────────────────────────
+    {
+        "channel_name": "general",
+        "persona": "david_kim",
+        "text": "Heads up @channel - Customer Portal will be down for maintenance Saturday 2-4 AM PT. We're upgrading the database. Customers have been notified.",
+    },
+    {
+        "channel_name": "general",
+        "persona": "ryan_patel",
+        "text": "IT announcement: We're upgrading to Okta Identity Engine next week. You'll need to re-enroll your MFA devices. Instructions will be emailed Monday.",
+    },
+    {
+        "channel_name": "general",
+        "persona": "amanda_garcia",
+        "text": "Annual security training is due by end of month. If you haven't completed it yet, please do so in Workday. It's only 45 minutes and covers important topics.",
+    },
+    {
+        "channel_name": "general",
+        "persona": "jennifer_wang",
+        "text": "Q2 planning is wrapping up. Thanks to all department heads for your input. Final roadmap will be shared at All Hands on Friday. Some exciting initiatives ahead!",
+    },
+    # ─── More Technical Discussions ───────────────────────────────────────
+    {
+        "channel_name": "engineering",
+        "persona": "alex_chen",
+        "text": "Architecture decision: We're adding Neo4j to the stack for the Graph RAG feature. It'll run in our existing Kubernetes cluster. ADR is in Confluence for review.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "emily_johnson",
+        "text": "The Graph RAG entity extraction is working well in testing. Average latency is +150ms but accuracy on relationship queries is up 35%. Worth the tradeoff IMO.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "chris_lee",
+        "text": "Billing System update: Stripe webhook reliability issues last week were due to our retry logic. Fixed in v3.2.1. No customer impact.",
+    },
+    {
+        "channel_name": "engineering",
+        "persona": "ryan_patel",
+        "text": "Kafka cluster upgrade complete. We're now on 3.6 with KRaft mode. The old ZooKeeper-based setup is fully deprecated. Runbooks have been updated.",
+    },
+    # ─── More Incidents ───────────────────────────────────────────────────
+    {
+        "channel_name": "incidents",
+        "persona": "amanda_garcia",
+        "text": "SECURITY INCIDENT: Potential credential exposure detected in a public GitHub repo. Affected: service-account-dev. Rotating immediately. Will update.",
+    },
+    {
+        "channel_name": "incidents",
+        "persona": "amanda_garcia",
+        "text": "RESOLVED: Credential rotated and old one revoked. No evidence of malicious use. Root cause: developer accidentally committed .env file. Adding pre-commit hooks to prevent recurrence.",
+    },
+    {
+        "channel_name": "incidents",
+        "persona": "emily_johnson",
+        "text": "INCIDENT: Knowledge Service latency spike. P99 at 800ms (normal 200ms). Investigating - appears related to Pinecone region issues.",
+    },
+    {
+        "channel_name": "incidents",
+        "persona": "emily_johnson",
+        "text": "RESOLVED: Pinecone confirmed and resolved the regional issue. Our latency is back to normal. No action needed on our side.",
+    },
+    # ─── More Random/Social ───────────────────────────────────────────────
+    {
+        "channel_name": "random",
+        "persona": "david_kim",
+        "text": "Just finished reading 'Designing Data-Intensive Applications' - highly recommend for anyone building distributed systems. The chapters on consensus are gold.",
+    },
+    {
+        "channel_name": "random",
+        "persona": "ryan_patel",
+        "text": "Running the SF Half Marathon this weekend! Any other runners here? Training has been brutal but excited for race day.",
+    },
+    {
+        "channel_name": "random",
+        "persona": "sarah_mitchell",
+        "text": "Don't forget - it's National Donut Day! Donuts in the kitchen courtesy of HR. Get them while they're fresh!",
+    },
+    {
+        "channel_name": "random",
+        "persona": "chris_lee",
+        "text": "Weekend project: Built a home automation system with Home Assistant. If anyone wants to geek out about smart home stuff, I'm happy to share my setup.",
+    },
+    {
+        "channel_name": "random",
+        "persona": "alex_chen",
+        "text": "Hitting my 5-year anniversary at Athena next week! Time flies. Thanks to everyone who's made this journey awesome.",
+    },
+    {
+        "channel_name": "random",
+        "persona": "jennifer_wang",
+        "text": "Congrats @alex_chen! You've been instrumental in building our technical foundation. Here's to many more years!",
     },
 ]
 
