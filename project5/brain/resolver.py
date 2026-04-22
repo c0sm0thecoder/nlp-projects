@@ -96,6 +96,8 @@ def _format_graph_context(entities: list[dict]) -> str:
             details.append(f"Role: {props['role']}")
         if props.get("department"):
             details.append(f"Dept: {props['department']}")
+        if props.get("email"):
+            details.append(f"Email: {props['email']}")
         if props.get("authority_score"):
             details.append(f"Authority: {props['authority_score']}")
         if props.get("status"):
