@@ -407,25 +407,44 @@ def _generate_org_graph() -> bytes | None:
 
 
 def _generate_entity_graph(entity_name: str) -> bytes | None:
-    """Generate graph centered on an entity."""
+    """Generate graph centered on an entity (people and dependencies only)."""
     import graphviz
     import tempfile
 
     driver = get_neo4j_driver()
 
     with driver.session() as session:
-        # Find entity and its relationships
+        # Find entity and get people + department dependencies with correct direction
         result = list(session.run("""
             MATCH (center)
             WHERE toLower(center.name) CONTAINS toLower($name)
-            OPTIONAL MATCH (center)-[r]-(related)
-            RETURN
-                labels(center)[0] AS center_label,
+            WITH center, labels(center)[0] AS center_label
+
+            // Get people who work in or lead this (if center is Department)
+            OPTIONAL MATCH (person:Person)-[r1:WORKS_IN|LEADS]->(center)
+            WHERE center_label = 'Department'
+
+            // Get departments this depends on
+            OPTIONAL MATCH (center)-[r2:DEPENDS_ON]->(dep:Department)
+
+            // Get departments that depend on this
+            OPTIONAL MATCH (dep2:Department)-[r3:DEPENDS_ON]->(center)
+
+            // If center is a Person, get their department
+            OPTIONAL MATCH (center)-[r4:WORKS_IN|LEADS]->(dept:Department)
+            WHERE center_label = 'Person'
+
+            RETURN DISTINCT
+                center_label,
                 center.name AS center_name,
-                type(r) AS rel_type,
-                labels(related)[0] AS related_label,
-                related.name AS related_name
-            LIMIT 30
+                person.name AS person_name,
+                person.role AS person_role,
+                person.authority_score AS person_auth,
+                type(r1) AS person_rel,
+                dep.name AS depends_on,
+                dep2.name AS depended_by,
+                dept.name AS person_dept,
+                type(r4) AS person_dept_rel
         """, name=entity_name))
 
     if not result or not result[0]['center_name']:
@@ -435,9 +454,11 @@ def _generate_entity_graph(entity_name: str) -> bytes | None:
         'entity_graph',
         format='png',
         graph_attr={
-            'rankdir': 'LR',
+            'rankdir': 'TB',
             'bgcolor': '#1a1a2e',
             'pad': '0.5',
+            'nodesep': '0.4',
+            'ranksep': '0.6',
         },
         node_attr={
             'shape': 'box',
@@ -448,51 +469,71 @@ def _generate_entity_graph(entity_name: str) -> bytes | None:
         },
         edge_attr={
             'fontname': 'Arial',
-            'fontsize': '8',
-            'fontcolor': '#888888',
+            'fontsize': '9',
+            'fontcolor': '#aaaaaa',
+            'color': '#4a4a6a',
         }
     )
 
-    # Color by label type
-    label_colors = {
-        'Person': ('#e94560', '#ffffff'),
-        'Department': ('#0f3460', '#ffffff'),
-        'Project': ('#00b894', '#ffffff'),
-        'Service': ('#6c5ce7', '#ffffff'),
-        'Technology': ('#fdcb6e', '#000000'),
-        'Policy': ('#fab1a0', '#000000'),
-    }
-
     center_name = result[0]['center_name']
     center_label = result[0]['center_label']
-    bg, fg = label_colors.get(center_label, ('#16213e', '#ffffff'))
 
-    # Add center node (larger)
-    dot.node(
-        center_name,
-        label=f"⬤ {center_name}\\n({center_label})",
-        fillcolor=bg,
-        fontcolor=fg,
-        penwidth='2',
-    )
+    # Color scheme
+    def get_person_color(auth):
+        auth = auth or 0
+        if auth >= 10:
+            return '#e94560', '#ffffff'  # Red for leaders
+        elif auth >= 7:
+            return '#0f3460', '#ffffff'  # Blue for seniors
+        else:
+            return '#16213e', '#cccccc'  # Dark for others
 
-    # Add related nodes and edges
+    dept_color = ('#00b894', '#ffffff')  # Green for departments
+
+    # Add center node
+    if center_label == 'Department':
+        dot.node(center_name, label=f"🏢 {center_name}", fillcolor=dept_color[0], fontcolor=dept_color[1], penwidth='2')
+    else:
+        bg, fg = get_person_color(result[0].get('person_auth'))
+        dot.node(center_name, label=f"👤 {center_name}", fillcolor=bg, fontcolor=fg, penwidth='2')
+
     added = set([center_name])
+
     for row in result:
-        if row['related_name'] and row['related_name'] not in added:
-            r_label = row['related_label'] or 'Unknown'
-            bg, fg = label_colors.get(r_label, ('#16213e', '#ffffff'))
+        # Add people
+        if row['person_name'] and row['person_name'] not in added:
+            bg, fg = get_person_color(row['person_auth'])
+            role = row['person_role'] or ''
+            dot.node(row['person_name'], label=f"👤 {row['person_name']}\\n{role}", fillcolor=bg, fontcolor=fg)
+            added.add(row['person_name'])
 
-            dot.node(
-                row['related_name'],
-                label=f"{row['related_name']}\\n({r_label})",
-                fillcolor=bg,
-                fontcolor=fg,
-            )
-            added.add(row['related_name'])
+            rel = row['person_rel']
+            if rel == 'LEADS':
+                dot.edge(row['person_name'], center_name, label='leads', color='#e94560', penwidth='1.5')
+            else:
+                dot.edge(row['person_name'], center_name, label='works in', style='dashed')
 
-            rel = row['rel_type'] or ''
-            dot.edge(center_name, row['related_name'], label=rel, color='#4a4a6a')
+        # Add dependencies (this dept depends on)
+        if row['depends_on'] and row['depends_on'] not in added:
+            dot.node(row['depends_on'], label=f"🏢 {row['depends_on']}", fillcolor=dept_color[0], fontcolor=dept_color[1])
+            added.add(row['depends_on'])
+            dot.edge(center_name, row['depends_on'], label='depends on', color='#fdcb6e')
+
+        # Add dependents (depts that depend on this)
+        if row['depended_by'] and row['depended_by'] not in added:
+            dot.node(row['depended_by'], label=f"🏢 {row['depended_by']}", fillcolor=dept_color[0], fontcolor=dept_color[1])
+            added.add(row['depended_by'])
+            dot.edge(row['depended_by'], center_name, label='depends on', color='#fdcb6e')
+
+        # If center is a person, show their department
+        if row['person_dept'] and row['person_dept'] not in added:
+            dot.node(row['person_dept'], label=f"🏢 {row['person_dept']}", fillcolor=dept_color[0], fontcolor=dept_color[1])
+            added.add(row['person_dept'])
+            rel = row['person_dept_rel']
+            if rel == 'LEADS':
+                dot.edge(center_name, row['person_dept'], label='leads', color='#e94560', penwidth='1.5')
+            else:
+                dot.edge(center_name, row['person_dept'], label='works in', style='dashed')
 
     with tempfile.TemporaryDirectory() as tmpdir:
         filepath = dot.render(directory=tmpdir, cleanup=True)
