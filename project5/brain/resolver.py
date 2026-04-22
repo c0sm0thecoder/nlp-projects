@@ -11,8 +11,10 @@ Query flow:
 """
 from __future__ import annotations
 
+import re
 import time
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -28,6 +30,100 @@ logger = get_logger(__name__)
 
 _MAX_RETRIES = 3
 _RETRY_DELAY = 2.0
+
+_MONTH_MAP = {
+    "january": 1, "february": 2, "march": 3, "april": 4,
+    "may": 5, "june": 6, "july": 7, "august": 8,
+    "september": 9, "october": 10, "november": 11, "december": 12,
+    "jan": 1, "feb": 2, "mar": 3, "apr": 4, "jun": 6,
+    "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
+}
+
+
+def _extract_time_filter(question: str) -> tuple[float | None, float | None, str | None]:
+    """Extract time constraints from question. Returns (start_ts, end_ts, description)."""
+    q = question.lower()
+    now = datetime.now()
+
+    # "last January", "in January"
+    for month_name, month_num in _MONTH_MAP.items():
+        if month_name in q:
+            # Determine year
+            if "last" in q or "previous" in q:
+                if now.month <= month_num:
+                    year = now.year - 1
+                else:
+                    year = now.year - 1 if "last year" in q else now.year
+            elif match := re.search(r"(20\d{2})", q):
+                year = int(match.group(1))
+            else:
+                year = now.year if now.month > month_num else now.year - 1
+
+            start = datetime(year, month_num, 1)
+            end = start + relativedelta(months=1)
+            return start.timestamp(), end.timestamp(), f"{month_name.title()} {year}"
+
+    # "last year", "in 2023"
+    if match := re.search(r"(?:in |during )(20\d{2})", q):
+        year = int(match.group(1))
+        start = datetime(year, 1, 1)
+        end = datetime(year, 12, 31, 23, 59, 59)
+        return start.timestamp(), end.timestamp(), str(year)
+
+    if "last year" in q:
+        year = now.year - 1
+        start = datetime(year, 1, 1)
+        end = datetime(year, 12, 31, 23, 59, 59)
+        return start.timestamp(), end.timestamp(), str(year)
+
+    # "last month"
+    if "last month" in q:
+        end = now.replace(day=1)
+        start = end - relativedelta(months=1)
+        return start.timestamp(), end.timestamp(), start.strftime("%B %Y")
+
+    # "last week"
+    if "last week" in q:
+        end = now - relativedelta(days=now.weekday())
+        start = end - relativedelta(weeks=1)
+        return start.timestamp(), end.timestamp(), "last week"
+
+    # "X months ago", "X weeks ago"
+    if match := re.search(r"(\d+)\s+months?\s+ago", q):
+        months = int(match.group(1))
+        target = now - relativedelta(months=months)
+        start = target.replace(day=1)
+        end = start + relativedelta(months=1)
+        return start.timestamp(), end.timestamp(), target.strftime("%B %Y")
+
+    return None, None, None
+
+
+def _filter_docs_by_time(docs: list, start_ts: float | None, end_ts: float | None) -> list:
+    """Filter documents to those within the time range."""
+    if start_ts is None:
+        return docs
+
+    filtered = []
+    for doc in docs:
+        ts = doc.metadata.get("timestamp")
+        if not ts:
+            continue
+        try:
+            ts_float = float(ts)
+            if start_ts <= ts_float <= end_ts:
+                filtered.append(doc)
+        except (ValueError, TypeError):
+            # Try ISO format
+            try:
+                if "T" in str(ts):
+                    doc_dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                    ts_float = doc_dt.timestamp()
+                    if start_ts <= ts_float <= end_ts:
+                        filtered.append(doc)
+            except Exception:
+                pass
+    return filtered
 
 
 def _retriever_with_retry(store, question: str, k: int = 4) -> list:
@@ -229,6 +325,110 @@ def ask(question: str, history: list[dict[str, str]] | None = None) -> str:
 
     logger.info("Athena answering with graph context: %s", question[:80])
     return chain.invoke(question)
+
+
+def ask_stream(question: str, history: list[dict[str, str]] | None = None):
+    """Graph-first RAG with streaming response. Yields chunks of text."""
+    for item in ask_stream_with_status(question, history):
+        if not isinstance(item, dict):  # Skip status updates
+            yield item
+
+
+def ask_stream_with_status(question: str, history: list[dict[str, str]] | None = None):
+    """Graph-first RAG with streaming. Yields status dicts and text chunks."""
+
+    # Step 0: Check for time-travel query
+    start_ts, end_ts, time_desc = _extract_time_filter(question)
+    if time_desc:
+        yield {"status": "time", "message": f"⏰ Time-travel: {time_desc}..."}
+        logger.info("Time filter detected: %s (%s - %s)", time_desc, start_ts, end_ts)
+
+    # Step 1: Extract entities
+    yield {"status": "extracting", "message": "🔍 Analyzing question..."}
+
+    search_context = question
+    if history:
+        recent_user_msgs = [m["content"] for m in history[-4:] if m["role"] == "user"]
+        search_context = " ".join(recent_user_msgs + [question])
+
+    entity_names = extract_entities_from_question(search_context)
+    logger.info("Extracted entities: %s", entity_names)
+
+    # Step 2: Query knowledge graph
+    yield {"status": "graph", "message": "🕸️ Querying knowledge graph..."}
+
+    graph_entities = []
+    graph_doc_ids = set()
+
+    if entity_names:
+        try:
+            graph_entities = kg.query_related_entities(entity_names, hops=2)
+            entity_ids = [e["id"] for e in graph_entities if e.get("id")]
+            graph_doc_ids = set(kg.get_documents_for_entities(entity_ids))
+            logger.info("Graph found %d entities, %d connected docs",
+                       len(graph_entities), len(graph_doc_ids))
+        except Exception as e:
+            logger.warning("Graph query failed: %s", e)
+
+    # Step 3: Vector search with retry
+    yield {"status": "vector", "message": "📚 Searching documents..."}
+
+    all_docs = []
+    # Fetch more docs if filtering by time (some will be filtered out)
+    fetch_k = _TOP_K * 3 if start_ts else _TOP_K
+    for ns in _NAMESPACES:
+        store = get_vector_store(ns)
+        docs = _retriever_with_retry(store, question, k=fetch_k)
+
+        for doc in docs:
+            doc_id = doc.metadata.get("url", "")
+            if doc_id in graph_doc_ids:
+                doc.metadata["graph_boost"] = True
+        all_docs.extend(docs)
+
+    # Apply time filter if specified
+    if start_ts:
+        all_docs = _filter_docs_by_time(all_docs, start_ts, end_ts)
+        logger.info("After time filter: %d docs remain", len(all_docs))
+
+    # Step 4: Rank documents
+    def score(doc):
+        authority = int(doc.metadata.get("authority_score", 0))
+        recency = _ts_float(doc)
+        graph_boost = 100 if doc.metadata.get("graph_boost") else 0
+        return -(authority + graph_boost), -recency
+
+    all_docs.sort(key=score)
+
+    if not all_docs and not graph_entities:
+        yield "I could not find any relevant information in the knowledge base."
+        return
+
+    # Step 5: Build context and stream response
+    yield {"status": "generating", "message": "✨ Generating response..."}
+
+    graph_context = _format_graph_context(graph_entities)
+    doc_context = _format_docs(all_docs)
+    history_section = _format_history(history or [])
+
+    # Add time context if filtering
+    time_context = ""
+    if time_desc:
+        time_context = f"\n\nIMPORTANT: The user is asking about {time_desc}. Only use information from that time period. Make it clear you're answering based on historical data."
+
+    full_prompt = _SYSTEM_PROMPT.format(
+        graph_context=graph_context,
+        doc_context=doc_context,
+        history_section=history_section,
+        question=question + time_context,
+    )
+
+    llm = get_llm()
+    logger.info("Athena streaming answer: %s", question[:80])
+
+    for chunk in llm.stream(full_prompt):
+        if hasattr(chunk, "content") and chunk.content:
+            yield chunk.content
 
 
 def ask_simple(question: str, history: list[dict[str, str]] | None = None) -> str:
