@@ -1,0 +1,13 @@
+google-generativeai>=0.8.0
+langchain>=0.3.28
+langchain-core>=0.3.84
+langchain-community>=0.3.31
+langchain-google-genai>=2.1.12
+pinecone>=5.4.2
+langchain-pinecone>=0.2.13
+slack_sdk>=3.41.0
+atlassian-python-api>=3.41.21
+python-telegram-bot>=21.11.1
+pydantic>=2.10.6
+pydantic-settings>=2.7.1
+python-dotenv>=1.1.0
