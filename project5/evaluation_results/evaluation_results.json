@@ -1,0 +1,263 @@
+{
+  "summary": {
+    "rag": {
+      "avg_relevance": 4.8,
+      "avg_specificity": 4.4,
+      "avg_accuracy": 4.7,
+      "avg_latency": 8.557475090026855,
+      "citation_rate": 0.8
+    },
+    "baseline": {
+      "avg_relevance": 4.9,
+      "avg_specificity": 4.8,
+      "avg_accuracy": 4.8,
+      "avg_latency": 11.539112734794617,
+      "citation_rate": 0.8
+    },
+    "improvement": {
+      "relevance": -0.10000000000000053,
+      "specificity": -0.39999999999999947,
+      "accuracy": -0.09999999999999964
+    }
+  },
+  "detailed": {
+    "rag": {
+      "scores": [
+        {
+          "relevance": 5,
+          "specificity": 3,
+          "accuracy": 5,
+          "explanation": "The answer is highly relevant and accurate, directly addressing GitLab's policy and correctly stating why the specific details are not publicly available. It is specific about the *existence* and *location* of the policy but, by its nature, cannot provide specificity on the policy *content* itself."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by providing specific PTO days for different employee levels. It includes detailed, concrete numbers and clarifies a recent policy update with sources and dates, demonstrating high specificity and accuracy regarding the expected topics."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly and accurately lists GitLab's six core values, including the CREDIT acronym and additional context. It covers all expected topics comprehensively and correctly."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question, providing detailed steps for both the old and new deployment processes. It specifically mentions all expected topics (Jenkins, GitHub Actions, GitHub for code and releases) and clearly outlines triggers, stages (staging, production), and permissions. The update from the Lead Architect makes the information timely and comprehensive."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by detailing numerous security measures. It is highly specific, listing technologies (Okta, GitHub), policies (MFA, least privilege, data classification), frequencies (quarterly, annual, 90 days), and procedures (incident reporting). All expected topics (security, assurance, compliance, protection) are explicitly and accurately covered throughout the answer."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by detailing the entire code review process from author guidelines to merge strategy. It provides highly specific details like PR line limits, response times, specific approval counts, and the exact merge strategy. All expected topics (review, code, merge, approval) are covered thoroughly and appropriately."
+        },
+        {
+          "relevance": 5,
+          "specificity": 4,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by outlining the company's privacy principles, responsible teams, and key aspects, including specific data subject rights. It accurately covers all expected topics (privacy, data, GDPR, personal data). While it provides concrete details regarding rights and responsibilities, it could offer more granular information on data types or processing methods to achieve higher specificity."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly and comprehensively details the product team's structure, naming key personnel, their roles, and the specific focus areas of each sub-team. All expected topics are covered with high specificity."
+        },
+        {
+          "relevance": 5,
+          "specificity": 4,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by listing specific communication tools and elaborating on their use, especially Slack. It accurately covers all expected topics, including asynchronous communication. While specific names for 'public issues' and 'merge requests' tools could add more specificity (e.g., GitLab Issues, GitLab Merge Requests), it's still very concrete."
+        },
+        {
+          "relevance": 3,
+          "specificity": 3,
+          "accuracy": 2,
+          "explanation": "The answer provides some administrative steps (when, where, how to get help) relevant to the enrollment process. It is specific about these logistics and a new mental health benefit. However, it doesn't describe the actual steps within the enrollment platform or the various benefit types available (e.g., health insurance), making it less comprehensive in addressing the 'process.' It appropriately mentions 'benefits' and 'enrollment,' but only touches on 'health' via a specific mental health service and completely omits explicit mention of 'insurance,' which are key expected topics for a benefits enrollment process."
+        }
+      ],
+      "latencies": [
+        10.75248908996582,
+        7.531339883804321,
+        7.274058818817139,
+        5.729046106338501,
+        12.776080131530762,
+        8.633331060409546,
+        7.077070951461792,
+        11.242681980133057,
+        6.822443962097168,
+        7.736208915710449
+      ],
+      "citations": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false
+      ]
+    },
+    "baseline": {
+      "scores": [
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question, providing a comprehensive and detailed overview of GitLab's travel expense policy. It includes specific examples of eligible/non-eligible expenses, approval processes, reporting, and directly references the GitLab Handbook, covering all expected topics with excellent specificity."
+        },
+        {
+          "relevance": 5,
+          "specificity": 4,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by explaining why it cannot provide a specific number and then offers highly relevant and accurate guidance on factors influencing PTO and resources to find the information. It is specific in its advice, even if it cannot provide the direct numerical answer."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by accurately identifying and detailing GitLab's core CREDITS values. It provides specific examples and explanations for each value, covering all expected topics thoroughly and correctly."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 4,
+          "explanation": "The answer is highly relevant and exceptionally specific, detailing core stages, techniques, and principles of the deployment process. It comprehensively covers 'deploy' and 'ci/cd'. While it mentions 'Git' for version control, it doesn't explicitly name 'GitHub', 'Actions', or 'Jenkins' as specific examples of tools, which were listed as expected topics. However, it covers the *concepts* these tools embody very well."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer is exceptionally comprehensive and highly specific, detailing a multi-layered security approach. It directly addresses the question and thoroughly covers all expected topics (security, assurance, compliance, protection) with concrete examples and structured categories."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly and comprehensively addresses the question, providing a highly specific, step-by-step breakdown of the code review process. All expected topics (review, code, merge, approval) are accurately covered and deeply integrated into the explanation."
+        },
+        {
+          "relevance": 4,
+          "specificity": 4,
+          "accuracy": 4,
+          "explanation": "The answer doesn't recite the privacy policy verbatim (which is expected for a generic AI assistant) but effectively addresses the user's intent by providing clear instructions on how to find the official document and a comprehensive, accurate outline of what a typical privacy policy covers. The instructions on where to look are specific. While 'GDPR' isn't explicitly named, the described topics like 'Your rights' and 'Data retention' are highly aligned with modern data protection regulations like GDPR, making it implicitly accurate."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly and comprehensively addresses the question. It provides highly specific examples for different structural approaches, details the product leadership hierarchy with concrete titles and roles, and accurately covers all expected topics related to product team structure and management."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer is highly relevant, directly addressing the question with a comprehensive list of communication tools. It is very specific, naming popular tools for each category and detailing their purpose and features. It accurately covers all expected topics, including 'slack' and 'async' communication methods."
+        },
+        {
+          "relevance": 5,
+          "specificity": 5,
+          "accuracy": 5,
+          "explanation": "The answer directly addresses the question by outlining a clear, step-by-step process for benefits enrollment. It provides highly specific details, examples, and common terminology (e.g., QLE, SPDs, HRIS systems, plan types) and accurately covers all expected topics like benefits, enrollment mechanics, health plans, and various insurance types. The structure is logical and helpful."
+        }
+      ],
+      "latencies": [
+        11.956390857696533,
+        7.604893922805786,
+        9.0139741897583,
+        13.42998194694519,
+        15.278634071350098,
+        11.628422021865845,
+        8.187315225601196,
+        14.091183185577393,
+        10.707669019699097,
+        13.492662906646729
+      ],
+      "citations": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true
+      ]
+    },
+    "questions": [
+      {
+        "question": "What is GitLab's policy on travel expenses?",
+        "category": "policy",
+        "rag_answer": "Based on the information available, a Confluence page from GitLab's Handbook (last modified March 18, 2026) indicates that GitLab does have a Global Travel and Expense Policy. However, that specific public page states that it has moved and GitLab team members should refer to the Expenses handbook page in the internal handbook for the current details.\n\nTherefore, the specific details of GitLab's current travel expense policy are not directly available in the provided documents. The detailed Expen",
+        "baseline_answer": "As a remote-first company, GitLab has a clear and comprehensive travel expense policy designed to balance the need for team members to travel for business purposes with their value of **frugality, transparency, and responsible stewardship** of company resources.\n\nHere's a summary of the key aspects of GitLab's travel expense policy:\n\n1.  **Primary Source:** The full policy is publicly available in the **GitLab Handbook**, which is their single source of truth for all company operations. This emp"
+      },
+      {
+        "question": "How many PTO days do employees get?",
+        "category": "hr",
+        "rag_answer": "The number of PTO days an employee receives depends on their employee level.\n\nBased on the official PTO Policy, employees receive:\n- Junior (L1-L2): 15 days\n- Mid-Level (L3-L4): 18 days\n- Senior (L5-L6): 20 days\n- Director+: 25 days\n\nThe Official Wiki (updated January 15, 2024) suggests Lead/Manager level employees receive 20 days. However, Sarah Mitchell (HR Lead) updated this in Slack on April 22, 2026, stating that effective immediately, all Lead and Manager level employees now receive 25 day",
+        "baseline_answer": "As an AI, I don't have access to your specific company's internal policies, so I can't provide an exact number of PTO days.\n\nThe number of PTO days an employee gets typically varies significantly based on several factors, including:\n\n*   **Company Policy:** This is the primary determinant, as each organization sets its own PTO structure.\n*   **Employee Tenure:** Often, PTO accrual increases with years of service.\n*   **Job Level/Role:** Some roles or levels may have different allocations.\n*   **"
+      },
+      {
+        "question": "What are GitLab's core values?",
+        "category": "culture",
+        "rag_answer": "GitLab's six core values are Collaboration, Results for Customers, Efficiency, Diversity, Inclusion & Belonging, Iteration, and Transparency. Together, these values spell CREDIT, which reminds us to assume good intent with one another. These values are a living document, refined and revised based on lessons learned.",
+        "baseline_answer": "GitLab's core values are summarized by the acronym **CREDITS**. These values are deeply embedded in their remote-first culture and operations, and they are extensively documented in their public handbook.\n\nHere's a breakdown of each value:\n\n*   **C - Collaboration:** GitLab emphasizes working together, both internally and with the wider community. This includes asynchronous communication, valuing contribution over ego, and assuming good intent.\n*   **R - Results:** The focus is on delivering mea"
+      },
+      {
+        "question": "What is the deployment process?",
+        "category": "engineering",
+        "rag_answer": "The official Deployment Guide from January 2024 (Confluence) states that all services are deployed via Jenkins. It details that a code push to GitHub triggers a Jenkins webhook, which then runs tests, builds a Docker image, deploys to staging, and requires manual approval for production via a tag matching v*.*.*.\n\nHowever, Alex Chen (Lead Architect) updated this information in Slack on April 22, 2026. Alex states that the migration from Jenkins to GitHub Actions is complete, and all pipelines ar",
+        "baseline_answer": "The deployment process is the systematic series of steps involved in taking a developed application, service, or system and making it available and operational for its intended users in a production environment.\n\nIt's a critical phase in the software development lifecycle, ensuring that new features, bug fixes, and updates are delivered reliably and efficiently, minimizing disruption to end-users.\n\nHere's a breakdown of the typical stages and key considerations:\n\n### Core Stages of the Deploymen"
+      },
+      {
+        "question": "What security measures does the company have?",
+        "category": "security",
+        "rag_answer": "Our company maintains a robust suite of security measures designed to protect company property, customer data, and our platform, while also meeting stringent compliance standards.\n\nAt a high level, we are SOC 2 Type II certified and GDPR compliant, which is a key selling point for our enterprise prospects, as noted by Michael Torres, VP Engineering, on April 22, 2026. This commitment to compliance is foundational.\n\nWe also have a strong focus on internal security practices:\n\n-   Annual security ",
+        "baseline_answer": "Our company takes security very seriously and employs a comprehensive, multi-layered approach to protect our assets, data, and people. Here's an overview of our key security measures:\n\n**I. Cybersecurity & Information Security**\n\n1.  **Network Security:**\n    *   **Firewalls & Intrusion Prevention Systems (IPS):** We use advanced firewalls and IPS to monitor and control incoming and outgoing network traffic, blocking malicious activity and known threats.\n    *   **Virtual Private Networks (VPNs)"
+      },
+      {
+        "question": "How does the engineering team handle code reviews?",
+        "category": "engineering",
+        "rag_answer": "The engineering team handles code reviews with a set of established guidelines, as detailed in the Code Review Guidelines from January 15, 2024.\n\nFor authors:\n - Keep Pull Requests (PRs) small, ideally under 400 lines and never over 1000.\n - Write a clear description covering what, why, and how to test.\n - Self-review before requesting feedback.\n - Add tests for new functionality.\n - Respond to feedback within 24 hours.\n\nFor reviewers:\n - Review within 24 hours of the request.\n - Be constructive",
+        "baseline_answer": "Our engineering team employs a robust and standardized code review process to ensure code quality, reliability, and maintainability. This process is fundamental to our development workflow and helps foster collaboration and knowledge sharing.\n\nHere's a breakdown of how it typically works:\n\n1.  **Initiation (Pull Request/Merge Request):**\n    *   After a developer completes a feature, bug fix, or refactor in a separate branch, they create a **Pull Request (PR)** (or Merge Request, depending on th"
+      },
+      {
+        "question": "What is the company's privacy policy?",
+        "category": "legal",
+        "rag_answer": "The company's privacy policy is built on principles of transparency and a culture that respects and prioritizes the privacy of its Team Members and users.\n\nThe Privacy Team, part of the Legal and Corporate Affairs Team, provides support and guidance to uphold consistent business processes around the protection of personal data for customers, users, Team Members, and other natural persons. They ensure that data privacy practices meet the needs of cross-functional partners and adapt to the global ",
+        "baseline_answer": "As a corporate assistant, I can help you find our company's official Privacy Policy.\n\n**To access the full, current Privacy Policy for [Your Company Name], please refer to the following:**\n\n1.  **Our Official Company Website:** The most common place to find our Privacy Policy is on our public-facing website. Look for a link typically located in the footer of any page, often titled \"Privacy Policy,\" \"Privacy Statement,\" \"Legal,\" or \"Terms & Privacy.\"\n    *   **[Insert Specific URL Here, if known,"
+      },
+      {
+        "question": "How is the product team structured?",
+        "category": "organization",
+        "rag_answer": "The Product team is structured as a department led by Lisa Nguyen, who holds the title of Director of Product.\n\nThe team structure within the Product Department is organized into several key areas:\n\n - Core Product, which focuses on main platform features, with Lisa Nguyen also serving as the Product Manager for this area.\n - Enterprise Product, managing features like SSO, compliance, and admin functionalities, led by Product Manager Marcus Chen.\n - Growth Product, concentrating on onboarding, a",
+        "baseline_answer": "That's a great question, as product team structures can vary quite a bit depending on the company's size, industry, product complexity, and strategic goals. However, I can outline the most common ways product teams are structured.\n\nIn general, a product team isn't just a group of Product Managers (PMs); it's typically a **cross-functional unit** comprising Product Management, Engineering, and Design, all working together to build and deliver a specific part of the product.\n\nHere are the most com"
+      },
+      {
+        "question": "What communication tools does the company use?",
+        "category": "tools",
+        "rag_answer": "The company employs several communication tools and emphasizes clear, asynchronous communication given its all-remote nature.\n\nCommunication tools explicitly mentioned include:\n- Slack channels\n- Public issues\n- Merge requests\n- A wiki (presumably Confluence, where the GitLab Handbook is hosted)\n\nThe company also starts with asynchronous communication as a principle to maintain openness and transparency. Slack messages from various team members across different departments demonstrate its active",
+        "baseline_answer": "Certainly! Our company utilizes a blend of communication tools designed to facilitate efficient internal collaboration, external outreach, and knowledge sharing. Here's a breakdown of the primary tools we use:\n\n1.  **Email (Microsoft Outlook / Google Mail):**\n    *   **Purpose:** Our primary tool for formal communications, external correspondence with clients and partners, sharing documents, and asynchronous internal messages that don't require immediate replies.\n    *   **Key Features:** Calend"
+      },
+      {
+        "question": "What is the process for employee benefits enrollment?",
+        "category": "hr",
+        "rag_answer": "The benefits enrollment period is scheduled to open next Monday. You will receive an email containing instructions on how to review and update your selections within Workday. These changes will officially take effect on January 1st. For any questions you may have, HR office hours will be available on Wednesday from 2-4 PM. Additionally, as of April 22, 2026, we have partnered with Modern Health to provide all employees with access to free therapy sessions and coaching, which you can find details",
+        "baseline_answer": "Navigating employee benefits enrollment is a key part of your employment, ensuring you have access to crucial health, financial, and wellness programs. While specific details can vary slightly by company, the general process typically follows these steps:\n\n---\n\n### The Process for Employee Benefits Enrollment\n\n1.  **Eligibility Notification & Onboarding**\n    *   **When:** This usually occurs during your initial onboarding process as a new hire, or during the annual \"Open Enrollment\" period for "
+      }
+    ]
+  }
+}
