@@ -422,6 +422,92 @@ def _sync_now() -> tuple[str, str]:
     ), "HTML"
 
 
+def _route_question(question: str, from_user: str) -> tuple[str, str]:
+    """Route a question to the best expert via Slack DM."""
+    from slack_sdk import WebClient
+    from slack_sdk.errors import SlackApiError
+
+    settings = get_settings()
+    client = WebClient(token=settings.slack_bot_token)
+    driver = get_neo4j_driver()
+
+    # Extract topic keywords for expert matching
+    keywords = question.lower().split()
+
+    # Find best expert
+    with driver.session() as session:
+        result = list(session.run("""
+            MATCH (p:Person)
+            WHERE p.authority_score >= 7
+            RETURN p.name AS name, p.role AS role, p.email AS email,
+                   p.department AS dept, p.authority_score AS auth
+            ORDER BY p.authority_score DESC
+            LIMIT 10
+        """))
+
+    if not result:
+        return "No experts found in the system.", "HTML"
+
+    # Try to match expert based on question content
+    best_expert = None
+    for row in result:
+        role = (row['role'] or '').lower()
+        dept = (row['dept'] or '').lower()
+
+        for kw in keywords:
+            if kw in role or kw in dept:
+                best_expert = row
+                break
+        if best_expert:
+            break
+
+    # Fallback to highest authority
+    if not best_expert:
+        best_expert = result[0]
+
+    expert_email = best_expert['email']
+    expert_name = best_expert['name']
+
+    if not expert_email:
+        return f"Found expert <b>{expert_name}</b> but no email on file.", "HTML"
+
+    # Find Slack user by email
+    try:
+        user_resp = client.users_lookupByEmail(email=expert_email)
+        slack_user_id = user_resp['user']['id']
+    except SlackApiError as e:
+        if "users_not_found" in str(e):
+            return f"Expert <b>{expert_name}</b> ({expert_email}) not found on Slack.", "HTML"
+        raise
+
+    # Open DM and send message
+    try:
+        dm_resp = client.conversations_open(users=[slack_user_id])
+        dm_channel = dm_resp['channel']['id']
+
+        message = (
+            f"👋 *Question routed to you by Athena*\n\n"
+            f"_{from_user} asked:_\n\n"
+            f"> {question}\n\n"
+            f"_You were identified as the best person to answer based on your role and expertise._"
+        )
+
+        client.chat_postMessage(channel=dm_channel, text=message, mrkdwn=True)
+
+        return (
+            f"<b>📨 Question Routed</b>\n"
+            f"━━━━━━━━━━━━━━━\n\n"
+            f"Sent to: <b>{expert_name}</b>\n"
+            f"Role: {best_expert['role']}\n"
+            f"Dept: {best_expert['dept']}\n\n"
+            f"<i>They'll receive a Slack DM with your question.</i>"
+        ), "HTML"
+
+    except SlackApiError as e:
+        logger.error("Failed to send DM: %s", e)
+        return f"Failed to send message to {expert_name}: {e}", "HTML"
+
+
 def _generate_org_graph() -> bytes | None:
     """Generate org chart as PNG image."""
     import graphviz
@@ -685,7 +771,8 @@ _GREETING = (
     "resolving conflicts using authority scores and timestamps.\n\n"
     "<b>📝 Ask me anything:</b>\n"
     "• Policies, deployments, decisions\n"
-    "• Who to contact, team info\n\n"
+    "• Who to contact, team info\n"
+    "• 🎤 Send a voice message!\n\n"
     "<b>🛠 Commands:</b>\n"
     "/whois — Look up a person\n"
     "/team — List department members\n"
@@ -693,6 +780,7 @@ _GREETING = (
     "/summarize — Summarize a channel\n"
     "/diff — Page change history\n"
     "/expert — Find who to ask\n"
+    "/route — Route question to expert via Slack DM\n"
     "/sync — Trigger data sync\n"
     "/clear — Reset conversation"
 )
@@ -900,6 +988,26 @@ async def sync_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(result, parse_mode=parse_mode)
 
 
+async def route_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Route a question to an expert via Slack DM."""
+    if not context.args:
+        await update.message.reply_text("Usage: /route &lt;your question&gt;", parse_mode="HTML")
+        return
+
+    question = " ".join(context.args)
+    from_user = update.effective_user.first_name or "A user"
+
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+
+    try:
+        loop = asyncio.get_event_loop()
+        result, parse_mode = await loop.run_in_executor(None, _route_question, question, from_user)
+        await update.message.reply_text(result, parse_mode=parse_mode)
+    except Exception as e:
+        logger.error("Route error: %s", e, exc_info=True)
+        await update.message.reply_text(f"❌ Error routing question: {e}")
+
+
 async def graph_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.UPLOAD_PHOTO)
 
@@ -1104,6 +1212,7 @@ async def post_init(application) -> None:
         BotCommand("summarize", "Summarize Slack channel: /summarize #general"),
         BotCommand("diff", "Page changes: /diff PTO Policy"),
         BotCommand("expert", "Find expert: /expert kubernetes"),
+        BotCommand("route", "Route question to expert: /route How do I deploy?"),
         BotCommand("sync", "Trigger manual sync"),
     ]
     await application.bot.set_my_commands(commands)
@@ -1123,6 +1232,7 @@ def main() -> None:
     app.add_handler(CommandHandler("summarize", summarize_handler))
     app.add_handler(CommandHandler("diff", diff_handler))
     app.add_handler(CommandHandler("expert", expert_handler))
+    app.add_handler(CommandHandler("route", route_handler))
     app.add_handler(CommandHandler("sync", sync_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
     app.add_handler(MessageHandler(filters.VOICE, voice_handler))
