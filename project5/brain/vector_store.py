@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from typing import Any
 
 from langchain_core.documents import Document
@@ -11,7 +12,8 @@ from core.logger import get_logger
 
 logger = get_logger(__name__)
 
-_EMBED_BATCH_SIZE = 96
+_EMBED_BATCH_SIZE = 20
+_RATE_LIMIT_DELAY = 1.5
 
 
 def _doc_id(doc: Document) -> str:
@@ -46,6 +48,9 @@ def upsert_documents(documents: list[Document], namespace: str) -> None:
         ]
         index.upsert(vectors=payload, namespace=namespace)
         logger.info("  batch %d–%d done.", offset, offset + len(batch) - 1)
+
+        if offset + _EMBED_BATCH_SIZE < len(documents):
+            time.sleep(_RATE_LIMIT_DELAY)
 
     logger.info("Upsert complete for namespace '%s'.", namespace)
 

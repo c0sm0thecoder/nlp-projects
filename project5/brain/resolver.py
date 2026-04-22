@@ -33,9 +33,11 @@ When answering:
 2. Compare timestamps of all retrieved documents.
 3. Weigh information from users with higher 'authority_score' more heavily.
 4. If a Lead's Slack message (newer) contradicts a Confluence page (older), prioritize the Slack message but explicitly state: 'The Official Wiki suggests X, but [Name] (Lead) updated this in Slack on [Date] to Y'.
+5. Use the conversation history to understand context from previous questions.
 
 IMPORTANT: Format your response as plain text without any markdown formatting (no asterisks, no bullet points with *, no **bold**). Use simple dashes (-) for lists and plain text for emphasis.
 
+{history_section}
 Graph Context (relationships and entities):
 {graph_context}
 
@@ -117,11 +119,26 @@ def _ts_float(doc) -> float:
         return 0.0
 
 
-def ask(question: str) -> str:
+def _format_history(history: list[dict[str, str]]) -> str:
+    if not history:
+        return ""
+    parts = ["Conversation History:"]
+    for msg in history[-6:]:
+        role = "User" if msg["role"] == "user" else "Athena"
+        parts.append(f"{role}: {msg['content'][:500]}")
+    return "\n".join(parts) + "\n\n"
+
+
+def ask(question: str, history: list[dict[str, str]] | None = None) -> str:
     """Graph-first RAG: extract entities, query graph, then vector search."""
 
-    # Step 1: Extract entities from question
-    entity_names = extract_entities_from_question(question)
+    # Step 1: Extract entities from question (include recent history for context)
+    search_context = question
+    if history:
+        recent_user_msgs = [m["content"] for m in history[-4:] if m["role"] == "user"]
+        search_context = " ".join(recent_user_msgs + [question])
+
+    entity_names = extract_entities_from_question(search_context)
     logger.info("Extracted entities: %s", entity_names)
 
     # Step 2: Query knowledge graph for related entities
@@ -166,12 +183,14 @@ def ask(question: str) -> str:
     # Step 5: Build context and synthesize
     graph_context = _format_graph_context(graph_entities)
     doc_context = _format_docs(all_docs)
+    history_section = _format_history(history or [])
 
     prompt = ChatPromptTemplate.from_template(_SYSTEM_PROMPT)
     chain = (
         {
             "graph_context": lambda _: graph_context,
             "doc_context": lambda _: doc_context,
+            "history_section": lambda _: history_section,
             "question": RunnablePassthrough(),
         }
         | prompt
@@ -183,7 +202,7 @@ def ask(question: str) -> str:
     return chain.invoke(question)
 
 
-def ask_simple(question: str) -> str:
+def ask_simple(question: str, history: list[dict[str, str]] | None = None) -> str:
     """Fallback: Simple vector-only RAG (no graph)."""
     all_docs = []
     for ns in _NAMESPACES:
