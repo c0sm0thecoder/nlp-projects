@@ -29,73 +29,93 @@ logger = get_logger("evaluate")
 
 # Test questions with expected topics/keywords
 TEST_QUESTIONS = [
+    # Company-specific questions (RAG should win - info from internal Slack/Confluence)
     {
-        "question": "What is GitLab's policy on travel expenses?",
+        "question": "How many PTO days do Lead roles get?",
+        "expected_topics": ["25", "days", "lead", "pto"],
+        "category": "internal-hr",
+        "rag_advantage": True,  # This info is from internal Slack
+    },
+    {
+        "question": "What CI/CD tool does the company currently use for deployments?",
+        "expected_topics": ["github actions", "deploy", "ci/cd"],
+        "category": "internal-eng",
+        "rag_advantage": True,  # Alex Chen announced switch from Jenkins
+    },
+    {
+        "question": "Who announced the change from Jenkins to GitHub Actions?",
+        "expected_topics": ["alex", "chen", "lead", "architect"],
+        "category": "internal-eng",
+        "rag_advantage": True,
+    },
+    {
+        "question": "What did Sarah Mitchell announce about PTO policy?",
+        "expected_topics": ["sarah", "mitchell", "25", "days", "lead"],
+        "category": "internal-hr",
+        "rag_advantage": True,
+    },
+    # General policy questions (from GitLab handbook - both may know)
+    {
+        "question": "What is the policy on travel expenses?",
         "expected_topics": ["travel", "expense", "reimbursement", "policy"],
-        "category": "policy"
+        "category": "policy",
+        "rag_advantage": False,
     },
     {
-        "question": "How many PTO days do employees get?",
-        "expected_topics": ["pto", "days", "vacation", "time off", "leave"],
-        "category": "hr"
-    },
-    {
-        "question": "What are GitLab's core values?",
+        "question": "What are the company's core values?",
         "expected_topics": ["values", "collaboration", "results", "efficiency", "transparency"],
-        "category": "culture"
+        "category": "culture",
+        "rag_advantage": False,
     },
     {
-        "question": "What is the deployment process?",
-        "expected_topics": ["deploy", "github", "actions", "jenkins", "ci/cd"],
-        "category": "engineering"
-    },
-    {
-        "question": "What security measures does the company have?",
+        "question": "What security policies are in place?",
         "expected_topics": ["security", "assurance", "compliance", "protection"],
-        "category": "security"
+        "category": "security",
+        "rag_advantage": False,
     },
     {
         "question": "How does the engineering team handle code reviews?",
         "expected_topics": ["review", "code", "merge", "approval"],
-        "category": "engineering"
+        "category": "engineering",
+        "rag_advantage": False,
     },
     {
         "question": "What is the company's privacy policy?",
         "expected_topics": ["privacy", "data", "gdpr", "personal"],
-        "category": "legal"
+        "category": "legal",
+        "rag_advantage": False,
     },
     {
-        "question": "How is the product team structured?",
-        "expected_topics": ["product", "team", "manager", "structure"],
-        "category": "organization"
-    },
-    {
-        "question": "What communication tools does the company use?",
-        "expected_topics": ["slack", "communication", "tools", "async"],
-        "category": "tools"
-    },
-    {
-        "question": "What is the process for employee benefits enrollment?",
-        "expected_topics": ["benefits", "enrollment", "health", "insurance"],
-        "category": "hr"
+        "question": "What communication guidelines does the company follow?",
+        "expected_topics": ["communication", "async", "slack", "meetings"],
+        "category": "tools",
+        "rag_advantage": False,
     },
 ]
 
-JUDGE_PROMPT = """You are an impartial judge evaluating answer quality.
+JUDGE_PROMPT = """You are an impartial judge evaluating answer quality for a company Q&A system.
 
 Question: {question}
-Expected topics: {expected_topics}
+Expected topics/keywords that should appear: {expected_topics}
 
 Answer to evaluate:
 {answer}
 
 Rate the answer on these criteria (1-5 scale):
-1. Relevance: Does it address the question directly?
-2. Specificity: Does it provide concrete details, not vague generalities?
-3. Accuracy: Does it mention expected topics appropriately?
+1. Relevance: Does it directly answer the question asked?
+2. Specificity: Does it give concrete details (names, dates, numbers) rather than vague generalities?
+3. Accuracy: Does it mention the expected topics/keywords? (Check if {expected_topics} appear)
+4. Grounding: Does it cite sources (names, dates, "according to", "in Slack/Confluence")?
+
+Scoring guide:
+- 5: Excellent - directly answers with specific details and citations
+- 4: Good - answers correctly with some specifics
+- 3: Adequate - general answer without specifics
+- 2: Poor - vague or partially wrong
+- 1: Bad - doesn't answer or wrong
 
 Return ONLY a JSON object:
-{{"relevance": X, "specificity": X, "accuracy": X, "explanation": "brief reason"}}
+{{"relevance": X, "specificity": X, "accuracy": X, "grounding": X, "explanation": "brief reason"}}
 """
 
 
@@ -182,16 +202,17 @@ def run_evaluation():
         results["questions"].append({
             "question": q,
             "category": test["category"],
+            "rag_advantage": test.get("rag_advantage", False),
             "rag_answer": rag_answer[:500],
             "baseline_answer": baseline_answer[:500]
         })
 
-        logger.info("  RAG: rel=%d, spec=%d, acc=%d, latency=%.2fs, cited=%s",
+        logger.info("  RAG: rel=%d, spec=%d, acc=%d, ground=%d, latency=%.2fs",
                    rag_scores.get("relevance", 0), rag_scores.get("specificity", 0),
-                   rag_scores.get("accuracy", 0), rag_latency, rag_cited)
-        logger.info("  Baseline: rel=%d, spec=%d, acc=%d, latency=%.2fs",
+                   rag_scores.get("accuracy", 0), rag_scores.get("grounding", 0), rag_latency)
+        logger.info("  Baseline: rel=%d, spec=%d, acc=%d, ground=%d, latency=%.2fs",
                    baseline_scores.get("relevance", 0), baseline_scores.get("specificity", 0),
-                   baseline_scores.get("accuracy", 0), baseline_latency)
+                   baseline_scores.get("accuracy", 0), baseline_scores.get("grounding", 0), baseline_latency)
 
     return results
 
@@ -204,16 +225,18 @@ def generate_graphs(results: dict, output_dir: Path):
     rag_rel = [s.get("relevance", 0) for s in results["rag"]["scores"]]
     rag_spec = [s.get("specificity", 0) for s in results["rag"]["scores"]]
     rag_acc = [s.get("accuracy", 0) for s in results["rag"]["scores"]]
+    rag_ground = [s.get("grounding", 0) for s in results["rag"]["scores"]]
 
     base_rel = [s.get("relevance", 0) for s in results["baseline"]["scores"]]
     base_spec = [s.get("specificity", 0) for s in results["baseline"]["scores"]]
     base_acc = [s.get("accuracy", 0) for s in results["baseline"]["scores"]]
+    base_ground = [s.get("grounding", 0) for s in results["baseline"]["scores"]]
 
     # 1. Overall scores comparison (bar chart)
-    fig, ax = plt.subplots(figsize=(10, 6))
-    metrics = ["Relevance", "Specificity", "Accuracy"]
-    rag_means = [np.mean(rag_rel), np.mean(rag_spec), np.mean(rag_acc)]
-    base_means = [np.mean(base_rel), np.mean(base_spec), np.mean(base_acc)]
+    fig, ax = plt.subplots(figsize=(12, 6))
+    metrics = ["Relevance", "Specificity", "Accuracy", "Grounding"]
+    rag_means = [np.mean(rag_rel), np.mean(rag_spec), np.mean(rag_acc), np.mean(rag_ground)]
+    base_means = [np.mean(base_rel), np.mean(base_spec), np.mean(base_acc), np.mean(base_ground)]
 
     x = np.arange(len(metrics))
     width = 0.35
@@ -302,24 +325,18 @@ def generate_graphs(results: dict, output_dir: Path):
     plt.close()
     logger.info("Saved: citation_rate.png")
 
-    # 5. Radar chart - overall comparison
+    # 5. Radar chart - overall comparison (with grounding)
     fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
 
-    categories = ["Relevance", "Specificity", "Accuracy", "Citations\n(normalized)", "Speed\n(inverted)"]
+    categories = ["Relevance", "Specificity", "Accuracy", "Grounding", "Speed\n(inverted)"]
 
-    # Normalize metrics to 0-5 scale
-    rag_citation_norm = (sum(results["rag"]["citations"]) / len(results["rag"]["citations"])) * 5
-    base_citation_norm = (sum(results["baseline"]["citations"]) / len(results["baseline"]["citations"])) * 5
-
-    # Invert latency (lower is better) - normalize to 0-5
     max_lat = max(max(rag_lat), max(base_lat))
     rag_speed = 5 - (np.mean(rag_lat) / max_lat * 5)
     base_speed = 5 - (np.mean(base_lat) / max_lat * 5)
 
-    rag_values = [np.mean(rag_rel), np.mean(rag_spec), np.mean(rag_acc), rag_citation_norm, rag_speed]
-    base_values = [np.mean(base_rel), np.mean(base_spec), np.mean(base_acc), base_citation_norm, base_speed]
+    rag_values = [np.mean(rag_rel), np.mean(rag_spec), np.mean(rag_acc), np.mean(rag_ground), rag_speed]
+    base_values = [np.mean(base_rel), np.mean(base_spec), np.mean(base_acc), np.mean(base_ground), base_speed]
 
-    # Close the polygon
     rag_values += rag_values[:1]
     base_values += base_values[:1]
 
@@ -342,26 +359,68 @@ def generate_graphs(results: dict, output_dir: Path):
     plt.close()
     logger.info("Saved: radar_comparison.png")
 
-    # 6. Summary statistics
+    # 6. Internal vs External questions comparison
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    internal_idx = [i for i, q in enumerate(results["questions"]) if q.get("rag_advantage")]
+    external_idx = [i for i, q in enumerate(results["questions"]) if not q.get("rag_advantage")]
+
+    rag_internal_acc = np.mean([rag_acc[i] for i in internal_idx]) if internal_idx else 0
+    rag_external_acc = np.mean([rag_acc[i] for i in external_idx]) if external_idx else 0
+    base_internal_acc = np.mean([base_acc[i] for i in internal_idx]) if internal_idx else 0
+    base_external_acc = np.mean([base_acc[i] for i in external_idx]) if external_idx else 0
+
+    x = np.arange(2)
+    width = 0.35
+
+    bars1 = ax.bar(x - width/2, [rag_internal_acc, rag_external_acc], width, label="RAG", color="#2ecc71")
+    bars2 = ax.bar(x + width/2, [base_internal_acc, base_external_acc], width, label="Baseline", color="#e74c3c")
+
+    ax.set_ylabel("Accuracy Score")
+    ax.set_title("Internal (Private) vs External (Public) Questions")
+    ax.set_xticks(x)
+    ax.set_xticklabels(["Internal Questions\n(from Slack/Confluence)", "External Questions\n(public knowledge)"])
+    ax.legend()
+    ax.set_ylim(0, 5.5)
+
+    for bar in bars1 + bars2:
+        height = bar.get_height()
+        ax.annotate(f'{height:.2f}', xy=(bar.get_x() + bar.get_width()/2, height),
+                   xytext=(0, 3), textcoords="offset points", ha='center', va='bottom')
+
+    plt.tight_layout()
+    plt.savefig(output_dir / "internal_vs_external.png", dpi=150)
+    plt.close()
+    logger.info("Saved: internal_vs_external.png")
+
+    # 7. Summary statistics
     summary = {
         "rag": {
             "avg_relevance": np.mean(rag_rel),
             "avg_specificity": np.mean(rag_spec),
             "avg_accuracy": np.mean(rag_acc),
+            "avg_grounding": np.mean(rag_ground),
             "avg_latency": np.mean(rag_lat),
-            "citation_rate": sum(results["rag"]["citations"]) / len(results["rag"]["citations"])
+            "citation_rate": sum(results["rag"]["citations"]) / len(results["rag"]["citations"]),
+            "internal_accuracy": rag_internal_acc,
+            "external_accuracy": rag_external_acc,
         },
         "baseline": {
             "avg_relevance": np.mean(base_rel),
             "avg_specificity": np.mean(base_spec),
             "avg_accuracy": np.mean(base_acc),
+            "avg_grounding": np.mean(base_ground),
             "avg_latency": np.mean(base_lat),
-            "citation_rate": sum(results["baseline"]["citations"]) / len(results["baseline"]["citations"])
+            "citation_rate": sum(results["baseline"]["citations"]) / len(results["baseline"]["citations"]),
+            "internal_accuracy": base_internal_acc,
+            "external_accuracy": base_external_acc,
         },
         "improvement": {
             "relevance": np.mean(rag_rel) - np.mean(base_rel),
             "specificity": np.mean(rag_spec) - np.mean(base_spec),
-            "accuracy": np.mean(rag_acc) - np.mean(base_acc)
+            "accuracy": np.mean(rag_acc) - np.mean(base_acc),
+            "grounding": np.mean(rag_ground) - np.mean(base_ground),
+            "internal_accuracy": rag_internal_acc - base_internal_acc,
         }
     }
 
@@ -382,18 +441,25 @@ def main():
     summary = generate_graphs(results, output_dir)
 
     logger.info("\n=== Evaluation Complete ===")
-    logger.info("RAG avg scores: rel=%.2f, spec=%.2f, acc=%.2f",
+    logger.info("RAG avg scores: rel=%.2f, spec=%.2f, acc=%.2f, ground=%.2f",
                summary["rag"]["avg_relevance"],
                summary["rag"]["avg_specificity"],
-               summary["rag"]["avg_accuracy"])
-    logger.info("Baseline avg scores: rel=%.2f, spec=%.2f, acc=%.2f",
+               summary["rag"]["avg_accuracy"],
+               summary["rag"]["avg_grounding"])
+    logger.info("Baseline avg scores: rel=%.2f, spec=%.2f, acc=%.2f, ground=%.2f",
                summary["baseline"]["avg_relevance"],
                summary["baseline"]["avg_specificity"],
-               summary["baseline"]["avg_accuracy"])
-    logger.info("Improvement: rel=%+.2f, spec=%+.2f, acc=%+.2f",
+               summary["baseline"]["avg_accuracy"],
+               summary["baseline"]["avg_grounding"])
+    logger.info("Overall improvement: rel=%+.2f, spec=%+.2f, acc=%+.2f, ground=%+.2f",
                summary["improvement"]["relevance"],
                summary["improvement"]["specificity"],
-               summary["improvement"]["accuracy"])
+               summary["improvement"]["accuracy"],
+               summary["improvement"]["grounding"])
+    logger.info("Internal questions (RAG advantage): RAG=%.2f, Baseline=%.2f, Improvement=%+.2f",
+               summary["rag"]["internal_accuracy"],
+               summary["baseline"]["internal_accuracy"],
+               summary["improvement"]["internal_accuracy"])
     logger.info("\nResults saved to: %s", output_dir)
 
 
