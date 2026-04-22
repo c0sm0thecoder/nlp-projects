@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import numpy as np
 from langchain_core.documents import Document
 
-from core.clients import get_embeddings
+from core.clients import get_local_embeddings
 from core.logger import get_logger
 
 logger = get_logger(__name__)
@@ -57,7 +57,7 @@ def semantic_chunk(text: str, min_size: int = _MIN_CHUNK_SIZE, max_size: int = _
         return [text]
 
     # Get embeddings for all sentences (batched, GPU-accelerated)
-    embeddings = get_embeddings()
+    embeddings = get_local_embeddings()
     sentence_embeddings = np.array(embeddings.embed_documents(sentences))
 
     # Find breakpoints where similarity drops
