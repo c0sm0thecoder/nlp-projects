@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     neo4j_user: str = "neo4j"
     neo4j_password: str = "athena123"
 
+    openai_api_key: str = ""
+
     sync_state_path: str = "sync_state.json"
 
     @property

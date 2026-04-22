@@ -8,7 +8,11 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import queue
 import sys
+import tempfile
+import threading
+from io import BytesIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -31,6 +35,48 @@ from core.config import get_settings
 from core.logger import get_logger
 
 logger = get_logger("athena_bot")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# VOICE FUNCTIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+_whisper_model = None
+
+def _transcribe_voice(audio_bytes: bytes) -> str:
+    """Transcribe voice message using local Whisper model."""
+    import whisper
+
+    global _whisper_model
+    if _whisper_model is None:
+        _whisper_model = whisper.load_model("base")  # ~140MB, good balance
+
+    # Write to temp file (whisper needs file path)
+    with tempfile.NamedTemporaryFile(suffix=".ogg", delete=False) as f:
+        f.write(audio_bytes)
+        temp_path = f.name
+
+    try:
+        result = _whisper_model.transcribe(temp_path)
+        return result["text"]
+    finally:
+        Path(temp_path).unlink(missing_ok=True)
+
+
+def _text_to_speech(text: str) -> bytes:
+    """Convert text to speech using gTTS."""
+    from gtts import gTTS
+
+    # Clean text for TTS
+    clean_text = text.replace("*", "").replace("_", "").replace("`", "")
+
+    tts = gTTS(text=clean_text, lang="en", slow=False)
+
+    audio_buffer = BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+
+    return audio_buffer.read()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -901,15 +947,56 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         action=ChatAction.TYPING,
     )
 
+    history_list = _history_to_list(chat_history, chat_id)
+
+    msg = await update.message.reply_text("🔍 Analyzing question...")
+
     try:
-        history_list = _history_to_list(chat_history, chat_id)
-        loop = asyncio.get_event_loop()
-        answer = await loop.run_in_executor(
-            None, resolver.ask, question, history_list
-        )
+        status_queue: queue.Queue = queue.Queue()
+        chunk_queue: queue.Queue = queue.Queue()
+
+        def run_in_thread():
+            try:
+                for item in resolver.ask_stream_with_status(question, history_list):
+                    if isinstance(item, dict):
+                        status_queue.put(item)
+                    else:
+                        chunk_queue.put(item)
+            finally:
+                chunk_queue.put(None)
+
+        thread = threading.Thread(target=run_in_thread, daemon=True)
+        thread.start()
+
+        answer_chunks = []
+        while True:
+            # Update status messages
+            try:
+                while True:
+                    status = status_queue.get_nowait()
+                    await msg.edit_text(status.get("message", "..."))
+            except queue.Empty:
+                pass
+
+            try:
+                chunk = chunk_queue.get(timeout=0.1)
+            except queue.Empty:
+                continue
+
+            if chunk is None:
+                break
+            answer_chunks.append(chunk)
+
+        answer = "".join(answer_chunks)
+        if not answer.strip():
+            answer = "I could not find any relevant information."
+
+        await msg.edit_text(answer)
+
     except Exception as exc:
         logger.error("Resolver error: %s", exc, exc_info=True)
         answer = "I'm sorry, I encountered an error while searching the knowledge base. Please try again."
+        await msg.edit_text(answer)
 
     chat_history.add_user_message(question)
     chat_history.add_ai_message(answer)
@@ -919,7 +1006,90 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         None, _maybe_summarize, chat_history, chat_id
     )
 
-    await update.message.reply_text(answer)
+
+async def voice_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle voice messages - transcribe, process, respond with voice."""
+    chat_id = update.effective_chat.id
+    chat_history = _get_history(chat_id)
+
+    await context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+
+    # Download voice message
+    voice = update.message.voice
+    file = await context.bot.get_file(voice.file_id)
+    audio_bytes = await file.download_as_bytearray()
+
+    msg = await update.message.reply_text("🎤 Transcribing...")
+
+    try:
+        # Transcribe
+        loop = asyncio.get_event_loop()
+        question = await loop.run_in_executor(None, _transcribe_voice, bytes(audio_bytes))
+
+        if not question.strip():
+            await msg.edit_text("Could not understand the voice message.")
+            return
+
+        await msg.edit_text(f"💬 \"{question}\"\n\n🔍 Searching...")
+
+        # Process question
+        history_list = _history_to_list(chat_history, chat_id)
+
+        status_queue: queue.Queue = queue.Queue()
+        chunk_queue: queue.Queue = queue.Queue()
+
+        def run_in_thread():
+            try:
+                for item in resolver.ask_stream_with_status(question, history_list):
+                    if isinstance(item, dict):
+                        status_queue.put(item)
+                    else:
+                        chunk_queue.put(item)
+            finally:
+                chunk_queue.put(None)
+
+        thread = threading.Thread(target=run_in_thread, daemon=True)
+        thread.start()
+
+        answer_chunks = []
+        while True:
+            try:
+                while True:
+                    status = status_queue.get_nowait()
+                    await msg.edit_text(f"💬 \"{question}\"\n\n{status.get('message', '...')}")
+            except queue.Empty:
+                pass
+
+            try:
+                chunk = chunk_queue.get(timeout=0.1)
+            except queue.Empty:
+                continue
+
+            if chunk is None:
+                break
+            answer_chunks.append(chunk)
+
+        answer = "".join(answer_chunks)
+        if not answer.strip():
+            answer = "I could not find any relevant information."
+
+        # Show text response
+        await msg.edit_text(f"💬 \"{question}\"\n\n{answer}")
+
+        # Generate voice response
+        await context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.RECORD_VOICE)
+        audio_response = await loop.run_in_executor(None, _text_to_speech, answer)
+
+        await update.message.reply_voice(voice=BytesIO(audio_response))
+
+        chat_history.add_user_message(question)
+        chat_history.add_ai_message(answer)
+
+        await loop.run_in_executor(None, _maybe_summarize, chat_history, chat_id)
+
+    except Exception as exc:
+        logger.error("Voice handler error: %s", exc, exc_info=True)
+        await msg.edit_text("❌ Error processing voice message.")
 
 
 async def post_init(application) -> None:
@@ -955,6 +1125,7 @@ def main() -> None:
     app.add_handler(CommandHandler("expert", expert_handler))
     app.add_handler(CommandHandler("sync", sync_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
+    app.add_handler(MessageHandler(filters.VOICE, voice_handler))
 
     logger.info("Athena bot is running. Waiting for messages...")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
