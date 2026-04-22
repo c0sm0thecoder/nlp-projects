@@ -11,6 +11,7 @@ Query flow:
 """
 from __future__ import annotations
 
+import time
 from datetime import datetime
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -24,6 +25,29 @@ from core.clients import get_llm
 from core.logger import get_logger
 
 logger = get_logger(__name__)
+
+_MAX_RETRIES = 3
+_RETRY_DELAY = 2.0
+
+
+def _retriever_with_retry(store, question: str, k: int = 4) -> list:
+    """Retrieve documents with retry on rate limit."""
+    retriever = store.as_retriever(search_type="similarity", search_kwargs={"k": k})
+    for attempt in range(_MAX_RETRIES):
+        try:
+            return retriever.invoke(question)
+        except Exception as e:
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                if attempt < _MAX_RETRIES - 1:
+                    wait = _RETRY_DELAY * (attempt + 1)
+                    logger.warning("Rate limited, retrying in %.1fs...", wait)
+                    time.sleep(wait)
+                else:
+                    logger.error("Rate limit exceeded after %d retries", _MAX_RETRIES)
+                    return []
+            else:
+                raise
+    return []
 
 _SYSTEM_PROMPT = """\
 You are Athena, the Wise Company Historian. You have access to both a knowledge graph (structured relationships between people, departments, projects, and services) and document search.
@@ -161,12 +185,11 @@ def ask(question: str, history: list[dict[str, str]] | None = None) -> str:
         except Exception as e:
             logger.warning("Graph query failed (Neo4j may not be running): %s", e)
 
-    # Step 3: Vector search
+    # Step 3: Vector search with retry
     all_docs = []
     for ns in _NAMESPACES:
         store = get_vector_store(ns)
-        retriever = store.as_retriever(search_type="similarity", search_kwargs={"k": _TOP_K})
-        docs = retriever.invoke(question)
+        docs = _retriever_with_retry(store, question, k=_TOP_K)
 
         for doc in docs:
             doc_id = doc.metadata.get("url", "")
