@@ -1127,7 +1127,10 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             try:
                 while True:
                     status = status_queue.get_nowait()
-                    await msg.edit_text(status.get("message", "..."))
+                    try:
+                        await msg.edit_text(status.get("message", "..."))
+                    except Exception:
+                        pass  # Ignore edit errors (e.g., message unchanged)
             except queue.Empty:
                 pass
 
@@ -1217,7 +1220,10 @@ async def voice_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             try:
                 while True:
                     status = status_queue.get_nowait()
-                    await msg.edit_text(f"💬 \"{question}\"\n\n{status.get('message', '...')}")
+                    try:
+                        await msg.edit_text(f"💬 \"{question}\"\n\n{status.get('message', '...')}")
+                    except Exception:
+                        pass
             except queue.Empty:
                 pass
 
