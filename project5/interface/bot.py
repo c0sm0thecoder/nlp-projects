@@ -101,7 +101,7 @@ def _team(department: str) -> tuple[str, str]:
 
 
 def _summarize_channel(channel_name: str) -> tuple[str, str]:
-    """Summarize recent Slack channel activity. Returns (text, parse_mode)."""
+    """Summarize recent Slack channel activity with chunked processing. Returns (text, parse_mode)."""
     from slack_sdk import WebClient
     settings = get_settings()
     client = WebClient(token=settings.slack_bot_token)
@@ -132,28 +132,63 @@ def _summarize_channel(channel_name: str) -> tuple[str, str]:
     if not messages:
         return f"No recent messages in #{channel_name}.", "HTML"
 
-    # Format messages for summarization
-    msg_texts = []
+    # Extract and filter messages (prioritize those with reactions or replies)
+    processed = []
     for msg in reversed(messages):
-        text = msg.get("text", "")[:200]
-        if text:
-            msg_texts.append(text)
+        text = msg.get("text", "")[:150]  # Shorter truncation
+        if not text or text.startswith("<"):  # Skip empty or bot messages
+            continue
 
-    prompt = f"""Summarize the following Slack channel activity in 4-6 concise bullet points. Start each bullet with a relevant emoji. Focus on key discussions, decisions, and updates. No markdown formatting.
+        # Prioritize messages with engagement
+        reactions = len(msg.get("reactions", []))
+        replies = msg.get("reply_count", 0)
+        score = reactions + replies
 
-Messages from #{channel_name}:
-{chr(10).join(msg_texts[:20])}
+        processed.append({"text": text, "score": score})
+
+    # Sort by engagement, take top 15
+    processed.sort(key=lambda x: x["score"], reverse=True)
+    top_messages = [m["text"] for m in processed[:15]]
+
+    if len(top_messages) <= 8:
+        # Small batch - single summarization
+        prompt = f"""Summarize in 3-4 bullet points with emojis. Key topics and decisions only. Plain text, no markdown.
+
+Messages:
+{chr(10).join(top_messages)}
 
 Summary:"""
+        llm = get_llm()
+        response = llm.invoke(prompt)
+        summary = response.content if hasattr(response, "content") else str(response)
+    else:
+        # Chunk into 2 batches, summarize each, then combine
+        llm = get_llm()
+        mid = len(top_messages) // 2
+        chunk_summaries = []
 
-    llm = get_llm()
-    response = llm.invoke(prompt)
-    summary = response.content if hasattr(response, "content") else str(response)
+        for chunk in [top_messages[:mid], top_messages[mid:]]:
+            prompt = f"""List 2-3 key points from these messages. Very brief, plain text:
+
+{chr(10).join(chunk)}
+
+Points:"""
+            resp = llm.invoke(prompt)
+            chunk_summaries.append(resp.content if hasattr(resp, "content") else str(resp))
+
+        # Combine chunk summaries
+        combine_prompt = f"""Combine into 4-5 bullet points with emojis. No markdown:
+
+{chr(10).join(chunk_summaries)}
+
+Summary:"""
+        response = llm.invoke(combine_prompt)
+        summary = response.content if hasattr(response, "content") else str(response)
 
     result = (
         f"<b>💬 #{channel_name} Summary</b>\n"
         f"━━━━━━━━━━━━━━━\n"
-        f"<i>{len(messages)} recent messages</i>\n\n"
+        f"<i>{len(messages)} messages analyzed</i>\n\n"
         f"{summary}"
     )
     return result, "HTML"
