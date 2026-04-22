@@ -426,74 +426,80 @@ def _sync_now() -> tuple[str, str]:
 
 
 def _route_question(question: str, from_user: str) -> tuple[str, str]:
-    """Route a question to a Slack channel, tagging suggested expert."""
+    """Route a question to the best Slack channel based on topic."""
     from slack_sdk import WebClient
     from slack_sdk.errors import SlackApiError
 
     settings = get_settings()
     client = WebClient(token=settings.slack_bot_token)
-    driver = get_neo4j_driver()
 
-    # Extract topic keywords for expert matching
-    keywords = question.lower().split()
+    q = question.lower()
 
-    # Find best expert
-    with driver.session() as session:
-        result = list(session.run("""
-            MATCH (p:Person)
-            WHERE p.authority_score >= 7
-            RETURN p.name AS name, p.role AS role, p.email AS email,
-                   p.department AS dept, p.authority_score AS auth
-            ORDER BY p.authority_score DESC
-            LIMIT 10
-        """))
+    # Fetch all channels bot is in and pick best match
+    try:
+        resp = client.conversations_list(types="public_channel,private_channel", limit=200)
+        channels = resp.get("channels", [])
+    except SlackApiError as e:
+        return f"Failed to fetch channels: {e}", "HTML"
 
-    # Try to match expert based on question content
-    best_expert = None
-    if result:
-        for row in result:
-            role = (row['role'] or '').lower()
-            dept = (row['dept'] or '').lower()
+    if not channels:
+        return "No accessible Slack channels found.", "HTML"
 
-            for kw in keywords:
-                if kw in role or kw in dept:
-                    best_expert = row
+    # Keywords to channel name matching
+    topic_keywords = {
+        "engineering": ["deploy", "code", "bug", "api", "build", "release", "github", "jenkins", "service"],
+        "hr": ["pto", "vacation", "leave", "benefits", "onboarding", "hiring", "salary", "policy"],
+        "sales": ["customer", "deal", "pricing", "contract", "client", "revenue"],
+        "marketing": ["campaign", "brand", "content", "social", "ads"],
+        "finance": ["budget", "expense", "invoice", "payment", "cost"],
+        "general": [],  # fallback
+    }
+
+    # Find best channel
+    best_channel = None
+    best_channel_name = None
+
+    for keyword_group, keywords in topic_keywords.items():
+        if any(kw in q for kw in keywords):
+            # Find channel matching this topic
+            for ch in channels:
+                ch_name = ch.get("name", "").lower()
+                if keyword_group in ch_name or ch_name in keyword_group:
+                    best_channel = ch["id"]
+                    best_channel_name = ch["name"]
                     break
-            if best_expert:
+            if best_channel:
                 break
 
-        if not best_expert:
-            best_expert = result[0]
-
-    # Post to first channel
-    channel_ids = settings.slack_channel_list
-    if not channel_ids:
-        return "No Slack channels configured.", "HTML"
-
-    expert_mention = ""
-    if best_expert:
-        expert_mention = f"\n\n💡 *Suggested expert:* {best_expert['name']} ({best_expert['role']})"
+    # Fallback to #general or first channel
+    if not best_channel:
+        for ch in channels:
+            if ch.get("name", "").lower() == "general":
+                best_channel = ch["id"]
+                best_channel_name = ch["name"]
+                break
+        if not best_channel:
+            best_channel = channels[0]["id"]
+            best_channel_name = channels[0]["name"]
 
     message = (
         f"❓ *Question from {from_user} (via Athena)*\n\n"
-        f"> {question}"
-        f"{expert_mention}\n\n"
+        f"> {question}\n\n"
         f"_Can anyone help with this?_"
     )
 
     try:
-        client.chat_postMessage(channel=channel_ids[0], text=message, mrkdwn=True)
+        client.chat_postMessage(channel=best_channel, text=message, mrkdwn=True)
 
         return (
             f"<b>📨 Question Posted</b>\n"
             f"━━━━━━━━━━━━━━━\n\n"
-            f"Posted to Slack channel\n"
-            + (f"Suggested expert: <b>{best_expert['name']}</b>" if best_expert else "")
+            f"Posted to: <b>#{best_channel_name}</b>"
         ), "HTML"
 
     except SlackApiError as e:
         logger.error("Failed to post question: %s", e)
-        return f"Failed to post question: {e}", "HTML"
+        return f"Failed to post to #{best_channel_name}: {e}", "HTML"
 
 
 def _generate_org_graph() -> bytes | None:
