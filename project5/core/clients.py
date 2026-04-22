@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from neo4j import GraphDatabase
 from pinecone import Pinecone
 
 from core.config import get_settings
@@ -38,3 +39,11 @@ def get_embeddings() -> GoogleGenerativeAIEmbeddings:
         google_api_key=s.google_api_key,
         output_dimensionality=768,
     )
+
+
+@lru_cache(maxsize=1)
+def get_neo4j_driver():
+    s = get_settings()
+    driver = GraphDatabase.driver(s.neo4j_uri, auth=(s.neo4j_user, s.neo4j_password))
+    logger.info("Neo4j connected at %s", s.neo4j_uri)
+    return driver

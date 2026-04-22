@@ -28,6 +28,10 @@ class Settings(BaseSettings):
 
     telegram_bot_token: str
 
+    neo4j_uri: str = "bolt://localhost:7687"
+    neo4j_user: str = "neo4j"
+    neo4j_password: str = "athena123"
+
     sync_state_path: str = "sync_state.json"
 
     @property
