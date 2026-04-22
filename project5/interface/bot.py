@@ -41,7 +41,7 @@ _GREETING = (
 )
 
 _HISTORY_DIR = Path(__file__).resolve().parents[1] / "chat_history"
-_MAX_RECENT = 5  # Keep last 5 message pairs before summarizing
+_MAX_RECENT = 10  # Keep last 10 message pairs before summarizing
 
 _SUMMARY_PROMPT = """\
 Summarize this conversation in 2-3 sentences, focusing on the main topics discussed and any key facts established. Be concise.
