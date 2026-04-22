@@ -77,7 +77,7 @@ def import_slack_users() -> None:
 
             # Add to knowledge graph
             kg.upsert_person(
-                person_id=f"slack_{user_id}",
+                id=f"slack_{user_id}",
                 name=name,
                 role=title or "Team Member",
                 department=dept,
