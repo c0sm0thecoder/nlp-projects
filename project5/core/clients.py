@@ -34,6 +34,7 @@ def get_llm() -> ChatGoogleGenerativeAI:
 def get_embeddings() -> GoogleGenerativeAIEmbeddings:
     s = get_settings()
     return GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-005",
+        model="gemini-embedding-001",
         google_api_key=s.google_api_key,
+        output_dimensionality=768,
     )
