@@ -125,9 +125,13 @@ def _format_history(history: list[dict[str, str]]) -> str:
     if not history:
         return ""
     parts = ["Conversation History:"]
-    for msg in history[-6:]:
-        role = "User" if msg["role"] == "user" else "Athena"
-        parts.append(f"{role}: {msg['content'][:500]}")
+    for msg in history:
+        if msg["role"] == "system":
+            parts.append(msg["content"])
+        elif msg["role"] == "user":
+            parts.append(f"User: {msg['content'][:500]}")
+        else:
+            parts.append(f"Athena: {msg['content'][:500]}")
     return "\n".join(parts) + "\n\n"
 
 
