@@ -21,8 +21,20 @@ def _doc_id(doc: Document) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()[:32]
 
 
-def upsert_documents(documents: list[Document], namespace: str, use_chunking: bool = True) -> None:
-    """Embed and upsert documents into Pinecone with semantic chunking."""
+def upsert_documents(
+    documents: list[Document],
+    namespace: str,
+    use_chunking: bool = True,
+    index_in_graph: bool = True,
+) -> None:
+    """Embed and upsert documents into Pinecone with semantic chunking.
+
+    Args:
+        documents: List of documents to upsert
+        namespace: Pinecone namespace
+        use_chunking: Whether to apply semantic chunking
+        index_in_graph: Whether to also index in Neo4j graph (auto entity extraction)
+    """
     if not documents:
         logger.info("No documents to upsert for namespace '%s'.", namespace)
         return
@@ -54,6 +66,17 @@ def upsert_documents(documents: list[Document], namespace: str, use_chunking: bo
         logger.info("  batch %d–%d done.", offset, offset + len(batch) - 1)
 
     logger.info("Upsert complete for namespace '%s'.", namespace)
+
+    # Index in Neo4j graph (automatic entity extraction)
+    if index_in_graph:
+        from brain.knowledge_graph import index_document_in_graph
+        logger.info("Indexing %d docs in Neo4j graph...", len(documents))
+        for doc in documents:
+            try:
+                doc_id = _doc_id(doc)
+                index_document_in_graph(doc_id, doc.page_content, doc.metadata)
+            except Exception as e:
+                logger.warning("Failed to index doc in graph: %s", e)
 
 
 def get_vector_store(namespace: str) -> PineconeVectorStore:

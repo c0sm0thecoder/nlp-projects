@@ -299,3 +299,96 @@ def get_graph_stats() -> dict:
         )
         record = result.single()
         return {"nodes": record["node_counts"] if record else []}
+
+
+def index_document_in_graph(doc_id: str, content: str, metadata: dict) -> None:
+    """
+    Automatically index a document in the graph:
+    1. Create Document node
+    2. Link to author via AUTHORED relationship
+    3. Extract entities and create MENTIONS relationships
+    """
+    from brain.entity_extractor import extract_entities
+
+    driver = get_neo4j_driver()
+
+    # Create document node
+    upsert_document(
+        id=doc_id,
+        source=metadata.get("source", "unknown"),
+        url=metadata.get("url", ""),
+        title=metadata.get("page_title", content[:50]),
+        timestamp=str(metadata.get("timestamp", "")),
+        namespace=metadata.get("namespace", ""),
+    )
+
+    # Link to author if exists
+    author_name = metadata.get("author_name", "")
+    if author_name:
+        with driver.session() as session:
+            # Find person by name (fuzzy match)
+            session.run(
+                """
+                MATCH (p:Person)
+                WHERE toLower(p.name) = toLower($author_name)
+                MATCH (d:Document {id: $doc_id})
+                MERGE (p)-[:AUTHORED]->(d)
+                """,
+                author_name=author_name, doc_id=doc_id,
+            )
+
+    # Extract entities and create MENTIONS
+    entities = extract_entities(content[:2000])
+
+    with driver.session() as session:
+        # Link to mentioned people
+        for person in entities.get("people", []):
+            name = person.get("name") if isinstance(person, dict) else person
+            if name:
+                session.run(
+                    """
+                    MATCH (p:Person)
+                    WHERE toLower(p.name) CONTAINS toLower($name)
+                    MATCH (d:Document {id: $doc_id})
+                    MERGE (d)-[:MENTIONS]->(p)
+                    """,
+                    name=name, doc_id=doc_id,
+                )
+
+        # Link to departments
+        for dept in entities.get("departments", []):
+            session.run(
+                """
+                MATCH (dept:Department)
+                WHERE toLower(dept.name) CONTAINS toLower($name)
+                MATCH (d:Document {id: $doc_id})
+                MERGE (d)-[:MENTIONS]->(dept)
+                """,
+                name=dept, doc_id=doc_id,
+            )
+
+        # Link to projects
+        for proj in entities.get("projects", []):
+            session.run(
+                """
+                MATCH (p:Project)
+                WHERE toLower(p.name) CONTAINS toLower($name)
+                MATCH (d:Document {id: $doc_id})
+                MERGE (d)-[:MENTIONS]->(p)
+                """,
+                name=proj, doc_id=doc_id,
+            )
+
+        # Link to technologies
+        for tech in entities.get("technologies", []):
+            session.run(
+                """
+                MATCH (t:Technology)
+                WHERE toLower(t.name) CONTAINS toLower($name)
+                MATCH (d:Document {id: $doc_id})
+                MERGE (d)-[:MENTIONS]->(t)
+                """,
+                name=tech, doc_id=doc_id,
+            )
+
+    logger.info("Indexed document %s in graph with entity links", doc_id[:16])
