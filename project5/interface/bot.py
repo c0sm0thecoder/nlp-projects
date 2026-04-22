@@ -70,8 +70,8 @@ async def _text_to_speech(text: str) -> bytes:
     # Clean text for TTS
     clean_text = text.replace("*", "").replace("_", "").replace("`", "")
 
-    # Use a natural-sounding voice
-    communicate = edge_tts.Communicate(clean_text, "en-US-AriaNeural")
+    # Use Jenny - most natural sounding voice
+    communicate = edge_tts.Communicate(clean_text, "en-US-JennyNeural")
 
     audio_buffer = BytesIO()
     async for chunk in communicate.stream():
@@ -784,12 +784,35 @@ _GREETING = (
     "/diff — Page change history\n"
     "/expert — Find who to ask\n"
     "/route — Route question to expert via Slack DM\n"
+    "/voice — Toggle voice responses on/off\n"
     "/sync — Trigger data sync\n"
     "/clear — Reset conversation"
 )
 
 _HISTORY_DIR = Path(__file__).resolve().parents[1] / "chat_history"
+_SETTINGS_DIR = Path(__file__).resolve().parents[1] / "user_settings"
 _MAX_RECENT = 10  # Keep last 10 message pairs before summarizing
+
+
+def _get_voice_mode(chat_id: int) -> bool:
+    """Check if voice response mode is enabled for this chat."""
+    _SETTINGS_DIR.mkdir(exist_ok=True)
+    settings_file = _SETTINGS_DIR / f"{chat_id}.json"
+    if settings_file.exists():
+        data = json.loads(settings_file.read_text())
+        return data.get("voice_mode", False)
+    return False
+
+
+def _set_voice_mode(chat_id: int, enabled: bool) -> None:
+    """Set voice response mode for this chat."""
+    _SETTINGS_DIR.mkdir(exist_ok=True)
+    settings_file = _SETTINGS_DIR / f"{chat_id}.json"
+    data = {}
+    if settings_file.exists():
+        data = json.loads(settings_file.read_text())
+    data["voice_mode"] = enabled
+    settings_file.write_text(json.dumps(data))
 
 _SUMMARY_PROMPT = """\
 Summarize this conversation in 2-3 sentences, focusing on the main topics discussed and any key facts established. Be concise.
@@ -906,6 +929,25 @@ async def clear_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     if summary_path.exists():
         summary_path.unlink()
     await update.message.reply_text("✨ <b>Conversation cleared</b>\n\nStarting fresh!", parse_mode="HTML")
+
+
+async def voice_toggle_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Toggle voice response mode."""
+    chat_id = update.effective_chat.id
+    current = _get_voice_mode(chat_id)
+    new_mode = not current
+    _set_voice_mode(chat_id, new_mode)
+
+    if new_mode:
+        await update.message.reply_text(
+            "🔊 <b>Voice mode enabled</b>\n\nI'll respond with voice messages only.",
+            parse_mode="HTML"
+        )
+    else:
+        await update.message.reply_text(
+            "📝 <b>Voice mode disabled</b>\n\nI'll respond with text messages.",
+            parse_mode="HTML"
+        )
 
 
 async def whois_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -1102,7 +1144,15 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         if not answer.strip():
             answer = "I could not find any relevant information."
 
-        await msg.edit_text(answer)
+        # Check if voice mode is enabled
+        if _get_voice_mode(chat_id):
+            await msg.edit_text("🔊 Generating voice response...")
+            await context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.RECORD_VOICE)
+            audio_response = await _text_to_speech(answer)
+            await msg.delete()
+            await update.message.reply_voice(voice=BytesIO(audio_response))
+        else:
+            await msg.edit_text(answer)
 
     except Exception as exc:
         logger.error("Resolver error: %s", exc, exc_info=True)
@@ -1184,14 +1234,17 @@ async def voice_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         if not answer.strip():
             answer = "I could not find any relevant information."
 
-        # Generate voice response only
-        await msg.edit_text("🔊 Generating voice response...")
-        await context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.RECORD_VOICE)
-        audio_response = await _text_to_speech(answer)
-
-        # Delete status message and send voice only
-        await msg.delete()
-        await update.message.reply_voice(voice=BytesIO(audio_response))
+        # Check voice mode preference
+        if _get_voice_mode(chat_id):
+            # Voice response only
+            await msg.edit_text("🔊 Generating voice response...")
+            await context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.RECORD_VOICE)
+            audio_response = await _text_to_speech(answer)
+            await msg.delete()
+            await update.message.reply_voice(voice=BytesIO(audio_response))
+        else:
+            # Text response only
+            await msg.edit_text(f"💬 \"{question}\"\n\n{answer}")
 
         chat_history.add_user_message(question)
         chat_history.add_ai_message(answer)
@@ -1216,6 +1269,7 @@ async def post_init(application) -> None:
         BotCommand("diff", "Page changes: /diff PTO Policy"),
         BotCommand("expert", "Find expert: /expert kubernetes"),
         BotCommand("route", "Route question to expert: /route How do I deploy?"),
+        BotCommand("voice", "Toggle voice responses on/off"),
         BotCommand("sync", "Trigger manual sync"),
     ]
     await application.bot.set_my_commands(commands)
@@ -1236,6 +1290,7 @@ def main() -> None:
     app.add_handler(CommandHandler("diff", diff_handler))
     app.add_handler(CommandHandler("expert", expert_handler))
     app.add_handler(CommandHandler("route", route_handler))
+    app.add_handler(CommandHandler("voice", voice_toggle_handler))
     app.add_handler(CommandHandler("sync", sync_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
     app.add_handler(MessageHandler(filters.VOICE, voice_handler))
