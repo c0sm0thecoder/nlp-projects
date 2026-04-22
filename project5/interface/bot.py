@@ -37,36 +37,41 @@ logger = get_logger("athena_bot")
 # TOOL FUNCTIONS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _whois(name: str) -> str:
-    """Look up a person by name."""
+def _whois(name: str) -> tuple[str, str]:
+    """Look up a person by name. Returns (text, parse_mode)."""
     results = kg.find_entity_by_name(name)
     persons = [r for r in results if r["label"] == "Person"]
 
     if not persons:
-        return f"No person found matching '{name}'."
+        return f"No person found matching '{name}'.", "HTML"
 
-    lines = []
+    cards = []
     for p in persons[:3]:
         props = p["props"]
-        lines.append(
-            f"Name: {props.get('name', 'Unknown')}\n"
-            f"Role: {props.get('role', 'Unknown')}\n"
-            f"Department: {props.get('department', 'Unknown')}\n"
-            f"Email: {props.get('email', 'N/A')}\n"
-            f"Authority: {props.get('authority_score', 'N/A')}"
+        authority = props.get('authority_score', 0)
+        auth_stars = "★" * min(authority // 2, 5) + "☆" * (5 - min(authority // 2, 5))
+
+        card = (
+            f"<b>👤 {props.get('name', 'Unknown')}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"💼  <b>Role:</b> {props.get('role', 'Unknown')}\n"
+            f"🏢  <b>Dept:</b> {props.get('department', 'Unknown')}\n"
+            f"📧  <b>Email:</b> <code>{props.get('email', 'N/A')}</code>\n"
+            f"⭐  <b>Authority:</b> {auth_stars}"
         )
-    return "\n\n".join(lines)
+        cards.append(card)
+    return "\n\n".join(cards), "HTML"
 
 
-def _team(department: str) -> str:
-    """List all people in a department."""
+def _team(department: str) -> tuple[str, str]:
+    """List all people in a department. Returns (text, parse_mode)."""
     driver = get_neo4j_driver()
     with driver.session() as session:
         result = session.run(
             """
             MATCH (p:Person)
             WHERE toLower(p.department) CONTAINS toLower($dept)
-            RETURN p.name AS name, p.role AS role, p.email AS email
+            RETURN p.name AS name, p.role AS role, p.email AS email, p.authority_score AS auth
             ORDER BY p.authority_score DESC
             """,
             dept=department,
@@ -74,16 +79,29 @@ def _team(department: str) -> str:
         members = list(result)
 
     if not members:
-        return f"No team members found in '{department}'."
+        return f"No team members found in '{department}'.", "HTML"
 
-    lines = [f"Team: {department}\n"]
+    lines = [
+        f"<b>🏢 {department.title()} Team</b>",
+        f"━━━━━━━━━━━━━━━",
+        f"<i>{len(members)} members</i>\n",
+    ]
+
     for m in members:
-        lines.append(f"- {m['name']} ({m['role']}) - {m['email']}")
-    return "\n".join(lines)
+        auth = m['auth'] or 0
+        if auth >= 10:
+            icon = "👑"
+        elif auth >= 7:
+            icon = "🔹"
+        else:
+            icon = "▫️"
+        lines.append(f"{icon} <b>{m['name']}</b>\n     {m['role']}\n     <code>{m['email']}</code>")
+
+    return "\n".join(lines), "HTML"
 
 
-def _summarize_channel(channel_name: str) -> str:
-    """Summarize recent Slack channel activity."""
+def _summarize_channel(channel_name: str) -> tuple[str, str]:
+    """Summarize recent Slack channel activity. Returns (text, parse_mode)."""
     from slack_sdk import WebClient
     settings = get_settings()
     client = WebClient(token=settings.slack_bot_token)
@@ -105,14 +123,14 @@ def _summarize_channel(channel_name: str) -> str:
             break
 
     if not channel_id:
-        return f"Channel '#{channel_name}' not found."
+        return f"Channel '#{channel_name}' not found.", "HTML"
 
     # Fetch recent messages
     resp = client.conversations_history(channel=channel_id, limit=30)
     messages = resp.get("messages", [])
 
     if not messages:
-        return f"No recent messages in #{channel_name}."
+        return f"No recent messages in #{channel_name}.", "HTML"
 
     # Format messages for summarization
     msg_texts = []
@@ -121,20 +139,28 @@ def _summarize_channel(channel_name: str) -> str:
         if text:
             msg_texts.append(text)
 
-    prompt = f"""Summarize the following Slack channel activity from #{channel_name} in 3-5 bullet points. Focus on key discussions, decisions, and updates.
+    prompt = f"""Summarize the following Slack channel activity in 4-6 concise bullet points. Start each bullet with a relevant emoji. Focus on key discussions, decisions, and updates. No markdown formatting.
 
-Messages:
+Messages from #{channel_name}:
 {chr(10).join(msg_texts[:20])}
 
 Summary:"""
 
     llm = get_llm()
     response = llm.invoke(prompt)
-    return response.content if hasattr(response, "content") else str(response)
+    summary = response.content if hasattr(response, "content") else str(response)
+
+    result = (
+        f"<b>💬 #{channel_name} Summary</b>\n"
+        f"━━━━━━━━━━━━━━━\n"
+        f"<i>{len(messages)} recent messages</i>\n\n"
+        f"{summary}"
+    )
+    return result, "HTML"
 
 
-def _diff_page(page_title: str) -> str:
-    """Show what changed in a Confluence page."""
+def _diff_page(page_title: str) -> tuple[str, str]:
+    """Show what changed in a Confluence page. Returns (text, parse_mode)."""
     from atlassian import Confluence
     settings = get_settings()
     cf = Confluence(
@@ -147,7 +173,7 @@ def _diff_page(page_title: str) -> str:
     # Search for the page
     pages = cf.cql(f'title ~ "{page_title}" AND type = page', limit=1).get("results", [])
     if not pages:
-        return f"Page '{page_title}' not found."
+        return f"Page '{page_title}' not found.", "HTML"
 
     page_id = pages[0]["content"]["id"]
     page = cf.get_page_by_id(page_id, expand="version,history.lastUpdated")
@@ -155,81 +181,126 @@ def _diff_page(page_title: str) -> str:
     version = page.get("version", {})
     current_version = version.get("number", 1)
     modified_by = version.get("by", {}).get("displayName", "Unknown")
-    modified_at = version.get("when", "Unknown")
-    message = version.get("message", "No version message")
+    modified_at = version.get("when", "Unknown")[:10] if version.get("when") else "Unknown"
+    message = version.get("message", "—")
 
-    result = [
-        f"Page: {page.get('title')}",
-        f"Current Version: {current_version}",
-        f"Last Modified: {modified_at}",
-        f"Modified By: {modified_by}",
-        f"Change Note: {message}",
-    ]
-
+    diff_info = ""
     if current_version > 1:
-        # Get previous version content for comparison summary
         try:
             history = cf.get_page_by_id(page_id, expand="body.storage", version=current_version - 1)
             old_length = len(history.get("body", {}).get("storage", {}).get("value", ""))
-            current = cf.get_page_by_id(page_id, expand="body.storage")
-            new_length = len(current.get("body", {}).get("storage", {}).get("value", ""))
+            current_page = cf.get_page_by_id(page_id, expand="body.storage")
+            new_length = len(current_page.get("body", {}).get("storage", {}).get("value", ""))
             diff = new_length - old_length
-            result.append(f"Content Change: {'+' if diff > 0 else ''}{diff} characters")
+            if diff > 0:
+                diff_info = f"📈  <b>Change:</b> +{diff} chars"
+            elif diff < 0:
+                diff_info = f"📉  <b>Change:</b> {diff} chars"
+            else:
+                diff_info = f"📊  <b>Change:</b> Modified (same size)"
         except Exception:
-            pass
+            diff_info = ""
 
-    return "\n".join(result)
+    result = (
+        f"<b>📄 {page.get('title')}</b>\n"
+        f"━━━━━━━━━━━━━━━\n"
+        f"📌  <b>Version:</b> {current_version}\n"
+        f"📅  <b>Modified:</b> {modified_at}\n"
+        f"👤  <b>Author:</b> {modified_by}\n"
+        f"💬  <b>Note:</b> {message}\n"
+        f"{diff_info}"
+    )
+    return result.strip(), "HTML"
 
 
-def _find_expert(topic: str) -> str:
-    """Find who to talk to about a topic."""
-    prompt = f"""Based on this topic: "{topic}"
+def _find_expert(topic: str) -> tuple[str, str]:
+    """Find who to talk to about a topic. Returns (text, parse_mode)."""
+    # First search the knowledge graph for relevant people
+    graph_results = []
+    results = kg.find_entity_by_name(topic)
+    people = [r for r in results if r["label"] == "Person"]
+    for p in people[:3]:
+        props = p["props"]
+        graph_results.append(f"👤 <b>{props.get('name')}</b> — {props.get('role')}\n     📧 <code>{props.get('email', 'N/A')}</code>")
 
-Given a typical tech company structure with these departments and roles:
-- Engineering: CTO, VP Engineering, Lead Architect, Senior Engineers, DevOps
-- Product: Director of Product, Product Managers, UX Lead
-- HR: HR Lead
-- Sales: VP Sales
-- Marketing: Director of Marketing
-- Finance: CFO
-- Legal: General Counsel
-- IT Operations: Director of IT
+    # Also check projects/services related to topic
+    projects = [r for r in results if r["label"] in ("Project", "Service")]
+    for proj in projects[:2]:
+        props = proj["props"]
+        owner = props.get("owner_dept") or props.get("owner_team", "Unknown")
+        graph_results.append(f"📁 <b>{props.get('name')}</b> — owned by {owner}")
 
-Who would be the best person(s) to talk to about this topic? Be specific about the role and why.
-Keep response to 2-3 sentences."""
+    prompt = f"""Topic: "{topic}"
+
+Who should someone talk to about this topic in a tech company? Give 1-2 specific role recommendations with brief reasoning. No markdown, plain text only."""
 
     llm = get_llm()
     response = llm.invoke(prompt)
-    answer = response.content if hasattr(response, "content") else str(response)
+    suggestion = response.content if hasattr(response, "content") else str(response)
 
-    # Also search the knowledge graph
-    results = kg.find_entity_by_name(topic)
-    if results:
-        people = [r for r in results if r["label"] == "Person"]
-        if people:
-            names = [p["props"].get("name") for p in people[:2]]
-            answer += f"\n\nRelated people in knowledge graph: {', '.join(names)}"
+    result_parts = [
+        f"<b>🎯 Expert Finder: {topic}</b>",
+        "━━━━━━━━━━━━━━━",
+    ]
 
-    return answer
+    if graph_results:
+        result_parts.append("\n<b>From Knowledge Graph:</b>")
+        result_parts.extend(graph_results)
+
+    result_parts.append(f"\n<b>💡 Suggestion:</b>\n{suggestion}")
+
+    return "\n".join(result_parts), "HTML"
 
 
-def _sync_now() -> str:
-    """Trigger manual sync."""
+def _sync_now() -> tuple[str, str]:
+    """Trigger manual sync. Returns (text, parse_mode)."""
     import requests
+    results = []
+
     try:
-        # Try to call sync service if running
-        requests.post("http://localhost:8000/sync/slack", timeout=2)
-        requests.post("http://localhost:8000/sync/confluence", timeout=2)
-        return "Sync triggered. Check sync service logs for progress."
+        resp = requests.post("http://localhost:8000/sync/slack", timeout=2)
+        if resp.status_code == 200:
+            results.append("✅ Slack sync triggered")
+        else:
+            results.append("⚠️ Slack sync failed")
     except Exception:
-        return "Sync service not running. Start it with: python interface/sync_service.py"
+        results.append("❌ Slack sync: service unavailable")
+
+    try:
+        resp = requests.post("http://localhost:8000/sync/confluence", timeout=2)
+        if resp.status_code == 200:
+            results.append("✅ Confluence sync triggered")
+        else:
+            results.append("⚠️ Confluence sync failed")
+    except Exception:
+        results.append("❌ Confluence sync: service unavailable")
+
+    if all("❌" in r for r in results):
+        results.append("\n<i>Start sync service:</i>\n<code>python interface/sync_service.py</code>")
+
+    return (
+        "<b>🔄 Sync Status</b>\n"
+        "━━━━━━━━━━━━━━━\n" +
+        "\n".join(results)
+    ), "HTML"
 
 _GREETING = (
-    "Hello! I am *Athena*, your Wise Company Historian.\n\n"
-    "I have indexed your Slack history and Confluence wiki and can resolve "
-    "conflicts between them using source authority and recency.\n\n"
-    "Ask me anything — policies, deployments, team decisions.\n\n"
-    "Use /clear to reset our conversation history."
+    "<b>🏛 Welcome to Athena</b>\n"
+    "━━━━━━━━━━━━━━━\n\n"
+    "I am your <b>Wise Company Historian</b>.\n\n"
+    "I have indexed your Slack and Confluence, "
+    "resolving conflicts using authority scores and timestamps.\n\n"
+    "<b>📝 Ask me anything:</b>\n"
+    "• Policies, deployments, decisions\n"
+    "• Who to contact, team info\n\n"
+    "<b>🛠 Commands:</b>\n"
+    "/whois — Look up a person\n"
+    "/team — List department members\n"
+    "/summarize — Summarize a channel\n"
+    "/diff — Page change history\n"
+    "/expert — Find who to ask\n"
+    "/sync — Trigger data sync\n"
+    "/clear — Reset conversation"
 )
 
 _HISTORY_DIR = Path(__file__).resolve().parents[1] / "chat_history"
@@ -339,7 +410,7 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     summary_path = _get_summary_path(chat_id)
     if summary_path.exists():
         summary_path.unlink()
-    await update.message.reply_text(_GREETING, parse_mode="Markdown")
+    await update.message.reply_text(_GREETING, parse_mode="HTML")
 
 
 async def clear_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -349,38 +420,38 @@ async def clear_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     summary_path = _get_summary_path(chat_id)
     if summary_path.exists():
         summary_path.unlink()
-    await update.message.reply_text("Conversation history cleared.")
+    await update.message.reply_text("✨ <b>Conversation cleared</b>\n\nStarting fresh!", parse_mode="HTML")
 
 
 async def whois_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text("Usage: /whois <name>")
+        await update.message.reply_text("Usage: /whois &lt;name&gt;", parse_mode="HTML")
         return
 
     name = " ".join(context.args)
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
 
     loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, _whois, name)
-    await update.message.reply_text(result)
+    result, parse_mode = await loop.run_in_executor(None, _whois, name)
+    await update.message.reply_text(result, parse_mode=parse_mode)
 
 
 async def team_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text("Usage: /team <department>")
+        await update.message.reply_text("Usage: /team &lt;department&gt;", parse_mode="HTML")
         return
 
     department = " ".join(context.args)
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
 
     loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, _team, department)
-    await update.message.reply_text(result)
+    result, parse_mode = await loop.run_in_executor(None, _team, department)
+    await update.message.reply_text(result, parse_mode=parse_mode)
 
 
 async def summarize_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text("Usage: /summarize <#channel>")
+        await update.message.reply_text("Usage: /summarize &lt;#channel&gt;", parse_mode="HTML")
         return
 
     channel = " ".join(context.args)
@@ -388,16 +459,16 @@ async def summarize_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     try:
         loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, _summarize_channel, channel)
-        await update.message.reply_text(result)
+        result, parse_mode = await loop.run_in_executor(None, _summarize_channel, channel)
+        await update.message.reply_text(result, parse_mode=parse_mode)
     except Exception as e:
         logger.error("Summarize error: %s", e)
-        await update.message.reply_text(f"Error summarizing channel: {e}")
+        await update.message.reply_text(f"❌ Error: {e}")
 
 
 async def diff_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text("Usage: /diff <page title>")
+        await update.message.reply_text("Usage: /diff &lt;page title&gt;", parse_mode="HTML")
         return
 
     page_title = " ".join(context.args)
@@ -405,16 +476,16 @@ async def diff_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
     try:
         loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, _diff_page, page_title)
-        await update.message.reply_text(result)
+        result, parse_mode = await loop.run_in_executor(None, _diff_page, page_title)
+        await update.message.reply_text(result, parse_mode=parse_mode)
     except Exception as e:
         logger.error("Diff error: %s", e)
-        await update.message.reply_text(f"Error getting page diff: {e}")
+        await update.message.reply_text(f"❌ Error: {e}")
 
 
 async def expert_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text("Usage: /expert <topic>")
+        await update.message.reply_text("Usage: /expert &lt;topic&gt;", parse_mode="HTML")
         return
 
     topic = " ".join(context.args)
@@ -422,17 +493,17 @@ async def expert_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     try:
         loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, _find_expert, topic)
-        await update.message.reply_text(result)
+        result, parse_mode = await loop.run_in_executor(None, _find_expert, topic)
+        await update.message.reply_text(result, parse_mode=parse_mode)
     except Exception as e:
         logger.error("Expert error: %s", e)
-        await update.message.reply_text(f"Error finding expert: {e}")
+        await update.message.reply_text(f"❌ Error: {e}")
 
 
 async def sync_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    result = _sync_now()
-    await update.message.reply_text(result)
+    result, parse_mode = _sync_now()
+    await update.message.reply_text(result, parse_mode=parse_mode)
 
 
 async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
