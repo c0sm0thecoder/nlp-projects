@@ -21,3 +21,5 @@ graphviz>=0.20.0
 openai-whisper>=20231117
 edge-tts>=6.1.0
 python-dateutil>=2.8.0
+mlx>=0.16.0
+sentence-transformers>=2.2.0
