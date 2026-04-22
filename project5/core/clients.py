@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-import google.generativeai as genai
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from pinecone import Pinecone
 
@@ -24,7 +23,6 @@ def get_pinecone_index():
 @lru_cache(maxsize=1)
 def get_llm() -> ChatGoogleGenerativeAI:
     s = get_settings()
-    genai.configure(api_key=s.google_api_key)
     return ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         google_api_key=s.google_api_key,

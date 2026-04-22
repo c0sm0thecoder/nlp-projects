@@ -26,33 +26,37 @@ logger = get_logger("seed_data")
 
 # ── Confluence seed ───────────────────────────────────────────────────────────
 
-_CONFLUENCE_PAGES = [
-    {
-        "space": "WIKI",
-        "title": "PTO Policy",
-        "body": (
-            "<h1>PTO Policy</h1>"
-            "<p>All employees are entitled to <strong>20 days</strong> of paid time off per year. "
-            "PTO accrues monthly at a rate of 1.67 days per month. "
-            "Unused days may be rolled over up to a maximum of 5 days.</p>"
-        ),
-    },
-    {
-        "space": "ENG",
-        "title": "Deployment Guide",
-        "body": (
-            "<h1>Deployment Guide</h1>"
-            "<p>All services are deployed via <strong>Jenkins</strong>. "
-            "Pipelines are defined in a <code>Jenkinsfile</code> at the repository root. "
-            "Trigger a production deployment by pushing a tag matching <code>v*.*.*</code>.</p>"
-        ),
-    },
-]
+def _get_confluence_pages(settings):
+    spaces = settings.confluence_space_list
+    space_wiki = spaces[0] if len(spaces) > 0 else "WIKI"
+    space_eng = spaces[1] if len(spaces) > 1 else "ENG"
+    return [
+        {
+            "space": space_wiki,
+            "title": "PTO Policy",
+            "body": (
+                "<h1>PTO Policy</h1>"
+                "<p>All employees are entitled to <strong>20 days</strong> of paid time off per year. "
+                "PTO accrues monthly at a rate of 1.67 days per month. "
+                "Unused days may be rolled over up to a maximum of 5 days.</p>"
+            ),
+        },
+        {
+            "space": space_eng,
+            "title": "Deployment Guide",
+            "body": (
+                "<h1>Deployment Guide</h1>"
+                "<p>All services are deployed via <strong>Jenkins</strong>. "
+                "Pipelines are defined in a <code>Jenkinsfile</code> at the repository root. "
+                "Trigger a production deployment by pushing a tag matching <code>v*.*.*</code>.</p>"
+            ),
+        },
+    ]
 
 
 def _seed_confluence(cf: Confluence, settings) -> list[Document]:
     docs: list[Document] = []
-    for page in _CONFLUENCE_PAGES:
+    for page in _get_confluence_pages(settings):
         existing = cf.get_page_by_title(space=page["space"], title=page["title"])
         if existing:
             logger.info("Page '%s' already exists (id=%s), skipping create.", page["title"], existing["id"])
