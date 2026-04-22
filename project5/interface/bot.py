@@ -426,7 +426,7 @@ def _sync_now() -> tuple[str, str]:
 
 
 def _route_question(question: str, from_user: str) -> tuple[str, str]:
-    """Route a question to the best expert via Slack DM."""
+    """Route a question to a Slack channel, tagging suggested expert."""
     from slack_sdk import WebClient
     from slack_sdk.errors import SlackApiError
 
@@ -448,67 +448,52 @@ def _route_question(question: str, from_user: str) -> tuple[str, str]:
             LIMIT 10
         """))
 
-    if not result:
-        return "No experts found in the system.", "HTML"
-
     # Try to match expert based on question content
     best_expert = None
-    for row in result:
-        role = (row['role'] or '').lower()
-        dept = (row['dept'] or '').lower()
+    if result:
+        for row in result:
+            role = (row['role'] or '').lower()
+            dept = (row['dept'] or '').lower()
 
-        for kw in keywords:
-            if kw in role or kw in dept:
-                best_expert = row
+            for kw in keywords:
+                if kw in role or kw in dept:
+                    best_expert = row
+                    break
+            if best_expert:
                 break
-        if best_expert:
-            break
 
-    # Fallback to highest authority
-    if not best_expert:
-        best_expert = result[0]
+        if not best_expert:
+            best_expert = result[0]
 
-    expert_email = best_expert['email']
-    expert_name = best_expert['name']
+    # Post to first channel
+    channel_ids = settings.slack_channel_list
+    if not channel_ids:
+        return "No Slack channels configured.", "HTML"
 
-    if not expert_email:
-        return f"Found expert <b>{expert_name}</b> but no email on file.", "HTML"
+    expert_mention = ""
+    if best_expert:
+        expert_mention = f"\n\n💡 *Suggested expert:* {best_expert['name']} ({best_expert['role']})"
 
-    # Find Slack user by email
+    message = (
+        f"❓ *Question from {from_user} (via Athena)*\n\n"
+        f"> {question}"
+        f"{expert_mention}\n\n"
+        f"_Can anyone help with this?_"
+    )
+
     try:
-        user_resp = client.users_lookupByEmail(email=expert_email)
-        slack_user_id = user_resp['user']['id']
-    except SlackApiError as e:
-        if "users_not_found" in str(e):
-            return f"Expert <b>{expert_name}</b> ({expert_email}) not found on Slack.", "HTML"
-        raise
-
-    # Open DM and send message
-    try:
-        dm_resp = client.conversations_open(users=[slack_user_id])
-        dm_channel = dm_resp['channel']['id']
-
-        message = (
-            f"👋 *Question routed to you by Athena*\n\n"
-            f"_{from_user} asked:_\n\n"
-            f"> {question}\n\n"
-            f"_You were identified as the best person to answer based on your role and expertise._"
-        )
-
-        client.chat_postMessage(channel=dm_channel, text=message, mrkdwn=True)
+        client.chat_postMessage(channel=channel_ids[0], text=message, mrkdwn=True)
 
         return (
-            f"<b>📨 Question Routed</b>\n"
+            f"<b>📨 Question Posted</b>\n"
             f"━━━━━━━━━━━━━━━\n\n"
-            f"Sent to: <b>{expert_name}</b>\n"
-            f"Role: {best_expert['role']}\n"
-            f"Dept: {best_expert['dept']}\n\n"
-            f"<i>They'll receive a Slack DM with your question.</i>"
+            f"Posted to Slack channel\n"
+            + (f"Suggested expert: <b>{best_expert['name']}</b>" if best_expert else "")
         ), "HTML"
 
     except SlackApiError as e:
-        logger.error("Failed to send DM: %s", e)
-        return f"Failed to send message to {expert_name}: {e}", "HTML"
+        logger.error("Failed to post question: %s", e)
+        return f"Failed to post question: {e}", "HTML"
 
 
 def _generate_org_graph() -> bytes | None:
