@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from atlassian import Confluence
-from langchain.schema import Document
+from langchain_core.documents import Document
 from pinecone import Pinecone, ServerlessSpec
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError

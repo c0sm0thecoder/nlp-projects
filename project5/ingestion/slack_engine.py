@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 

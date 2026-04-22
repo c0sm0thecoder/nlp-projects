@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from atlassian import Confluence
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 from core.config import get_settings
 from core.logger import get_logger

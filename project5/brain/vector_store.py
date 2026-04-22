@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_pinecone import PineconeVectorStore
 
 from core.clients import get_embeddings, get_pinecone_index
